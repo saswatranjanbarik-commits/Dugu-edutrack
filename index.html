@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Dugu EduTrack v3</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f0f4f8;color:#1a202c;min-height:100vh}
+:root{--p:#1F4E79;--a:#C55A11;--s:#276221;--sl:#C6EFCE;--d:#9C0006;--dl:#FFC7CE;--w:#9C5700;--wl:#FFEB9C;--pu:#4B2E83}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes sp{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.fi{animation:fi .3s ease}
+.card{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.08);padding:20px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn:active{transform:scale(.97)}
+.bp{background:var(--p);color:#fff}.bp:hover{background:#2E75B6}
+.ba{background:var(--a);color:#fff}.ba:hover{background:#a34a0e}
+.bs{background:var(--s);color:#fff}
+.bpu{background:var(--pu);color:#fff}
+.bo{background:transparent;border:2px solid var(--p);color:var(--p)}.bo:hover{background:var(--p);color:#fff}
+.bg2{background:#f1f5f9;color:#334155}.bg2:hover{background:#e2e8f0}
+.brd{background:var(--dl);color:var(--d);border:none}
+.bsm{padding:6px 14px;font-size:12px}.blg{padding:14px 28px;font-size:16px}.bfw{width:100%}
+.inp{width:100%;padding:10px 14px;border:2px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:inherit;outline:none;background:#fff;transition:border-color .2s}
+.inp:focus{border-color:var(--p)}
+.lbl{font-size:13px;font-weight:600;color:#334155;display:block;margin-bottom:6px}
+.pb{height:8px;background:#e2e8f0;border-radius:9999px;overflow:hidden}
+.pf{height:100%;border-radius:9999px;transition:width .5s ease}
+.nav{background:var(--p);color:#fff;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.sb{width:210px;background:#fff;height:calc(100vh - 60px);position:fixed;left:0;top:60px;border-right:1px solid #e2e8f0;padding:12px 0;overflow-y:auto;z-index:90}
+.si{display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;font-weight:500;color:#334155;cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+.si:hover{background:#f8fafc;color:var(--p)}
+.si.act{background:#DCE6F1;color:var(--p);border-left-color:var(--p);font-weight:600}
+.main{margin-left:210px;padding:24px;min-height:calc(100vh - 60px);padding-bottom:80px}
+.mn{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;z-index:100;padding:6px 0 10px}
+.mi{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#64748b;cursor:pointer;padding:4px}
+.mi.act{color:var(--p);font-weight:600}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.pt{font-size:24px;font-weight:800;color:#0f172a;margin-bottom:4px}
+.ps{font-size:14px;color:#64748b;margin-bottom:24px}
+.st{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:600}
+.ts{background:var(--sl);color:var(--s)}.tw{background:var(--wl);color:var(--w)}.td2{background:var(--dl);color:var(--d)}.tp{background:#DCE6F1;color:var(--p)}.tpu{background:#E8E0F0;color:var(--pu)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-lg{max-width:800px}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;position:relative;padding:4px;min-height:36px}
+.cal-day:hover{background:#f1f5f9}
+.task-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:10px}
+.task-check{width:22px;height:22px;border-radius:6px;border:2px solid #e2e8f0;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:2px}
+.upload-zone{border:2px dashed #e2e8f0;border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .15s;background:#f8fafc}
+.upload-zone:hover{border-color:var(--p);background:#f0f7ff}
+.tree-item{padding:6px 10px;border-radius:8px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px;font-size:13px}
+.tree-item:hover{background:#f1f5f9}
+.tree-item.sel{background:#DCE6F1;color:var(--p);font-weight:600}
+.note-card{border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;background:#fff;transition:all .15s}
+.note-card:hover{border-color:var(--p);box-shadow:0 2px 8px rgba(31,78,121,.1)}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:9999px;font-size:11px;font-weight:600;background:#f1f5f9;color:#334155}
+.tutor-slot{border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:10px;background:#fff}
+.tutor-slot.booked{border-color:#276221;background:#f0fdf4}
+.tutor-slot.available{border-color:#e2e8f0;background:#fff}
+@media(max-width:768px){.main{margin-left:0;padding:16px}.sb{display:none}.mn{display:flex!important}.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const FC={apiKey:"AIzaSyD4hjE7UhFfzpBh63XzPwRY9gOhCQfUn8w",authDomain:"dugu-edutrack.firebaseapp.com",projectId:"dugu-edutrack",storageBucket:"dugu-edutrack.firebasestorage.app",messagingSenderId:"336963361004",appId:"1:336963361004:web:4cde59e43fee0ad3282dc9"};
+firebase.initializeApp(FC);
+const auth=firebase.auth();
+const db=firebase.firestore();
+const storage=firebase.storage();
+</script>
+<script type="text/babel">
+const {useState,useEffect,useRef}=React;
+
+// ── Default Syllabus with Sub-topics ─────────────────────────────────────────
+const DS={
+  English:{chapters:[
+    {ch:"Ch-1",topics:[{name:"The Fire",subtopics:["Reading Aloud","Word Meanings","Question Answers","Summary Writing"]},{name:"Nouns (Grammar)",subtopics:["Types of Nouns","Common & Proper","Exercises","Test"]}]},
+    {ch:"Ch-2",topics:[{name:"Afternoon on a Hill",subtopics:["Poem Reading","Appreciation","Comprehension"]},{name:"Articles (Grammar)",subtopics:["A and An","The","Usage Rules","Exercises"]}]},
+    {ch:"Ch-3",topics:[{name:"Adventure in the Andamans",subtopics:["Reading","Vocabulary","Q&A","Summary"]},{name:"Pronouns (Grammar)",subtopics:["Types","Personal Pronouns","Exercises"]}]},
+    {ch:"Ch-4",topics:[{name:"A Book",subtopics:["Poem Reading","Appreciation","Q&A"]},{name:"Adjectives (Grammar)",subtopics:["Types","Degrees","Exercises"]}]},
+    {ch:"Writing",topics:[{name:"Notice Writing",subtopics:["Format","Lost & Found","Event Announcement","Practice"]},{name:"Informal Letter",subtopics:["Format","To Friend","To Family","Reply"]},{name:"Email Writing",subtopics:["Format","Practice","Examples"]}]},
+  ]},
+  Hindi:{chapters:[
+    {ch:"Ch-1",topics:[{name:"Pyare Bachcho",subtopics:["Paath Padhna","Shabdarth","Prashnottar","Saar"]},{name:"Shabd Vichar",subtopics:["Paribhasha","Utpatti ke Aadhar","Abhyas"]}]},
+    {ch:"Ch-2",topics:[{name:"Do Gauraiyaan",subtopics:["Paath Padhna","Shabdarth","Prashnottar"]},{name:"Sangya",subtopics:["Paribhasha","Bhed","Udaharan","Abhyas"]}]},
+    {ch:"Ch-3",topics:[{name:"Khel Divas",subtopics:["Paath Padhna","Prashnottar"]},{name:"Ling",subtopics:["Paribhasha","Bhed","Abhyas"]}]},
+    {ch:"Ch-4",topics:[{name:"Chhod Ped Ki Chhaon Musafir",subtopics:["Paath Padhna","Prashnottar"]},{name:"Vachan",subtopics:["Paribhasha","Abhyas"]}]},
+  ]},
+  Odia:{chapters:[
+    {ch:"Paath-7",topics:[{name:"Jatiya Dhwaja (Poetry)",subtopics:["Paath Padhiba","Prashna Uttar","Vyakaran"]},{name:"Odia Grammar",subtopics:["Vishesha Bhitti","Abhyas"]}]},
+    {ch:"Paath-8",topics:[{name:"Upayukta Besa (Prose)",subtopics:["Paath Padhiba","Prashna Uttar","Rachana"]}]},
+    {ch:"Paath-1",topics:[{name:"Prose Chapter 1",subtopics:["Reading","Q&A","Grammar"]}]},
+    {ch:"Paath-2",topics:[{name:"Poetry Chapter 2",subtopics:["Reading","Appreciation","Q&A"]}]},
+  ]},
+  Mathematics:{chapters:[
+    {ch:"Ch-1",topics:[{name:"Large Numbers",subtopics:["Introduction","Place Value","Indian System","International System","Comparison","Exercises"]},{name:"Operations on Large Numbers",subtopics:["Addition","Subtraction","Multiplication","Division","Word Problems"]}]},
+    {ch:"Ch-2",topics:[{name:"Factors and Multiples",subtopics:["Factors","Multiples","Prime Numbers","HCF","LCM","Exercises"]}]},
+    {ch:"Ch-3",topics:[{name:"Fractions",subtopics:["Types of Fractions","Equivalent Fractions","Addition","Subtraction","Multiplication","Division"]}]},
+    {ch:"Ch-4",topics:[{name:"Decimals",subtopics:["Introduction","Place Value","Addition","Subtraction","Multiplication","Division"]}]},
+    {ch:"Ch-5",topics:[{name:"Basic Geometry",subtopics:["Points and Lines","Angles","Triangles","Quadrilaterals","Circles"]}]},
+    {ch:"Ch-6",topics:[{name:"Patterns and Symmetry",subtopics:["Number Patterns","Shape Patterns","Lines of Symmetry","Exercises"]}]},
+    {ch:"Ch-7",topics:[{name:"Metric Measures",subtopics:["Length","Weight","Capacity","Conversion","Word Problems"]}]},
+    {ch:"Ch-8",topics:[{name:"Perimeter and Area",subtopics:["Perimeter of Rectangle","Perimeter of Square","Area of Rectangle","Area of Square","Exercises"]}]},
+  ]},
+  Science:{chapters:[
+    {ch:"Ch-1",topics:[{name:"Our Body",subtopics:["Body Systems","Digestive System","Respiratory System","Circulatory System","Nervous System","Exercises"]}]},
+    {ch:"Ch-2",topics:[{name:"Deficiency Diseases",subtopics:["Vitamins","Minerals","Diseases","Prevention","Balanced Diet"]}]},
+    {ch:"Ch-3",topics:[{name:"Eat Well Keep Well",subtopics:["Nutrients","Food Groups","Balanced Diet","Junk Food","Healthy Habits"]}]},
+    {ch:"Ch-4",topics:[{name:"Fuel for Vehicle",subtopics:["Types of Fuel","Fossil Fuels","Alternative Energy","Pollution","Conservation"]}]},
+    {ch:"Ch-5",topics:[{name:"In Times of Emergency",subtopics:["First Aid","Safety Rules","Natural Disasters","Disaster Management"]}]},
+    {ch:"Ch-6",topics:[{name:"The Story of Water",subtopics:["Water Cycle","Sources of Water","Water Conservation","Water Pollution"]}]},
+    {ch:"Ch-7",topics:[{name:"Aquatic Life",subtopics:["Adaptations","Food Chain","Aquatic Ecosystem","Conservation"]}]},
+  ]},
+  "Social Studies":{chapters:[
+    {ch:"Ch-1",topics:[{name:"Why People Move",subtopics:["Reasons for Migration","Types","Push Factors","Pull Factors","Effects"]}]},
+    {ch:"Ch-2",topics:[{name:"Being Different",subtopics:["Diversity","Respect","Unity in Diversity","Cultural Differences"]}]},
+    {ch:"Ch-3",topics:[{name:"Different Jobs",subtopics:["Types of Occupations","Importance","Interdependence","Exercises"]}]},
+    {ch:"Ch-6",topics:[{name:"Food for All",subtopics:["Food Security","Distribution","Government Schemes","Hunger"]}]},
+    {ch:"Ch-9",topics:[{name:"Let Us Play",subtopics:["Importance of Sports","Famous Players","Olympic Games","Indoor Outdoor Sports"]}]},
+    {ch:"Ch-10",topics:[{name:"On an Adventure Trip",subtopics:["Planning","Safety","Types of Adventure","Experience"]}]},
+    {ch:"Ch-11",topics:[{name:"Shelter for Everyone",subtopics:["Types of Houses","Construction","Homelessness","Government Schemes"]}]},
+    {ch:"Ch-13",topics:[{name:"Our Forests",subtopics:["Types of Forests","Importance","Deforestation","Conservation"]}]},
+    {ch:"Ch-14",topics:[{name:"Our Rich Heritage",subtopics:["Culture","Monuments","Traditions","Festivals"]}]},
+  ]},
+  "Computer Science":{chapters:[
+    {ch:"Ch-1",topics:[{name:"History of Computers",subtopics:["Generations","Types","Uses","Future"]}]},
+    {ch:"Ch-2",topics:[{name:"Tables in Word",subtopics:["Insert Table","Format Table","Merge Cells","Split Cells","Practical"]}]},
+    {ch:"Ch-3",topics:[{name:"Mail Merge",subtopics:["Introduction","Data Source","Main Document","Steps","Practical"]}]},
+    {ch:"Ch-4",topics:[{name:"Exploring PowerPoint",subtopics:["Interface","Creating Slides","Animations","Transitions","Practical"]}]},
+    {ch:"Ch-5",topics:[{name:"AI Tools",subtopics:["Introduction","Examples","Uses in Daily Life","Future of AI"]}]},
+    {ch:"Ch-6",topics:[{name:"Email",subtopics:["Compose","Send","Attachments","Etiquette","Practical"]}]},
+    {ch:"Ch-7",topics:[{name:"Algorithm and Flowchart",subtopics:["Algorithm Definition","Flowchart Symbols","Examples","Practice"]}]},
+  ]},
+  "Moral Science":{chapters:[
+    {ch:"Ch-1",topics:[{name:"Grandmas Beans",subtopics:["Story Reading","Moral","Discussion","Activity"]}]},
+    {ch:"Ch-2",topics:[{name:"The Wise Judge",subtopics:["Story Reading","Moral","Discussion"]}]},
+    {ch:"Ch-3",topics:[{name:"The Power of Forgiveness",subtopics:["Story Reading","Moral","Real Life Examples"]}]},
+    {ch:"Ch-4",topics:[{name:"The Real Winner",subtopics:["Story Reading","Moral","Sportsmanship"]}]},
+    {ch:"Ch-5",topics:[{name:"Every Drop Counts",subtopics:["Story Reading","Water Conservation","Activity"]}]},
+    {ch:"Ch-6",topics:[{name:"Lets Clean Up",subtopics:["Story Reading","Cleanliness","Activity"]}]},
+  ]},
+  "General Knowledge":{chapters:[
+    {ch:"Unit-1",topics:[{name:"Animals and Plants",subtopics:["Animal Facts","Plant Facts","Quiz","Current Affairs"]}]},
+    {ch:"Unit-2",topics:[{name:"Language and Literature",subtopics:["Famous Authors","Books","Languages","Quiz"]}]},
+    {ch:"Unit-3",topics:[{name:"Our Environment",subtopics:["Environment Facts","Pollution","Conservation","Current Affairs"]}]},
+    {ch:"Unit-4",topics:[{name:"Science and Technology",subtopics:["Inventions","Scientists","Technology","Quiz"]}]},
+    {ch:"Unit-5",topics:[{name:"Sports and Environment",subtopics:["Sports Records","Famous Players","Environment Sports","Quiz"]}]},
+    {ch:"Unit-6",topics:[{name:"Know about India",subtopics:["States and Capitals","National Symbols","Famous Places","Quiz"]}]},
+  ]},
+};
+
+const SUBS=Object.keys(DS);
+const SC={English:"#1F4E79",Hindi:"#4B2E83",Odia:"#7F6000",Mathematics:"#1F6B5B",Science:"#375623","Social Studies":"#C55A11","Computer Science":"#1F3864","Moral Science":"#4A1942","General Knowledge":"#404040"};
+const SL={English:"#DCE6F1",Hindi:"#E8E0F0",Odia:"#FFF2CC",Mathematics:"#DAEEE6",Science:"#E2EFDA","Social Studies":"#FCE4D6","Computer Science":"#D9E1F2","Moral Science":"#EAD1DC","General Knowledge":"#F2F2F2"};
+
+// ── App ───────────────────────────────────────────────────────────────────────
+function App(){
+  const[user,setUser]=useState(undefined);
+  const[email,setEmail]=useState("");
+  const[pass,setPass]=useState("");
+  const[err,setErr]=useState("");
+  const[loading,setLoading]=useState(false);
+  useEffect(()=>auth.onAuthStateChanged(u=>setUser(u)),[]);
+  const login=async(e,p)=>{try{setErr("");setLoading(true);await auth.signInWithEmailAndPassword(e,p);}catch{setErr("Invalid email or password.");}setLoading(false)};
+  const setup=async()=>{
+    const users=[{name:"Saswat",email:"saswat@dugu-edutrack.com",password:"Saswat@123",role:"teacher",avatar:"S"},{name:"Swagat",email:"swagat@dugu-edutrack.com",password:"Swagat@123",role:"teacher",avatar:"W"},{name:"Baibhav",email:"baibhav@dugu-edutrack.com",password:"Baibhav@123",role:"child",avatar:"B"}];
+    setLoading(true);
+    for(const u of users){try{const c=await auth.createUserWithEmailAndPassword(u.email,u.password);await db.collection("users").doc(c.user.uid).set({name:u.name,email:u.email,role:u.role,avatar:u.avatar,online:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});await auth.signOut();}catch(e){if(e.code!=="auth/email-already-in-use")console.log(e);}}
+    setLoading(false);alert("Setup complete! You can now login.");
+  };
+  if(user===undefined)return(<div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#1F4E79,#2E75B6)"}}><div style={{background:"white",padding:40,borderRadius:24,textAlign:"center"}}><div style={{fontSize:48,marginBottom:12}}>🎓</div><h2 style={{color:"#1F4E79",marginBottom:8}}>Dugu EduTrack</h2><p style={{color:"#64748b",fontSize:14,marginBottom:20}}>Connecting...</p><div style={{width:32,height:32,border:"3px solid #e2e8f0",borderTopColor:"#1F4E79",borderRadius:"50%",animation:"sp .8s linear infinite",margin:"0 auto"}}/><style>{`@keyframes sp{to{transform:rotate(360deg)}}`}</style></div></div>);
+  if(!user)return(
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#1F4E79,#2E75B6)",padding:20}}>
+      <div style={{background:"white",padding:40,borderRadius:24,width:"100%",maxWidth:420,boxShadow:"0 20px 60px rgba(0,0,0,.3)"}}>
+        <div style={{textAlign:"center",marginBottom:28}}><div style={{fontSize:52,marginBottom:8}}>🎓</div><h1 style={{fontSize:26,fontWeight:900,color:"#1F4E79"}}>Dugu EduTrack</h1><p style={{color:"#64748b",fontSize:13,marginTop:4}}>Baibhav Personal Learning Portal v3</p><div style={{display:"inline-flex",alignItems:"center",gap:6,marginTop:8,background:"#C6EFCE",color:"#276221",padding:"4px 12px",borderRadius:9999,fontSize:12,fontWeight:600}}><span style={{width:7,height:7,borderRadius:"50%",background:"#22c55e",display:"inline-block"}}/>Online Mode</div></div>
+        <div style={{marginBottom:12}}><label className="lbl">Email</label><input className="inp" type="email" placeholder="Enter your email" value={email} onChange={e=>setEmail(e.target.value)}/></div>
+        <div style={{marginBottom:18}}><label className="lbl">Password</label><input className="inp" type="password" placeholder="Enter your password" value={pass} onChange={e=>setPass(e.target.value)}/></div>
+        {err&&<div style={{background:"#FFC7CE",color:"#9C0006",padding:"10px 14px",borderRadius:8,fontSize:13,marginBottom:14,fontWeight:500}}>⚠️ {err}</div>}
+        <button className="btn bp bfw blg" onClick={()=>login(email,pass)} disabled={loading}>{loading?"Signing in...":"Sign In"}</button>
+        <div style={{height:1,background:"#e2e8f0",margin:"16px 0"}}/>
+        <p style={{fontSize:12,color:"#64748b",textAlign:"center",marginBottom:10,fontWeight:600}}>QUICK LOGIN</p>
+        <div style={{display:"flex",gap:8,marginBottom:14}}>
+          {[{n:"Saswat",e:"saswat@dugu-edutrack.com",p:"Saswat@123",c:"#1F4E79"},{n:"Swagat",e:"swagat@dugu-edutrack.com",p:"Swagat@123",c:"#4B2E83"},{n:"Baibhav",e:"baibhav@dugu-edutrack.com",p:"Baibhav@123",c:"#1F6B5B"}].map(u=>(
+            <button key={u.n} onClick={()=>login(u.e,u.p)} disabled={loading} style={{flex:1,padding:"10px 4px",borderRadius:10,border:`2px solid ${u.c}`,background:"white",color:u.c,fontSize:12,fontWeight:700,cursor:"pointer"}}>{u.n}</button>
+          ))}
+        </div>
+        <div style={{textAlign:"center"}}><button onClick={setup} disabled={loading} style={{background:"none",border:"none",color:"#94a3b8",fontSize:12,cursor:"pointer",textDecoration:"underline"}}>First time? Set up accounts</button></div>
+      </div>
+    </div>
+  );
+  return <MainApp user={user}/>;
+}
+
+// ── Main App ──────────────────────────────────────────────────────────────────
+function MainApp({user}){
+  const[profile,setProfile]=useState(null);
+  const[page,setPage]=useState("dashboard");
+  const[topics,setTopics]=useState([]);
+  const[revisions,setRevisions]=useState([]);
+  const[notes,setNotes]=useState([]);
+  const[syllabus,setSyllabus]=useState({});
+  const[calEvents,setCalEvents]=useState([]);
+  const[flashcards,setFlashcards]=useState([]);
+  const[quizzes,setQuizzes]=useState([]);
+  const[tasks,setTasks]=useState([]);
+  const[studyNotes,setStudyNotes]=useState([]);
+  const[users,setUsers]=useState([]);
+  const[onlineUsers,setOnlineUsers]=useState([]);
+  const[toast,setToast]=useState("");
+  const showToast=m=>{setToast(m);setTimeout(()=>setToast(""),3000)};
+
+  useEffect(()=>{
+    db.collection("users").doc(user.uid).get().then(d=>{if(d.exists)setProfile(d.data());});
+    db.collection("users").doc(user.uid).update({online:true});
+    const uns=[];
+    uns.push(db.collection("topics").orderBy("createdAt","desc").limit(100).onSnapshot(s=>setTopics(s.docs.map(d=>({id:d.id,...d.data()})))));
+    uns.push(db.collection("revisions").orderBy("dueDate","asc").onSnapshot(s=>setRevisions(s.docs.map(d=>({id:d.id,...d.data()})))));
+    uns.push(db.collection("notes").orderBy("createdAt","desc").limit(30).onSnapshot(s=>setNotes(s.docs.map(d=>({id:d.id,...d.data()})))));
+    uns.push(db.collection("syllabus").doc("shared").onSnapshot(s=>{if(s.exists)setSyllabus(s.data().data||{});}));
+    uns.push(db.collection("calEvents").orderBy("date","asc").onSnapshot(s=>setCalEvents(s.docs.map(d=>({id:d.id,...d.data()})))));
+    uns.push(db.collection("flashcards").orderBy("createdAt","desc").onSnapshot(s=>setFlashcards(s.docs.map(d=>({id:d.id,...d.data()})))));
+    uns.push(db.collection("quizzes").orderBy("createdAt","desc").onSnapshot(s=>setQuizzes(s.docs.map(d=>({id:d.id,...d.data()})))));
+    uns.push(db.collection("tasks").orderBy("createdAt","desc").onSnapshot(s=>setTasks(s.docs.map(d=>({id:d.id,...d.data()})))));
+    uns.push(db.collection("studyNotes").orderBy("createdAt","desc").onSnapshot(s=>setStudyNotes(s.docs.map(d=>({id:d.id,...d.data()})))));
+    uns.push(db.collection("users").onSnapshot(s=>setUsers(s.docs.map(d=>({id:d.id,...d.data()})))));
+    uns.push(db.collection("users").where("online","==",true).onSnapshot(s=>setOnlineUsers(s.docs.map(d=>d.data().name).filter(Boolean))));
+    return()=>{uns.forEach(u=>u());db.collection("users").doc(user.uid).update({online:false});};
+  },[user.uid]);
+
+  const logout=async()=>{await db.collection("users").doc(user.uid).update({online:false});await auth.signOut();};
+  const isT=profile?.role==="teacher"||profile?.role==="admin";
+
+  // Core functions
+  const logTopic=async(entry)=>{
+    const rd=new Date(entry.date);rd.setDate(rd.getDate()+7);
+    const rDue=rd.toISOString().split("T")[0];
+    await db.collection("topics").add({...entry,revisionDue:rDue,loggedBy:profile?.name||"Teacher",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    if(entry.status==="taught"){await db.collection("revisions").add({subject:entry.subject,chapter:entry.chapter,topic:entry.topic,subtopic:entry.subtopic||"",taughtDate:entry.date,dueDate:rDue,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});}
+    const upd=JSON.parse(JSON.stringify(syllabus));
+    if(!upd[entry.subject])upd[entry.subject]={chapters:DS[entry.subject]?.chapters||[],progress:{}};
+    if(!upd[entry.subject].progress)upd[entry.subject].progress={};
+    const key=`${entry.subject}||${entry.chapter}||${entry.topic}${entry.subtopic?"||"+entry.subtopic:""}`;
+    upd[entry.subject].progress[key]={status:entry.status,date:entry.date};
+    await db.collection("syllabus").doc("shared").set({data:upd},{merge:true});
+    showToast("Topic saved! Revision set for "+rDue);
+  };
+  const markRevised=async(id)=>{await db.collection("revisions").doc(id).update({done:true,doneDate:new Date().toISOString().split("T")[0]});showToast("Marked as revised!");};
+  const addNote=async(text)=>{await db.collection("notes").add({text,author:profile?.name||"Teacher",createdAt:firebase.firestore.FieldValue.serverTimestamp()});};
+  const addCalEvent=async(ev)=>{await db.collection("calEvents").add({...ev,createdBy:profile?.name,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("Event added!");};
+  const deleteCalEvent=async(id)=>{await db.collection("calEvents").doc(id).delete();showToast("Event deleted.");};
+  const addFlashcard=async(fc)=>{await db.collection("flashcards").add({...fc,createdBy:profile?.name,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("Flashcard added!");};
+  const addQuiz=async(qz)=>{await db.collection("quizzes").add({...qz,createdBy:profile?.name,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("Quiz question added!");};
+  const addTask=async(tk)=>{await db.collection("tasks").add({...tk,createdBy:profile?.name,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("Task assigned!");};
+  const toggleTask=async(id,done)=>{await db.collection("tasks").doc(id).update({done:!done,doneDate:!done?new Date().toISOString().split("T")[0]:null});};
+  const uploadSyllabus=async(subj,chapters)=>{const upd=JSON.parse(JSON.stringify(syllabus));if(!upd[subj])upd[subj]={};upd[subj].chapters=chapters;upd[subj].progress=upd[subj].progress||{};await db.collection("syllabus").doc("shared").set({data:upd},{merge:true});showToast("Syllabus updated for "+subj+"!");};
+  const addStudyNote=async(note)=>{await db.collection("studyNotes").add({...note,uploadedBy:profile?.name,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("Study material added!");};
+  const deleteStudyNote=async(id)=>{await db.collection("studyNotes").doc(id).delete();showToast("Deleted.");};
+  const addUser=async(userData)=>{
+    try{
+      const c=await auth.createUserWithEmailAndPassword(userData.email,userData.password);
+      await db.collection("users").doc(c.user.uid).set({name:userData.name,email:userData.email,role:userData.role,avatar:userData.name[0].toUpperCase(),online:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      await auth.signOut();
+      await auth.signInWithEmailAndPassword(profile?.email||"",userData._currentPass||"");
+      showToast("User "+userData.name+" added successfully!");
+      return true;
+    }catch(e){showToast("Error: "+e.message);return false;}
+  };
+
+  const todayRevs=revisions.filter(r=>{const t=new Date().toISOString().split("T")[0];return!r.done&&r.dueDate<=t;});
+  const navT=[{id:"dashboard",l:"Dashboard",i:"📊"},{id:"calendar",l:"Calendar",i:"📅"},{id:"log",l:"Log Topic",i:"✏️"},{id:"syllabus",l:"Syllabus",i:"📚"},{id:"studynotes",l:"Study Notes",i:"📎"},{id:"revision",l:"Revisions",i:"🔄"},{id:"notes",l:"Team Notes",i:"💬"},{id:"content",l:"Flashcards & Quiz",i:"🎯"},{id:"tasks",l:"Tasks",i:"✅"},{id:"users",l:"Manage Users",i:"👥"},{id:"timetable",l:"Timetable",i:"🗓️"}];
+  const navC=[{id:"dashboard",l:"Dashboard",i:"🏠"},{id:"calendar",l:"Calendar",i:"📅"},{id:"syllabus",l:"My Syllabus",i:"📚"},{id:"studynotes",l:"Study Notes",i:"📎"},{id:"revision",l:"Revisions",i:"🔄"},{id:"learn",l:"Learn",i:"🎯"},{id:"tasks",l:"My Tasks",i:"✅"}];
+  const nav=isT?navT:navC;
+  const props={profile,topics,revisions,notes,syllabus,calEvents,flashcards,quizzes,tasks,studyNotes,users,onlineUsers,todayRevs,logTopic,markRevised,addNote,addCalEvent,deleteCalEvent,addFlashcard,addQuiz,addTask,toggleTask,uploadSyllabus,addStudyNote,deleteStudyNote,addUser,showToast,isT};
+
+  const renderPage=()=>{
+    switch(page){
+      case"dashboard":return<Dashboard {...props} setPage={setPage}/>;
+      case"calendar":return<CalendarPage {...props}/>;
+      case"log":return<LogTopic {...props}/>;
+      case"syllabus":return<SyllabusPage {...props}/>;
+      case"studynotes":return<StudyNotesPage {...props}/>;
+      case"revision":return<RevisionPage {...props}/>;
+      case"notes":return<NotesPage {...props}/>;
+      case"content":return<ContentPage {...props}/>;
+      case"learn":return<LearnPage {...props}/>;
+      case"tasks":return<TasksPage {...props}/>;
+      case"users":return<UsersPage {...props}/>;
+      case"timetable":return<TimetablePage/>;
+      default:return<Dashboard {...props} setPage={setPage}/>;
+    }
+  };
+
+  return(
+    <div>
+      <nav className="nav">
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <span style={{fontSize:22}}>🎓</span>
+          <span style={{fontFamily:"sans-serif",fontSize:18,fontWeight:800}}>Dugu EduTrack</span>
+          <span style={{fontSize:10,background:"rgba(255,255,255,0.2)",padding:"2px 8px",borderRadius:9999,fontWeight:600}}>v3</span>
+          {onlineUsers.length>0&&<span style={{fontSize:11,background:"rgba(34,197,94,0.2)",color:"#86efac",padding:"2px 8px",borderRadius:9999,fontWeight:600}}>{onlineUsers.length} online</span>}
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <div style={{width:30,height:30,borderRadius:"50%",background:"rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13}}>{profile?.avatar||"?"}</div>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end"}}><span style={{fontWeight:700,fontSize:13}}>{profile?.name||"..."}</span><span style={{fontSize:10,opacity:.75,textTransform:"capitalize"}}>{profile?.role}</span></div>
+          <button onClick={logout} style={{background:"rgba(255,255,255,0.15)",color:"white",border:"none",padding:"5px 12px",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,marginLeft:6}}>Exit</button>
+        </div>
+      </nav>
+      <div className="sb">
+        <div style={{padding:"6px 16px 10px",borderBottom:"1px solid #e2e8f0",marginBottom:6,fontSize:11,fontWeight:700,color:"#64748b",letterSpacing:1}}>{isT?"TEACHER PORTAL":"STUDENT PORTAL"}</div>
+        {nav.map(item=><div key={item.id} className={`si ${page===item.id?"act":""}`} onClick={()=>setPage(item.id)}><span style={{fontSize:16}}>{item.i}</span><span>{item.l}</span></div>)}
+        <div style={{padding:"12px 16px",position:"absolute",bottom:0,left:0,right:0,borderTop:"1px solid #e2e8f0",fontSize:10,color:"#64748b",textAlign:"center"}}><span style={{width:6,height:6,borderRadius:"50%",background:"#22c55e",display:"inline-block",marginRight:4}}/>Live Sync · Baibhav · Std 5A</div>
+      </div>
+      <div className="main">{renderPage()}</div>
+      <div className="mn" style={{display:"none"}}>{nav.slice(0,5).map(item=><div key={item.id} className={`mi ${page===item.id?"act":""}`} onClick={()=>setPage(item.id)}><span style={{fontSize:18}}>{item.i}</span><span>{item.l}</span></div>)}</div>
+      {toast&&<div style={{position:"fixed",bottom:80,left:"50%",transform:"translateX(-50%)",background:"#1a202c",color:"#fff",padding:"10px 22px",borderRadius:9999,fontSize:13,fontWeight:500,zIndex:999,boxShadow:"0 8px 32px rgba(0,0,0,.16)",whiteSpace:"nowrap"}}>{toast}</div>}
+    </div>
+  );
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+function Dashboard({profile,topics,todayRevs,onlineUsers,tasks,calEvents,syllabus,setPage}){
+  const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const tn=days[new Date().getDay()];
+  const TT={Monday:["English","Odia","Maths","SST","Science","GK","Games","Yoga"],Tuesday:["English","Hindi","Maths","Science","SST","Odia","Art","CSPD"],Wednesday:["English","Maths","Science","Hindi","Odia","SST","Music","GK"],Thursday:["English","Science","SST","Maths","Hindi","Maths Lab","Comp Lab","Dance"],Friday:["English","GK","Hindi","Odia","Maths","Science","SST","Library"],Saturday:["English","SST","Odia","Science","Maths","Hindi","Comp","Art"]};
+  const ts=TT[tn]||[];
+  const todayStr=new Date().toISOString().split("T")[0];
+  const todayEvents=calEvents.filter(e=>e.date===todayStr);
+  const pendingTasks=tasks.filter(t=>!t.done).length;
+  const totalTopics=Object.values(DS).reduce((s,v)=>s+v.chapters.reduce((a,c)=>a+c.topics.reduce((b,t)=>b+1+(t.subtopics?.length||0),0),0),0);
+  const taughtTopics=Object.values(syllabus).reduce((s,v)=>s+Object.keys(v.progress||{}).filter(k=>v.progress[k].status==="taught").length,0);
+  const overallPct=totalTopics?Math.round(taughtTopics/totalTopics*100):0;
+  const tutorSlots=calEvents.filter(e=>e.type==="tutor"&&e.date>=todayStr).slice(0,3);
+  return(
+    <div className="fi">
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
+        <div className="pt">Welcome, {profile?.name||"..."}! 👋</div>
+        {onlineUsers.length>0&&<div style={{background:"#C6EFCE",color:"#276221",padding:"5px 12px",borderRadius:9999,fontSize:12,fontWeight:600}}><span style={{width:6,height:6,borderRadius:"50%",background:"#22c55e",display:"inline-block",marginRight:4}}/>Online: {onlineUsers.join(", ")}</div>}
+      </div>
+      <div className="ps">{new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</div>
+      <div className="g4" style={{marginBottom:20}}>
+        {[{v:topics.length,l:"Topics Taught",c:"#1F4E79",i:"📚"},{v:todayRevs.length,l:"Revisions Due",c:"#C55A11",i:"🔄"},{v:pendingTasks,l:"Pending Tasks",c:"#4B2E83",i:"✅"},{v:overallPct+"%",l:"Overall Progress",c:"#276221",i:"📈"}].map((s,i)=>(
+          <div key={i} className="card" style={{borderTop:`4px solid ${s.c}`}}>
+            <div style={{fontSize:22,marginBottom:4}}>{s.i}</div>
+            <div style={{fontSize:28,fontWeight:800,color:s.c}}>{s.v}</div>
+            <div style={{fontSize:12,color:"#64748b",fontWeight:500}}>{s.l}</div>
+          </div>
+        ))}
+      </div>
+      <div className="g2" style={{marginBottom:20}}>
+        <div className="card">
+          <div className="st">🗓️ Today — {tn}</div>
+          {ts.length>0?<div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:12}}>{ts.map((s,i)=><span key={i} style={{padding:"4px 10px",borderRadius:9999,fontSize:12,fontWeight:600,background:"#DCE6F1",color:"#1F4E79"}}>P{i+1}: {s}</span>)}</div>:<p style={{color:"#64748b",fontSize:13,marginBottom:12}}>No school today!</p>}
+          {todayEvents.length>0&&<div style={{borderTop:"1px solid #e2e8f0",paddingTop:10,marginBottom:10}}><div style={{fontSize:12,fontWeight:600,color:"#64748b",marginBottom:6}}>TODAY'S EVENTS</div>{todayEvents.map(e=><div key={e.id} style={{fontSize:13,padding:"4px 0",color:"#334155"}}>• {e.title}{e.time?" at "+e.time:""}{e.meetLink&&<a href={e.meetLink} target="_blank" style={{marginLeft:8,color:"#1F4E79",fontSize:11,fontWeight:600}}>Join Meeting →</a>}</div>)}</div>}
+          <button onClick={()=>setPage("log")} style={{width:"100%",padding:"8px",background:"#1F4E79",color:"white",border:"none",borderRadius:8,cursor:"pointer",fontSize:13,fontWeight:600}}>✏️ Log Today Topics</button>
+        </div>
+        <div className="card">
+          <div className="st">📊 Subject Progress</div>
+          {SUBS.slice(0,5).map(sub=>{
+            const allT=DS[sub].chapters.reduce((a,c)=>a+c.topics.reduce((b,t)=>b+1+(t.subtopics?.length||0),0),0);
+            const done=Object.keys(syllabus[sub]?.progress||{}).filter(k=>syllabus[sub].progress[k].status==="taught").length;
+            const pct=allT?Math.round(done/allT*100):0;
+            return(<div key={sub} style={{marginBottom:10}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}><span style={{fontSize:12,fontWeight:600}}>{sub}</span><span style={{fontSize:11,color:"#64748b"}}>{done}/{allT} · {pct}%</span></div>
+              <div className="pb"><div className="pf" style={{width:`${pct}%`,background:SC[sub]||"#1F4E79"}}/></div>
+            </div>);
+          })}
+          <button onClick={()=>setPage("syllabus")} style={{marginTop:8,width:"100%",padding:"6px",background:"transparent",color:"#1F4E79",border:"1px solid #1F4E79",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600}}>View All Subjects →</button>
+        </div>
+      </div>
+      <div className="g2">
+        <div className="card">
+          <div className="st">🔄 Revisions Due Today {todayRevs.length>0&&<span className="tag td2" style={{marginLeft:6}}>{todayRevs.length}</span>}</div>
+          {todayRevs.length===0?<p style={{color:"#64748b",fontSize:13,textAlign:"center",padding:"16px 0"}}>No revisions due today!</p>:todayRevs.slice(0,4).map(r=>(
+            <div key={r.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 12px",borderRadius:8,background:"#f8fafc",border:"1px solid #e2e8f0",marginBottom:6}}>
+              <div style={{width:8,height:8,borderRadius:"50%",background:"#C55A11",flexShrink:0}}/>
+              <div style={{flex:1}}><div style={{fontSize:13,fontWeight:600}}>{r.subject}</div><div style={{fontSize:11,color:"#64748b"}}>{r.topic}{r.subtopic?" → "+r.subtopic:""}</div></div>
+              <span className="tag tw">Due</span>
+            </div>
+          ))}
+        </div>
+        <div className="card">
+          <div className="st">📹 Upcoming Tutor Sessions</div>
+          {tutorSlots.length===0?<div style={{textAlign:"center",padding:"16px 0",color:"#64748b",fontSize:13}}><div style={{fontSize:32,marginBottom:8}}>📹</div>No tutor sessions scheduled.<br/><button onClick={()=>setPage("calendar")} style={{marginTop:8,background:"none",border:"none",color:"#1F4E79",cursor:"pointer",fontSize:12,fontWeight:600,textDecoration:"underline"}}>Schedule one →</button></div>:tutorSlots.map(e=>(
+            <div key={e.id} className="tutor-slot" style={{marginBottom:10}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <div><div style={{fontSize:13,fontWeight:700,color:"#4B2E83"}}>{e.title}</div><div style={{fontSize:12,color:"#64748b"}}>{e.date} {e.time&&"at "+e.time}</div>{e.subject&&<div style={{fontSize:11,color:"#64748b"}}>📚 {e.subject}</div>}</div>
+                {e.meetLink&&<a href={e.meetLink} target="_blank" style={{padding:"6px 12px",background:"#4B2E83",color:"white",borderRadius:8,fontSize:12,fontWeight:600,textDecoration:"none"}}>Join</a>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── FEATURE 5: Enhanced Calendar with Tutor Slots ─────────────────────────────
+function CalendarPage({calEvents,addCalEvent,deleteCalEvent,topics,isT}){
+  const today=new Date();
+  const[year,setYear]=useState(today.getFullYear());
+  const[month,setMonth]=useState(today.getMonth());
+  const[selected,setSelected]=useState(today.toISOString().split("T")[0]);
+  const[showAdd,setShowAdd]=useState(false);
+  const[form,setForm]=useState({title:"",type:"study",subject:"",time:"",endTime:"",notes:"",meetLink:"",tutorName:"",recurring:"none"});
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const firstDay=new Date(year,month,1).getDay();
+  const MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const todayStr=today.toISOString().split("T")[0];
+  const getDS=(d)=>`${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+  const evOnDate=(d)=>calEvents.filter(e=>e.date===getDS(d));
+  const tpOnDate=(d)=>topics.filter(t=>t.date===getDS(d));
+  const selEvs=calEvents.filter(e=>e.date===selected);
+  const selTps=topics.filter(t=>t.date===selected);
+  const TC={study:"#1F4E79",exam:"#9C0006",revision:"#C55A11",activity:"#276221",holiday:"#4B2E83",tutor:"#0891b2",meeting:"#7c3aed"};
+  const TI={study:"📚",exam:"📝",revision:"🔄",activity:"⚽",holiday:"🏖️",tutor:"📹",meeting:"🤝"};
+  const save=async()=>{
+    if(!form.title)return;
+    await addCalEvent({...form,date:selected});
+    setForm({title:"",type:"study",subject:"",time:"",endTime:"",notes:"",meetLink:"",tutorName:"",recurring:"none"});
+    setShowAdd(false);
+  };
+  return(
+    <div className="fi">
+      <div className="pt">📅 Study Calendar</div>
+      <div className="ps">Plan studies, schedule tutor sessions and set meeting links</div>
+      <div className="g2">
+        <div className="card">
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+            <button className="btn bg2 bsm" onClick={()=>{if(month===0){setMonth(11);setYear(y=>y-1);}else setMonth(m=>m-1);}}>←</button>
+            <span style={{fontWeight:700,fontSize:16}}>{MN[month]} {year}</span>
+            <button className="btn bg2 bsm" onClick={()=>{if(month===11){setMonth(0);setYear(y=>y+1);}else setMonth(m=>m+1);}}>→</button>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2,marginBottom:8}}>
+            {["Su","Mo","Tu","We","Th","Fr","Sa"].map(d=><div key={d} style={{textAlign:"center",fontSize:11,fontWeight:700,color:"#64748b",padding:"4px 0"}}>{d}</div>)}
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2}}>
+            {Array(firstDay).fill(null).map((_,i)=><div key={"e"+i}/>)}
+            {Array(daysInMonth).fill(null).map((_,i)=>{
+              const d=i+1;const ds=getDS(d);
+              const evs=evOnDate(d);const tps=tpOnDate(d);
+              const isToday=ds===todayStr;const isSel=ds===selected;
+              const hasTutor=evs.some(e=>e.type==="tutor"||e.type==="meeting");
+              return(
+                <div key={d} className="cal-day" onClick={()=>setSelected(ds)}
+                  style={{background:isToday?"#1F4E79":isSel?"#DCE6F1":"transparent",color:isToday?"white":isSel?"#1F4E79":"inherit",fontWeight:isToday||isSel?700:400}}>
+                  {d}
+                  {(evs.length>0||tps.length>0)&&<div style={{display:"flex",gap:2,marginTop:2}}>
+                    {tps.length>0&&<span style={{width:4,height:4,borderRadius:"50%",background:isToday?"white":"#276221",display:"inline-block"}}/>}
+                    {evs.length>0&&<span style={{width:4,height:4,borderRadius:"50%",background:isToday?"white":hasTutor?"#0891b2":"#C55A11",display:"inline-block"}}/>}
+                  </div>}
+                </div>
+              );
+            })}
+          </div>
+          <div style={{marginTop:12,display:"flex",gap:6,flexWrap:"wrap"}}>
+            {Object.entries(TC).map(([t,c])=><span key={t} style={{fontSize:10,display:"flex",alignItems:"center",gap:3}}><span style={{width:7,height:7,borderRadius:"50%",background:c,display:"inline-block"}}/>{t}</span>)}
+          </div>
+        </div>
+        <div>
+          <div className="card" style={{marginBottom:16}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+              <div className="st" style={{marginBottom:0}}>{new Date(selected+"T00:00:00").toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"})}</div>
+              {isT&&<button className="btn bp bsm" onClick={()=>setShowAdd(true)}>+ Add Event</button>}
+            </div>
+            {selEvs.length===0&&selTps.length===0?(
+              <div style={{textAlign:"center",padding:"20px 0",color:"#64748b",fontSize:13}}>
+                <div style={{fontSize:32,marginBottom:8}}>📭</div>No events for this day.
+                {isT&&<div style={{marginTop:8}}><button className="btn bp bsm" onClick={()=>setShowAdd(true)}>Plan this day</button></div>}
+              </div>
+            ):(
+              <>
+                {selTps.length>0&&<div style={{marginBottom:12}}><div style={{fontSize:12,fontWeight:700,color:"#64748b",marginBottom:6}}>TOPICS TAUGHT</div>{selTps.map(t=><div key={t.id} style={{padding:"8px 12px",borderRadius:8,background:"#C6EFCE",border:"1px solid #276221",marginBottom:6}}><div style={{fontSize:13,fontWeight:600,color:"#276221"}}>{t.subject} — {t.chapter}</div><div style={{fontSize:11,color:"#276221"}}>{t.topic}{t.subtopic?" → "+t.subtopic:""} · by {t.loggedBy}</div></div>)}</div>}
+                {selEvs.map(e=>(
+                  <div key={e.id} style={{padding:"12px 14px",borderRadius:10,background:`${TC[e.type]||"#1F4E79"}12`,border:`1px solid ${TC[e.type]||"#1F4E79"}33`,marginBottom:8}}>
+                    <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between"}}>
+                      <div style={{flex:1}}>
+                        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}><span style={{fontSize:16}}>{TI[e.type]||"📌"}</span><span style={{fontSize:13,fontWeight:700,color:TC[e.type]||"#1F4E79"}}>{e.title}</span></div>
+                        {e.time&&<div style={{fontSize:12,color:"#64748b"}}>⏰ {e.time}{e.endTime?" – "+e.endTime:""}</div>}
+                        {e.subject&&<div style={{fontSize:12,color:"#64748b"}}>📚 {e.subject}</div>}
+                        {e.tutorName&&<div style={{fontSize:12,color:"#64748b"}}>👨‍🏫 Tutor: {e.tutorName}</div>}
+                        {e.notes&&<div style={{fontSize:11,color:"#64748b",marginTop:4}}>{e.notes}</div>}
+                        {e.meetLink&&<a href={e.meetLink} target="_blank" style={{display:"inline-flex",alignItems:"center",gap:4,marginTop:6,padding:"5px 12px",background:TC[e.type]||"#1F4E79",color:"white",borderRadius:8,fontSize:12,fontWeight:600,textDecoration:"none"}}>📹 Join Meeting</a>}
+                      </div>
+                      {isT&&<button onClick={()=>deleteCalEvent(e.id)} style={{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:16,padding:"0 4px",flexShrink:0}}>✕</button>}
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+          <div className="card">
+            <div className="st">📌 Upcoming Events</div>
+            {calEvents.filter(e=>e.date>=todayStr).slice(0,6).map(e=>(
+              <div key={e.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #f1f5f9"}}>
+                <div style={{width:36,height:36,borderRadius:8,background:`${TC[e.type]||"#1F4E79"}20`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:TC[e.type]||"#1F4E79",flexShrink:0,lineHeight:1.2}}><span>{e.date.slice(8)}</span><span style={{fontSize:9}}>{MN[parseInt(e.date.slice(5,7))-1].slice(0,3)}</span></div>
+                <div style={{flex:1}}><div style={{fontSize:13,fontWeight:600}}>{TI[e.type]||"📌"} {e.title}</div><div style={{fontSize:11,color:"#64748b"}}>{e.time||e.type}{e.tutorName?" · "+e.tutorName:""}</div></div>
+                {e.meetLink&&<a href={e.meetLink} target="_blank" style={{fontSize:11,color:"#0891b2",fontWeight:600,textDecoration:"none"}}>Join →</a>}
+              </div>
+            ))}
+            {calEvents.filter(e=>e.date>=todayStr).length===0&&<p style={{color:"#64748b",fontSize:13,textAlign:"center",padding:"12px 0"}}>No upcoming events</p>}
+          </div>
+        </div>
+      </div>
+      {showAdd&&(
+        <div className="modal-bg" onClick={()=>setShowAdd(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}><h3 style={{fontSize:18,fontWeight:700}}>Add Event — {selected}</h3><button onClick={()=>setShowAdd(false)} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b"}}>✕</button></div>
+            <div style={{marginBottom:12}}><label className="lbl">Event Title *</label><input className="inp" placeholder="e.g. Maths Tutor Session, English Test" value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))}/></div>
+            <div className="g2" style={{marginBottom:12}}>
+              <div><label className="lbl">Type</label><select className="inp" style={{appearance:"none"}} value={form.type} onChange={e=>setForm(f=>({...f,type:e.target.value}))}><option value="study">📚 Study</option><option value="exam">📝 Exam/Test</option><option value="revision">🔄 Revision</option><option value="activity">⚽ Activity</option><option value="holiday">🏖️ Holiday</option><option value="tutor">📹 Tutor Session</option><option value="meeting">🤝 Meeting</option></select></div>
+              <div><label className="lbl">Subject</label><select className="inp" style={{appearance:"none"}} value={form.subject} onChange={e=>setForm(f=>({...f,subject:e.target.value}))}><option value="">-- Select --</option>{SUBS.map(s=><option key={s} value={s}>{s}</option>)}</select></div>
+            </div>
+            <div className="g2" style={{marginBottom:12}}>
+              <div><label className="lbl">Start Time</label><input className="inp" type="time" value={form.time} onChange={e=>setForm(f=>({...f,time:e.target.value}))}/></div>
+              <div><label className="lbl">End Time</label><input className="inp" type="time" value={form.endTime} onChange={e=>setForm(f=>({...f,endTime:e.target.value}))}/></div>
+            </div>
+            {(form.type==="tutor"||form.type==="meeting")&&(
+              <>
+                <div style={{marginBottom:12}}><label className="lbl">Tutor / Host Name</label><input className="inp" placeholder="e.g. Saswat, Swagat" value={form.tutorName} onChange={e=>setForm(f=>({...f,tutorName:e.target.value}))}/></div>
+                <div style={{marginBottom:12}}>
+                  <label className="lbl">Meeting Link (Google Meet / Zoom / Teams)</label>
+                  <input className="inp" placeholder="https://meet.google.com/xxx-xxxx-xxx" value={form.meetLink} onChange={e=>setForm(f=>({...f,meetLink:e.target.value}))}/>
+                  <div style={{fontSize:11,color:"#64748b",marginTop:4}}>Paste your Google Meet, Zoom or Teams link here. Baibhav can click to join directly.</div>
+                </div>
+                <div style={{marginBottom:12}}><label className="lbl">Recurring</label><select className="inp" style={{appearance:"none"}} value={form.recurring} onChange={e=>setForm(f=>({...f,recurring:e.target.value}))}><option value="none">One-time</option><option value="weekly">Weekly</option><option value="daily">Daily (Mon-Sat)</option></select></div>
+              </>
+            )}
+            <div style={{marginBottom:20}}><label className="lbl">Notes</label><input className="inp" placeholder="Any additional notes..." value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))}/></div>
+            <div style={{display:"flex",gap:10}}><button className="btn bg2" style={{flex:1}} onClick={()=>setShowAdd(false)}>Cancel</button><button className="btn bp" style={{flex:1}} onClick={save} disabled={!form.title}>Add Event</button></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── FEATURE 1: Enhanced Syllabus Editor with Topics & Sub-topics ──────────────
+function SyllabusPage({syllabus,uploadSyllabus,isT}){
+  const[selSub,setSelSub]=useState(SUBS[0]);
+  const[showEdit,setShowEdit]=useState(false);
+  const[editChs,setEditChs]=useState([]);
+  const[newCh,setNewCh]=useState("");
+  const[newTp,setNewTp]=useState({ch:"",name:""});
+  const[newSt,setNewSt]=useState({ch:"",tp:"",name:""});
+  const[expandedCh,setExpandedCh]=useState({});
+  const customChs=syllabus[selSub]?.chapters||DS[selSub]?.chapters||[];
+  const progress=syllabus[selSub]?.progress||{};
+
+  // Count all items (topics + subtopics)
+  const countAll=(chs)=>chs.reduce((a,c)=>a+c.topics.reduce((b,t)=>b+1+(t.subtopics?.length||0),0),0);
+  const allT=countAll(customChs);
+  const taughtT=Object.keys(progress).filter(k=>progress[k].status==="taught").length;
+  const pct=allT?Math.round(taughtT/allT*100):0;
+
+  const startEdit=()=>{setEditChs(JSON.parse(JSON.stringify(customChs)));setShowEdit(true);};
+  const addCh=()=>{if(!newCh.trim())return;setEditChs(p=>[...p,{ch:newCh.trim(),topics:[]}]);setNewCh("");};
+  const addTp=()=>{if(!newTp.ch||!newTp.name.trim())return;setEditChs(p=>p.map(c=>c.ch===newTp.ch?{...c,topics:[...c.topics,{name:newTp.name.trim(),subtopics:[]}]}:c));setNewTp({ch:"",name:""});};
+  const addSt=()=>{if(!newSt.ch||!newSt.tp||!newSt.name.trim())return;setEditChs(p=>p.map(c=>c.ch===newSt.ch?{...c,topics:c.topics.map(t=>t.name===newSt.tp?{...t,subtopics:[...(t.subtopics||[]),newSt.name.trim()]}:t)}:c));setNewSt({ch:"",tp:"",name:""});};
+  const remTp=(ch,tp)=>setEditChs(p=>p.map(c=>c.ch===ch?{...c,topics:c.topics.filter(t=>t.name!==tp)}:c));
+  const remSt=(ch,tp,st)=>setEditChs(p=>p.map(c=>c.ch===ch?{...c,topics:c.topics.map(t=>t.name===tp?{...t,subtopics:(t.subtopics||[]).filter(s=>s!==st)}:t)}:c));
+  const remCh=(ch)=>setEditChs(p=>p.filter(c=>c.ch!==ch));
+  const saveEdit=async()=>{await uploadSyllabus(selSub,editChs);setShowEdit(false);};
+  const toggleCh=(ch)=>setExpandedCh(p=>({...p,[ch]:!p[ch]}));
+
+  return(
+    <div className="fi">
+      <div className="pt">📚 Syllabus & Progress</div>
+      <div className="ps">Track topic and sub-topic completion for each subject</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:20}}>
+        {SUBS.map(s=>{
+          const chs=syllabus[s]?.chapters||DS[s]?.chapters||[];
+          const tot=countAll(chs);
+          const done=Object.keys(syllabus[s]?.progress||{}).filter(k=>syllabus[s].progress[k].status==="taught").length;
+          const p=tot?Math.round(done/tot*100):0;
+          return(<button key={s} onClick={()=>setSelSub(s)} style={{padding:"8px 14px",borderRadius:10,fontSize:12,fontWeight:600,border:`2px solid ${SC[s]||"#1F4E79"}`,cursor:"pointer",background:selSub===s?(SC[s]||"#1F4E79"):"white",color:selSub===s?"white":(SC[s]||"#1F4E79")}}>{s} ({p}%)</button>);
+        })}
+      </div>
+      <div className="card">
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,padding:"16px 20px",background:SL[selSub]||"#f8fafc",borderRadius:12,margin:"-20px -20px 16px"}}>
+          <div><div style={{fontSize:20,fontWeight:800,color:SC[selSub]||"#1F4E79"}}>{selSub}</div><div style={{fontSize:13,color:"#475569"}}>{taughtT}/{allT} items taught</div></div>
+          <div style={{textAlign:"right"}}><div style={{fontSize:36,fontWeight:900,color:SC[selSub]||"#1F4E79"}}>{pct}%</div>{isT&&<button className="btn bsm" style={{background:SC[selSub]||"#1F4E79",color:"white",marginTop:4}} onClick={startEdit}>✏️ Edit Syllabus</button>}</div>
+        </div>
+        <div style={{marginBottom:20}}>
+          <div className="pb" style={{height:12}}><div className="pf" style={{width:`${pct}%`,background:SC[selSub]||"#1F4E79"}}/></div>
+          <div style={{display:"flex",justifyContent:"space-between",marginTop:6,fontSize:12,color:"#64748b"}}><span>✅ {taughtT} taught</span><span>⏳ {allT-taughtT} remaining</span></div>
+        </div>
+        {customChs.map(ch=>{
+          const chAll=ch.topics.reduce((a,t)=>a+1+(t.subtopics?.length||0),0);
+          const chDone=ch.topics.reduce((a,t)=>{const tk=`${selSub}||${ch.ch}||${t.name}`;const stDone=(t.subtopics||[]).filter(st=>progress[`${selSub}||${ch.ch}||${t.name}||${st}`]?.status==="taught").length;return a+(progress[tk]?.status==="taught"?1:0)+stDone;},0);
+          const chP=chAll?Math.round(chDone/chAll*100):0;
+          const isExp=expandedCh[ch.ch]!==false;
+          return(
+            <div key={ch.ch} style={{marginBottom:12,border:"1px solid #e2e8f0",borderRadius:12,overflow:"hidden"}}>
+              <div style={{padding:"10px 14px",background:"#f8fafc",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer"}} onClick={()=>toggleCh(ch.ch)}>
+                <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:14}}>{isExp?"▼":"▶"}</span><span style={{fontWeight:700,fontSize:14,color:SC[selSub]||"#1F4E79"}}>{ch.ch}</span><span style={{fontSize:12,color:"#64748b"}}>({ch.topics.length} topics)</span></div>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <div style={{width:80}}><div className="pb" style={{height:6}}><div className="pf" style={{width:`${chP}%`,background:SC[selSub]||"#1F4E79"}}/></div></div>
+                  <span style={{fontSize:12,fontWeight:600,color:SC[selSub]||"#1F4E79"}}>{chP}%</span>
+                </div>
+              </div>
+              {isExp&&<div style={{padding:"8px 14px"}}>
+                {ch.topics.map(tp=>{
+                  const tpKey=`${selSub}||${ch.ch}||${tp.name}`;
+                  const tpSt=progress[tpKey]?.status;
+                  const stDone=(tp.subtopics||[]).filter(st=>progress[`${tpKey}||${st}`]?.status==="taught").length;
+                  const stTotal=(tp.subtopics||[]).length;
+                  return(
+                    <div key={tp.name} style={{marginBottom:8}}>
+                      <div style={{display:"flex",alignItems:"center",gap:10,padding:"6px 8px",borderRadius:8,background:tpSt==="taught"?`${SL[selSub]||"#f8fafc"}`:"#f8fafc",border:`1px solid ${tpSt==="taught"?(SC[selSub]||"#1F4E79")+"33":"#e2e8f0"}`}}>
+                        <div style={{width:20,height:20,borderRadius:"50%",background:tpSt==="taught"?(SC[selSub]||"#1F4E79"):"#e2e8f0",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:tpSt==="taught"?"white":"#64748b",flexShrink:0,fontWeight:700}}>{tpSt==="taught"?"✓":"○"}</div>
+                        <span style={{fontSize:13,flex:1,fontWeight:tpSt==="taught"?600:400,color:tpSt==="taught"?(SC[selSub]||"#1F4E79"):"#334155"}}>{tp.name}</span>
+                        {stTotal>0&&<span style={{fontSize:11,color:"#64748b"}}>{stDone}/{stTotal} subtopics</span>}
+                        {progress[tpKey]?.date&&<span style={{fontSize:10,color:"#94a3b8"}}>{progress[tpKey].date}</span>}
+                        <span className={`tag ${tpSt==="taught"?"ts":"tp"}`}>{tpSt==="taught"?"Done":"Pending"}</span>
+                      </div>
+                      {(tp.subtopics||[]).length>0&&(
+                        <div style={{marginLeft:28,marginTop:4}}>
+                          {(tp.subtopics||[]).map(st=>{
+                            const stKey=`${tpKey}||${st}`;
+                            const stSt=progress[stKey]?.status;
+                            return(
+                              <div key={st} style={{display:"flex",alignItems:"center",gap:8,padding:"4px 8px",borderRadius:6,marginBottom:3,background:stSt==="taught"?"#f0fdf4":"#fafafa",border:`1px solid ${stSt==="taught"?"#86efac":"#f1f5f9"}`}}>
+                                <div style={{width:14,height:14,borderRadius:"50%",background:stSt==="taught"?"#276221":"#e2e8f0",display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,color:stSt==="taught"?"white":"#94a3b8",flexShrink:0}}>✓</div>
+                                <span style={{fontSize:12,flex:1,color:stSt==="taught"?"#276221":"#64748b"}}>{st}</span>
+                                {stSt==="taught"&&<span style={{fontSize:10,color:"#276221",fontWeight:600}}>✅</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Edit Syllabus Modal */}
+      {showEdit&&(
+        <div className="modal-bg" onClick={()=>setShowEdit(false)}>
+          <div className="modal modal-lg" onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}><h3 style={{fontSize:18,fontWeight:700}}>Edit Syllabus — {selSub}</h3><button onClick={()=>setShowEdit(false)} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b"}}>✕</button></div>
+            <div style={{maxHeight:300,overflowY:"auto",marginBottom:14,border:"1px solid #e2e8f0",borderRadius:10,padding:10}}>
+              {editChs.map(ch=>(
+                <div key={ch.ch} style={{marginBottom:10}}>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 10px",background:"#f8fafc",borderRadius:8,marginBottom:4}}>
+                    <span style={{fontWeight:700,fontSize:13,color:"#1F4E79"}}>{ch.ch}</span>
+                    <button onClick={()=>remCh(ch.ch)} style={{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:13}}>Remove Chapter</button>
+                  </div>
+                  {ch.topics.map(tp=>(
+                    <div key={tp.name} style={{marginLeft:12,marginBottom:6}}>
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"4px 8px",background:"#f0f7ff",borderRadius:6,marginBottom:3}}>
+                        <span style={{fontSize:12,fontWeight:600}}>📌 {tp.name}</span>
+                        <button onClick={()=>remTp(ch.ch,tp.name)} style={{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:12}}>✕</button>
+                      </div>
+                      {(tp.subtopics||[]).map(st=>(
+                        <div key={st} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"3px 8px",marginLeft:12,marginBottom:2}}>
+                          <span style={{fontSize:11,color:"#64748b"}}>→ {st}</span>
+                          <button onClick={()=>remSt(ch.ch,tp.name,st)} style={{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:11}}>✕</button>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+              <div style={{border:"1px solid #e2e8f0",borderRadius:10,padding:12}}>
+                <div style={{fontSize:13,fontWeight:600,marginBottom:8,color:"#1F4E79"}}>Add New Chapter</div>
+                <div style={{display:"flex",gap:8}}><input className="inp" placeholder="e.g. Ch-8" value={newCh} onChange={e=>setNewCh(e.target.value)} style={{flex:1,fontSize:13}}/><button className="btn bp bsm" onClick={addCh} disabled={!newCh}>Add</button></div>
+              </div>
+              <div style={{border:"1px solid #e2e8f0",borderRadius:10,padding:12}}>
+                <div style={{fontSize:13,fontWeight:600,marginBottom:8,color:"#1F4E79"}}>Add Topic to Chapter</div>
+                <select className="inp" style={{appearance:"none",fontSize:13,marginBottom:6}} value={newTp.ch} onChange={e=>setNewTp(f=>({...f,ch:e.target.value}))}><option value="">Select Chapter</option>{editChs.map(c=><option key={c.ch} value={c.ch}>{c.ch}</option>)}</select>
+                <div style={{display:"flex",gap:8}}><input className="inp" placeholder="Topic name" value={newTp.name} onChange={e=>setNewTp(f=>({...f,name:e.target.value}))} style={{flex:1,fontSize:13}}/><button className="btn bp bsm" onClick={addTp} disabled={!newTp.ch||!newTp.name}>Add</button></div>
+              </div>
+            </div>
+            <div style={{border:"1px solid #e2e8f0",borderRadius:10,padding:12,marginBottom:16}}>
+              <div style={{fontSize:13,fontWeight:600,marginBottom:8,color:"#276221"}}>Add Sub-topic to Topic</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr auto",gap:8,alignItems:"end"}}>
+                <select className="inp" style={{appearance:"none",fontSize:13}} value={newSt.ch} onChange={e=>setNewSt(f=>({...f,ch:e.target.value,tp:""}))}><option value="">Chapter</option>{editChs.map(c=><option key={c.ch} value={c.ch}>{c.ch}</option>)}</select>
+                <select className="inp" style={{appearance:"none",fontSize:13}} value={newSt.tp} onChange={e=>setNewSt(f=>({...f,tp:e.target.value}))} disabled={!newSt.ch}><option value="">Topic</option>{(editChs.find(c=>c.ch===newSt.ch)?.topics||[]).map(t=><option key={t.name} value={t.name}>{t.name}</option>)}</select>
+                <input className="inp" placeholder="Sub-topic name" value={newSt.name} onChange={e=>setNewSt(f=>({...f,name:e.target.value}))} style={{fontSize:13}}/>
+                <button className="btn bs bsm" onClick={addSt} disabled={!newSt.ch||!newSt.tp||!newSt.name}>Add</button>
+              </div>
+            </div>
+            <div style={{display:"flex",gap:10}}><button className="btn bg2" style={{flex:1}} onClick={()=>setShowEdit(false)}>Cancel</button><button className="btn bp" style={{flex:1}} onClick={saveEdit}>Save Syllabus</button></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── FEATURE 4: Study Notes (PDF/PPT/Links) ────────────────────────────────────
+function StudyNotesPage({studyNotes,addStudyNote,deleteStudyNote,isT}){
+  const[showAdd,setShowAdd]=useState(false);
+  const[form,setForm]=useState({subject:"",chapter:"",topic:"",subtopic:"",title:"",type:"link",url:"",description:""});
+  const[filter,setFilter]=useState({subject:"",chapter:"",topic:""});
+  const[uploading,setUploading]=useState(false);
+  const fileRef=useRef();
+
+  const subChs=form.subject?(DS[form.subject]?.chapters||[]):[];
+  const chTps=form.chapter?(subChs.find(c=>c.ch===form.chapter)?.topics||[]):[];
+  const tpSts=form.topic?(chTps.find(t=>t.name===form.topic)?.subtopics||[]):[];
+
+  const handleFile=async(e)=>{
+    const file=e.target.files[0];
+    if(!file)return;
+    setUploading(true);
+    try{
+      const ref=storage.ref(`studyNotes/${Date.now()}_${file.name}`);
+      await ref.put(file);
+      const url=await ref.getDownloadURL();
+      setForm(f=>({...f,url,title:f.title||file.name,type:file.name.endsWith(".pdf")?"pdf":file.name.endsWith(".pptx")||file.name.endsWith(".ppt")?"ppt":"file"}));
+    }catch(err){alert("Upload failed: "+err.message);}
+    setUploading(false);
+  };
+
+  const save=async()=>{
+    if(!form.title||!form.subject)return;
+    await addStudyNote(form);
+    setForm({subject:"",chapter:"",topic:"",subtopic:"",title:"",type:"link",url:"",description:""});
+    setShowAdd(false);
+  };
+
+  const filtered=studyNotes.filter(n=>{
+    if(filter.subject&&n.subject!==filter.subject)return false;
+    if(filter.chapter&&n.chapter!==filter.chapter)return false;
+    if(filter.topic&&n.topic!==filter.topic)return false;
+    return true;
+  });
+
+  const typeIcon={pdf:"📄",ppt:"📊",link:"🔗",video:"🎥",file:"📎"};
+  const typeColor={pdf:"#9C0006",ppt:"#C55A11",link:"#1F4E79",video:"#276221",file:"#4B2E83"};
+
+  const filterChs=filter.subject?(DS[filter.subject]?.chapters||[]):[];
+  const filterTps=filter.chapter?(filterChs.find(c=>c.ch===filter.chapter)?.topics||[]):[];
+
+  return(
+    <div className="fi">
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
+        <div className="pt">📎 Study Notes & Materials</div>
+        {isT&&<button className="btn bp" onClick={()=>setShowAdd(true)}>+ Add Material</button>}
+      </div>
+      <div className="ps">PDFs, PPTs, links and videos attached to syllabus topics</div>
+
+      {/* Filters */}
+      <div className="card" style={{marginBottom:20}}>
+        <div style={{fontSize:13,fontWeight:600,marginBottom:10}}>Filter by:</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
+          <select className="inp" style={{appearance:"none",fontSize:13}} value={filter.subject} onChange={e=>setFilter(f=>({...f,subject:e.target.value,chapter:"",topic:""}))}><option value="">All Subjects</option>{SUBS.map(s=><option key={s} value={s}>{s}</option>)}</select>
+          <select className="inp" style={{appearance:"none",fontSize:13}} value={filter.chapter} onChange={e=>setFilter(f=>({...f,chapter:e.target.value,topic:""}))} disabled={!filter.subject}><option value="">All Chapters</option>{filterChs.map(c=><option key={c.ch} value={c.ch}>{c.ch}</option>)}</select>
+          <select className="inp" style={{appearance:"none",fontSize:13}} value={filter.topic} onChange={e=>setFilter(f=>({...f,topic:e.target.value}))} disabled={!filter.chapter}><option value="">All Topics</option>{filterTps.map(t=><option key={t.name} value={t.name}>{t.name}</option>)}</select>
+        </div>
+      </div>
+
+      {/* Notes list */}
+      {filtered.length===0?(
+        <div style={{textAlign:"center",padding:"40px 0",color:"#64748b"}}>
+          <div style={{fontSize:48,marginBottom:12}}>📎</div>
+          <p style={{fontSize:14}}>No study materials yet.{isT?" Add PDFs, PPTs or links for Baibhav to study!":""}</p>
+        </div>
+      ):(
+        <div>
+          {SUBS.filter(s=>!filter.subject||s===filter.subject).map(sub=>{
+            const subNotes=filtered.filter(n=>n.subject===sub);
+            if(subNotes.length===0)return null;
+            return(
+              <div key={sub} style={{marginBottom:20}}>
+                <div style={{fontSize:15,fontWeight:700,color:SC[sub]||"#1F4E79",marginBottom:10,display:"flex",alignItems:"center",gap:8}}>
+                  <div style={{width:8,height:8,borderRadius:"50%",background:SC[sub]||"#1F4E79"}}/>
+                  {sub}
+                </div>
+                {subNotes.map(n=>(
+                  <div key={n.id} className="note-card">
+                    <div style={{width:44,height:44,borderRadius:10,background:`${typeColor[n.type]||"#1F4E79"}15`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{typeIcon[n.type]||"📎"}</div>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>{n.title}</div>
+                      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:4}}>
+                        {n.chapter&&<span className="pill">{n.chapter}</span>}
+                        {n.topic&&<span className="pill">{n.topic}</span>}
+                        {n.subtopic&&<span className="pill">{n.subtopic}</span>}
+                        <span className="tag" style={{background:`${typeColor[n.type]||"#1F4E79"}15`,color:typeColor[n.type]||"#1F4E79"}}>{n.type?.toUpperCase()}</span>
+                      </div>
+                      {n.description&&<div style={{fontSize:12,color:"#64748b"}}>{n.description}</div>}
+                      <div style={{fontSize:11,color:"#94a3b8",marginTop:2}}>Added by {n.uploadedBy}</div>
+                    </div>
+                    <div style={{display:"flex",flexDirection:"column",gap:6,flexShrink:0}}>
+                      {n.url&&<a href={n.url} target="_blank" style={{padding:"6px 14px",background:SC[sub]||"#1F4E79",color:"white",borderRadius:8,fontSize:12,fontWeight:600,textDecoration:"none",textAlign:"center"}}>Open</a>}
+                      {isT&&<button onClick={()=>deleteStudyNote(n.id)} style={{padding:"6px 14px",background:"#FFC7CE",color:"#9C0006",border:"none",borderRadius:8,fontSize:12,fontWeight:600,cursor:"pointer"}}>Delete</button>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Add Material Modal */}
+      {showAdd&&(
+        <div className="modal-bg" onClick={()=>setShowAdd(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}><h3 style={{fontSize:18,fontWeight:700}}>Add Study Material</h3><button onClick={()=>setShowAdd(false)} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b"}}>✕</button></div>
+            <div style={{marginBottom:12}}><label className="lbl">Title *</label><input className="inp" placeholder="e.g. Chapter 1 Notes PDF, Fractions Video" value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))}/></div>
+            <div className="g2" style={{marginBottom:12}}>
+              <div><label className="lbl">Subject *</label><select className="inp" style={{appearance:"none"}} value={form.subject} onChange={e=>setForm(f=>({...f,subject:e.target.value,chapter:"",topic:"",subtopic:""}))}><option value="">-- Select --</option>{SUBS.map(s=><option key={s} value={s}>{s}</option>)}</select></div>
+              <div><label className="lbl">Chapter</label><select className="inp" style={{appearance:"none"}} value={form.chapter} onChange={e=>setForm(f=>({...f,chapter:e.target.value,topic:"",subtopic:""}))} disabled={!form.subject}><option value="">-- Select --</option>{subChs.map(c=><option key={c.ch} value={c.ch}>{c.ch}</option>)}</select></div>
+            </div>
+            <div className="g2" style={{marginBottom:12}}>
+              <div><label className="lbl">Topic</label><select className="inp" style={{appearance:"none"}} value={form.topic} onChange={e=>setForm(f=>({...f,topic:e.target.value,subtopic:""}))} disabled={!form.chapter}><option value="">-- Select --</option>{chTps.map(t=><option key={t.name} value={t.name}>{t.name}</option>)}</select></div>
+              <div><label className="lbl">Sub-topic</label><select className="inp" style={{appearance:"none"}} value={form.subtopic} onChange={e=>setForm(f=>({...f,subtopic:e.target.value}))} disabled={!form.topic}><option value="">-- Select --</option>{tpSts.map(s=><option key={s} value={s}>{s}</option>)}</select></div>
+            </div>
+            <div style={{marginBottom:12}}><label className="lbl">Type</label><select className="inp" style={{appearance:"none"}} value={form.type} onChange={e=>setForm(f=>({...f,type:e.target.value}))}><option value="pdf">📄 PDF Document</option><option value="ppt">📊 PowerPoint (PPT)</option><option value="link">🔗 Web Link</option><option value="video">🎥 Video Link</option><option value="file">📎 Other File</option></select></div>
+            <div style={{marginBottom:12}}>
+              <label className="lbl">Upload File or Paste URL</label>
+              <div className="upload-zone" onClick={()=>fileRef.current?.click()} style={{marginBottom:8}}>
+                <input ref={fileRef} type="file" accept=".pdf,.ppt,.pptx,.doc,.docx,.mp4" style={{display:"none"}} onChange={handleFile}/>
+                {uploading?<div style={{color:"#1F4E79",fontWeight:600}}>⏳ Uploading...</div>:<div><div style={{fontSize:24,marginBottom:6}}>📁</div><div style={{fontSize:13,color:"#64748b"}}>Click to upload PDF, PPT, or other file</div><div style={{fontSize:11,color:"#94a3b8",marginTop:4}}>Max 50MB</div></div>}
+              </div>
+              <input className="inp" placeholder="Or paste URL: https://..." value={form.url} onChange={e=>setForm(f=>({...f,url:e.target.value}))}/>
+            </div>
+            <div style={{marginBottom:18}}><label className="lbl">Description</label><input className="inp" placeholder="Brief description of this material..." value={form.description} onChange={e=>setForm(f=>({...f,description:e.target.value}))}/></div>
+            <div style={{display:"flex",gap:10}}><button className="btn bg2" style={{flex:1}} onClick={()=>setShowAdd(false)}>Cancel</button><button className="btn bp" style={{flex:1}} onClick={save} disabled={!form.title||!form.subject||uploading}>Add Material</button></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── FEATURE 2: User Management ────────────────────────────────────────────────
+function UsersPage({users,addUser,profile,showToast}){
+  const[showAdd,setShowAdd]=useState(false);
+  const[form,setForm]=useState({name:"",email:"",password:"",role:"teacher",_currentPass:""});
+  const[saving,setSaving]=useState(false);
+  const save=async()=>{
+    if(!form.name||!form.email||!form.password)return;
+    setSaving(true);
+    const ok=await addUser(form);
+    setSaving(false);
+    if(ok){setForm({name:"",email:"",password:"",role:"teacher",_currentPass:""});setShowAdd(false);}
+  };
+  const roleColor={teacher:"#1F4E79",admin:"#9C0006",child:"#276221"};
+  const roleIcon={teacher:"👨‍🏫",admin:"👑",child:"👦"};
+  return(
+    <div className="fi">
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
+        <div className="pt">👥 Manage Users</div>
+        <button className="btn bp" onClick={()=>setShowAdd(true)}>+ Add Teacher/User</button>
+      </div>
+      <div className="ps">Add teachers, tutors or additional users to the portal</div>
+      <div className="g3" style={{marginBottom:20}}>
+        {[{l:"Total Users",v:users.length,c:"#1F4E79"},{l:"Teachers",v:users.filter(u=>u.role==="teacher"||u.role==="admin").length,c:"#4B2E83"},{l:"Students",v:users.filter(u=>u.role==="child").length,c:"#276221"}].map((s,i)=>(
+          <div key={i} className="card" style={{borderTop:`4px solid ${s.c}`,textAlign:"center"}}>
+            <div style={{fontSize:28,fontWeight:800,color:s.c}}>{s.v}</div>
+            <div style={{fontSize:13,color:"#64748b"}}>{s.l}</div>
+          </div>
+        ))}
+      </div>
+      <div className="card">
+        <div className="st">All Users</div>
+        {users.map(u=>(
+          <div key={u.id} style={{display:"flex",alignItems:"center",gap:14,padding:"12px 16px",borderRadius:12,border:"1px solid #e2e8f0",marginBottom:10,background:"#f8fafc"}}>
+            <div style={{width:44,height:44,borderRadius:"50%",background:roleColor[u.role]||"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:18,flexShrink:0}}>{u.avatar||u.name?.[0]||"?"}</div>
+            <div style={{flex:1}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
+                <span style={{fontSize:15,fontWeight:700}}>{u.name}</span>
+                <span className="tag" style={{background:`${roleColor[u.role]||"#1F4E79"}15`,color:roleColor[u.role]||"#1F4E79"}}>{roleIcon[u.role]||"👤"} {u.role}</span>
+                {u.online&&<span style={{width:8,height:8,borderRadius:"50%",background:"#22c55e",display:"inline-block"}}/>}
+              </div>
+              <div style={{fontSize:13,color:"#64748b"}}>{u.email}</div>
+            </div>
+            {u.id===profile?.uid&&<span className="tag ts">You</span>}
+          </div>
+        ))}
+      </div>
+      {showAdd&&(
+        <div className="modal-bg" onClick={()=>setShowAdd(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}><h3 style={{fontSize:18,fontWeight:700}}>Add New User</h3><button onClick={()=>setShowAdd(false)} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b"}}>✕</button></div>
+            <div style={{background:"#FFF2CC",border:"1px solid #9C5700",borderRadius:10,padding:"10px 14px",marginBottom:16,fontSize:13,color:"#9C5700"}}>⚠️ To add a new user, you need to enter your own password below for security verification.</div>
+            <div style={{marginBottom:12}}><label className="lbl">Full Name *</label><input className="inp" placeholder="e.g. Ravi Kumar" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))}/></div>
+            <div style={{marginBottom:12}}><label className="lbl">Email *</label><input className="inp" type="email" placeholder="e.g. ravi@dugu-edutrack.com" value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))}/></div>
+            <div className="g2" style={{marginBottom:12}}>
+              <div><label className="lbl">Password *</label><input className="inp" type="password" placeholder="Set password for new user" value={form.password} onChange={e=>setForm(f=>({...f,password:e.target.value}))}/></div>
+              <div><label className="lbl">Role</label><select className="inp" style={{appearance:"none"}} value={form.role} onChange={e=>setForm(f=>({...f,role:e.target.value}))}><option value="teacher">👨‍🏫 Teacher</option><option value="admin">👑 Admin</option><option value="child">👦 Student</option></select></div>
+            </div>
+            <div style={{marginBottom:18}}><label className="lbl">Your Current Password (for verification) *</label><input className="inp" type="password" placeholder="Enter your own password" value={form._currentPass} onChange={e=>setForm(f=>({...f,_currentPass:e.target.value}))}/></div>
+            <div style={{display:"flex",gap:10}}><button className="btn bg2" style={{flex:1}} onClick={()=>setShowAdd(false)}>Cancel</button><button className="btn bp" style={{flex:1}} onClick={save} disabled={!form.name||!form.email||!form.password||saving}>{saving?"Creating...":"Create User"}</button></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── FEATURE 3: Log Topic with Sub-topic + Bulk Upload ─────────────────────────
+function LogTopic({logTopic,syllabus,profile}){
+  const[form,setForm]=useState({date:new Date().toISOString().split("T")[0],subject:"",chapter:"",topic:"",subtopic:"",duration:40,notes:"",status:"taught"});
+  const[entries,setEntries]=useState([]);
+  const[saving,setSaving]=useState(false);
+  const[ok,setOk]=useState(false);
+  const subChs=form.subject?(syllabus[form.subject]?.chapters||DS[form.subject]?.chapters||[]):[];
+  const chTps=form.chapter?(subChs.find(c=>c.ch===form.chapter)?.topics||[]):[];
+  const tpSts=form.topic?(chTps.find(t=>t.name===form.topic)?.subtopics||[]):[];
+  const addEntry=()=>{if(!form.subject||!form.chapter||!form.topic)return;setEntries(p=>[...p,{...form,id:Date.now()}]);setForm(f=>({...f,chapter:"",topic:"",subtopic:"",notes:""}));};
+  const submit=async()=>{
+    const tl=entries.length>0?entries:[form];
+    if(!tl[0].subject||!tl[0].chapter||!tl[0].topic)return;
+    setSaving(true);for(const e of tl)await logTopic(e);setSaving(false);
+    setOk(true);setEntries([]);
+    setForm({date:new Date().toISOString().split("T")[0],subject:"",chapter:"",topic:"",subtopic:"",duration:40,notes:"",status:"taught"});
+    setTimeout(()=>setOk(false),3000);
+  };
+  return(
+    <div className="fi">
+      <div className="pt">✏️ Log Today Topics</div>
+      <div className="ps">Select subject → chapter → topic → sub-topic from syllabus</div>
+      {ok&&<div style={{background:"#C6EFCE",color:"#276221",padding:"12px 18px",borderRadius:12,marginBottom:20,fontWeight:600,fontSize:14}}>✅ Topics saved! Revision reminders set automatically.</div>}
+      <div className="g2">
+        <div className="card">
+          <div className="st">📝 Add Topic Entry</div>
+          <div className="g2" style={{marginBottom:14}}>
+            <div><label className="lbl">Date</label><input className="inp" type="date" value={form.date} onChange={e=>setForm(f=>({...f,date:e.target.value}))}/></div>
+            <div><label className="lbl">Status</label><select className="inp" style={{appearance:"none"}} value={form.status} onChange={e=>setForm(f=>({...f,status:e.target.value}))}><option value="taught">✅ Taught</option><option value="missed">⚠️ Missed</option><option value="partial">🔶 Partial</option></select></div>
+          </div>
+          <div style={{marginBottom:14}}><label className="lbl">Subject *</label><select className="inp" style={{appearance:"none"}} value={form.subject} onChange={e=>setForm(f=>({...f,subject:e.target.value,chapter:"",topic:"",subtopic:""}))}><option value="">-- Select Subject --</option>{SUBS.map(s=><option key={s} value={s}>{s}</option>)}</select></div>
+          <div style={{marginBottom:14}}><label className="lbl">Chapter *</label><select className="inp" style={{appearance:"none"}} value={form.chapter} onChange={e=>setForm(f=>({...f,chapter:e.target.value,topic:"",subtopic:""}))} disabled={!form.subject}><option value="">-- Select Chapter --</option>{subChs.map(c=><option key={c.ch} value={c.ch}>{c.ch}</option>)}</select></div>
+          <div style={{marginBottom:14}}><label className="lbl">Topic *</label><select className="inp" style={{appearance:"none"}} value={form.topic} onChange={e=>setForm(f=>({...f,topic:e.target.value,subtopic:""}))} disabled={!form.chapter}><option value="">-- Select Topic --</option>{chTps.map(t=><option key={t.name} value={t.name}>{t.name}</option>)}</select></div>
+          <div style={{marginBottom:14}}><label className="lbl">Sub-topic (optional)</label><select className="inp" style={{appearance:"none"}} value={form.subtopic} onChange={e=>setForm(f=>({...f,subtopic:e.target.value}))} disabled={!form.topic}><option value="">-- Select Sub-topic --</option>{tpSts.map(s=><option key={s} value={s}>{s}</option>)}</select></div>
+          <div className="g2" style={{marginBottom:14}}>
+            <div><label className="lbl">Duration (min)</label><input className="inp" type="number" min={10} max={120} value={form.duration} onChange={e=>setForm(f=>({...f,duration:+e.target.value}))}/></div>
+            <div><label className="lbl">Logged by</label><input className="inp" value={profile?.name||"Teacher"} disabled style={{background:"#f8fafc",color:"#64748b"}}/></div>
+          </div>
+          <div style={{marginBottom:16}}><label className="lbl">Class Notes / Observations</label><textarea className="inp" rows={3} placeholder="What was covered? Any observations? Homework given?" value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} style={{resize:"vertical"}}/></div>
+          <div style={{display:"flex",gap:8}}>
+            <button className="btn bo" style={{flex:1}} onClick={addEntry} disabled={!form.subject||!form.chapter||!form.topic}>+ Add Another</button>
+            <button className="btn bp" style={{flex:1}} onClick={submit} disabled={!form.subject||!form.chapter||!form.topic||saving}>{saving?"Saving...":"Save "+(entries.length>0?`All (${entries.length+1})`:"Topic")}</button>
+          </div>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:16}}>
+          {entries.length>0&&(
+            <div className="card">
+              <div className="st">📋 Queued ({entries.length})</div>
+              {entries.map(e=>(
+                <div key={e.id} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"10px 12px",borderRadius:8,background:"#f8fafc",border:"1px solid #e2e8f0",marginBottom:8}}>
+                  <div style={{width:8,height:8,borderRadius:"50%",background:e.status==="taught"?"#276221":"#9C0006",flexShrink:0,marginTop:4}}/>
+                  <div style={{flex:1}}><div style={{fontSize:13,fontWeight:600}}>{e.subject}</div><div style={{fontSize:12,color:"#64748b"}}>{e.chapter} → {e.topic}{e.subtopic?" → "+e.subtopic:""}</div>{e.notes&&<div style={{fontSize:11,color:"#94a3b8",marginTop:2,fontStyle:"italic"}}>{e.notes.slice(0,50)}...</div>}</div>
+                  <button onClick={()=>setEntries(p=>p.filter(x=>x.id!==e.id))} style={{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:14}}>✕</button>
+                </div>
+              ))}
+              <button className="btn bp bfw" style={{marginTop:8}} onClick={submit}>Save All {entries.length} Entries</button>
+            </div>
+          )}
+          <div className="card" style={{background:"linear-gradient(135deg,#1F4E79,#2E75B6)",color:"white"}}>
+            <div style={{fontSize:15,fontWeight:700,marginBottom:10}}>How It Works</div>
+            <div style={{fontSize:13,lineHeight:1.8,opacity:.9}}>1. Select Subject<br/>2. Chapter auto-loads<br/>3. Topic auto-loads<br/>4. Sub-topic auto-loads<br/>5. Add class notes<br/>6. Save — progress updates instantly<br/>7. Revision set for 7 days later</div>
+          </div>
+          <div className="card">
+            <div className="st">Today Timetable</div>
+            {(()=>{const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];const tn=days[new Date().getDay()];const TT={Monday:["English","Odia","Maths","SST","Science","GK","Games","Yoga"],Tuesday:["English","Hindi","Maths","Science","SST","Odia","Art","CSPD"],Wednesday:["English","Maths","Science","Hindi","Odia","SST","Music","GK"],Thursday:["English","Science","SST","Maths","Hindi","Maths Lab","Comp Lab","Dance"],Friday:["English","GK","Hindi","Odia","Maths","Science","SST","Library"],Saturday:["English","SST","Odia","Science","Maths","Hindi","Comp","Art"]};const subs=TT[tn]||[];return subs.length>0?<div style={{display:"flex",flexWrap:"wrap",gap:6}}>{subs.map((s,i)=><span key={i} style={{padding:"4px 10px",borderRadius:9999,fontSize:12,fontWeight:600,background:"#DCE6F1",color:"#1F4E79"}}>P{i+1}: {s}</span>)}</div>:<p style={{fontSize:13,color:"#64748b"}}>No school today</p>;})()}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── FEATURE 3: Bulk Upload Flashcards/Quiz ────────────────────────────────────
+function ContentPage({flashcards,quizzes,tasks,addFlashcard,addQuiz,addTask,isT,showToast}){
+  const[tab,setTab]=useState("flashcards");
+  const[showModal,setShowModal]=useState(null);
+  const[showBulk,setShowBulk]=useState(null);
+  const[fcForm,setFcForm]=useState({subject:"",chapter:"",topic:"",subtopic:"",question:"",answer:"",hint:""});
+  const[qzForm,setQzForm]=useState({subject:"",chapter:"",topic:"",subtopic:"",question:"",options:["","","",""],correct:0,explanation:""});
+  const[tkForm,setTkForm]=useState({title:"",subject:"",description:"",dueDate:"",priority:"medium"});
+  const[bulkText,setBulkText]=useState("");
+  const[bulkSub,setBulkSub]=useState({subject:"",chapter:"",topic:"",subtopic:""});
+  const[bulkParsed,setBulkParsed]=useState([]);
+
+  const subChs=fcForm.subject?(DS[fcForm.subject]?.chapters||[]):[];
+  const chTps=fcForm.chapter?(subChs.find(c=>c.ch===fcForm.chapter)?.topics||[]):[];
+  const tpSts=fcForm.topic?(chTps.find(t=>t.name===fcForm.topic)?.subtopics||[]):[];
+
+  const saveFC=async()=>{if(!fcForm.question||!fcForm.answer)return;await addFlashcard(fcForm);setFcForm({subject:"",chapter:"",topic:"",subtopic:"",question:"",answer:"",hint:""});setShowModal(null);};
+  const saveQZ=async()=>{if(!qzForm.question||(qzForm.options||[]).some(o=>!o))return;await addQuiz(qzForm);setQzForm({subject:"",chapter:"",topic:"",subtopic:"",question:"",options:["","","",""],correct:0,explanation:""});setShowModal(null);};
+  const saveTK=async()=>{if(!tkForm.title)return;await addTask(tkForm);setTkForm({title:"",subject:"",description:"",dueDate:"",priority:"medium"});setShowModal(null);};
+
+  // Bulk parse CSV/text
+  const parseBulk=()=>{
+    const lines=bulkText.trim().split("\n").filter(l=>l.trim());
+    if(showBulk==="fc"){
+      const parsed=lines.map(l=>{const parts=l.split("|");return{question:(parts[0]||"").trim(),answer:(parts[1]||"").trim(),hint:(parts[2]||"").trim()};}).filter(p=>p.question&&p.answer);
+      setBulkParsed(parsed);
+    } else {
+      const parsed=[];let cur=null;
+      lines.forEach(l=>{
+        if(l.startsWith("Q:")){if(cur)parsed.push(cur);cur={question:l.slice(2).trim(),options:[],correct:0,explanation:""};}
+        else if(l.startsWith("A:")&&cur){cur.options.push(l.slice(2).trim());}
+        else if(l.startsWith("*A:")&&cur){cur.options.push(l.slice(3).trim());cur.correct=cur.options.length-1;}
+        else if(l.startsWith("E:")&&cur){cur.explanation=l.slice(2).trim();}
+      });
+      if(cur)parsed.push(cur);
+      setBulkParsed(parsed.filter(p=>p.question&&p.options.length>=2));
+    }
+  };
+
+  const saveBulk=async()=>{
+    for(const item of bulkParsed){
+      if(showBulk==="fc")await addFlashcard({...bulkSub,...item});
+      else await addQuiz({...bulkSub,...item});
+    }
+    setBulkText("");setBulkParsed([]);setShowBulk(null);
+    showToast(`${bulkParsed.length} items added!`);
+  };
+
+  return(
+    <div className="fi">
+      <div className="pt">🎯 Flashcards, Quizzes & Tasks</div>
+      <div className="ps">Create learning content and tasks for Baibhav</div>
+      <div style={{display:"flex",gap:4,background:"#f1f5f9",padding:4,borderRadius:12,marginBottom:20}}>
+        {[{id:"flashcards",l:`Flashcards (${flashcards.length})`},{id:"quizzes",l:`Quizzes (${quizzes.length})`},{id:"tasks",l:`Tasks (${tasks.length})`}].map(t=>(
+          <div key={t.id} className={`tab ${tab===t.id?"act":""}`} onClick={()=>setTab(t.id)}>{t.l}</div>
+        ))}
+      </div>
+
+      {tab==="flashcards"&&(
+        <div>
+          {isT&&<div style={{display:"flex",gap:8,marginBottom:16}}>
+            <button className="btn bp" onClick={()=>setShowModal("fc")}>+ Create Flashcard</button>
+            <button className="btn bpu" onClick={()=>{setShowBulk("fc");setBulkParsed([]);}}>📤 Bulk Upload</button>
+          </div>}
+          {flashcards.length===0?<div style={{textAlign:"center",padding:"40px 0",color:"#64748b"}}><div style={{fontSize:40,marginBottom:8}}>🃏</div><p>No flashcards yet.{isT?" Create some for Baibhav!":""}</p></div>:(
+            <div className="g3">{flashcards.map(fc=><FlashCard key={fc.id} fc={fc}/>)}</div>
+          )}
+        </div>
+      )}
+
+      {tab==="quizzes"&&(
+        <div>
+          {isT&&<div style={{display:"flex",gap:8,marginBottom:16}}>
+            <button className="btn bp" onClick={()=>setShowModal("qz")}>+ Create Quiz Question</button>
+            <button className="btn bpu" onClick={()=>{setShowBulk("qz");setBulkParsed([]);}}>📤 Bulk Upload</button>
+          </div>}
+          {quizzes.length===0?<div style={{textAlign:"center",padding:"40px 0",color:"#64748b"}}><div style={{fontSize:40,marginBottom:8}}>❓</div><p>No quiz questions yet.{isT?" Add some!":""}</p></div>:(
+            <div style={{display:"flex",flexDirection:"column",gap:16}}>{quizzes.map((qz,i)=><QuizQuestion key={qz.id} qz={qz} num={i+1}/>)}</div>
+          )}
+        </div>
+      )}
+
+      {tab==="tasks"&&(
+        <div>
+          {isT&&<button className="btn bp" style={{marginBottom:16}} onClick={()=>setShowModal("tk")}>+ Assign Task</button>}
+          {tasks.length===0?<div style={{textAlign:"center",padding:"40px 0",color:"#64748b"}}><div style={{fontSize:40,marginBottom:8}}>✅</div><p>No tasks assigned yet.</p></div>:(
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              {tasks.map(t=>(
+                <div key={t.id} className="task-item" style={{opacity:t.done?.8:1}}>
+                  <div className="task-check" style={{background:t.done?"#276221":"white",borderColor:t.done?"#276221":"#e2e8f0",color:"white"}}>{t.done?"✓":""}</div>
+                  <div style={{flex:1}}><div style={{fontSize:14,fontWeight:600,textDecoration:t.done?"line-through":"none",color:t.done?"#64748b":"#0f172a"}}>{t.title}</div>{t.subject&&<div style={{fontSize:12,color:"#64748b",marginTop:2}}>{t.subject}</div>}{t.description&&<div style={{fontSize:12,color:"#64748b",marginTop:2}}>{t.description}</div>}<div style={{display:"flex",gap:8,marginTop:4}}>{t.dueDate&&<span style={{fontSize:11,color:"#C55A11",fontWeight:600}}>Due: {t.dueDate}</span>}<span className={`tag ${t.priority==="high"?"td2":t.priority==="medium"?"tw":"ts"}`}>{t.priority}</span>{t.done&&<span className="tag ts">Done</span>}</div></div>
+                  <span style={{fontSize:11,color:"#94a3b8"}}>by {t.createdBy}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Bulk Upload Modal */}
+      {showBulk&&(
+        <div className="modal-bg" onClick={()=>setShowBulk(null)}>
+          <div className="modal modal-lg" onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}><h3 style={{fontSize:18,fontWeight:700}}>Bulk Upload {showBulk==="fc"?"Flashcards":"Quiz Questions"}</h3><button onClick={()=>setShowBulk(null)} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b"}}>✕</button></div>
+            <div style={{background:"#f8fafc",borderRadius:10,padding:14,marginBottom:16,fontSize:13}}>
+              <div style={{fontWeight:700,marginBottom:6,color:"#1F4E79"}}>{showBulk==="fc"?"Format: Question | Answer | Hint (one per line)":"Format: Q: Question, A: Option, *A: Correct Option, E: Explanation"}</div>
+              {showBulk==="fc"?<pre style={{fontSize:11,color:"#64748b",lineHeight:1.6}}>{"What is a Noun? | A naming word | Think of names\nWhat is an Article? | A, An, The | Used before nouns\nWhat is a Verb? | An action word | Running, jumping"}</pre>:<pre style={{fontSize:11,color:"#64748b",lineHeight:1.6}}>{"Q: What is the capital of India?\nA: Mumbai\n*A: New Delhi\nA: Kolkata\nA: Chennai\nE: New Delhi is the capital of India"}</pre>}
+            </div>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:13,fontWeight:600,marginBottom:8}}>Assign to Subject/Topic (optional):</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
+                <select className="inp" style={{appearance:"none",fontSize:12}} value={bulkSub.subject} onChange={e=>setBulkSub(f=>({...f,subject:e.target.value,chapter:"",topic:"",subtopic:""}))}><option value="">Subject</option>{SUBS.map(s=><option key={s} value={s}>{s}</option>)}</select>
+                <select className="inp" style={{appearance:"none",fontSize:12}} value={bulkSub.chapter} onChange={e=>setBulkSub(f=>({...f,chapter:e.target.value,topic:"",subtopic:""}))} disabled={!bulkSub.subject}><option value="">Chapter</option>{(bulkSub.subject?DS[bulkSub.subject]?.chapters||[]:[]).map(c=><option key={c.ch} value={c.ch}>{c.ch}</option>)}</select>
+                <select className="inp" style={{appearance:"none",fontSize:12}} value={bulkSub.topic} onChange={e=>setBulkSub(f=>({...f,topic:e.target.value,subtopic:""}))} disabled={!bulkSub.chapter}><option value="">Topic</option>{(bulkSub.chapter?(DS[bulkSub.subject]?.chapters||[]).find(c=>c.ch===bulkSub.chapter)?.topics||[]:[]).map(t=><option key={t.name} value={t.name}>{t.name}</option>)}</select>
+                <select className="inp" style={{appearance:"none",fontSize:12}} value={bulkSub.subtopic} onChange={e=>setBulkSub(f=>({...f,subtopic:e.target.value}))} disabled={!bulkSub.topic}><option value="">Sub-topic</option>{(bulkSub.topic?(DS[bulkSub.subject]?.chapters||[]).find(c=>c.ch===bulkSub.chapter)?.topics?.find(t=>t.name===bulkSub.topic)?.subtopics||[]:[]).map(s=><option key={s} value={s}>{s}</option>)}</select>
+              </div>
+            </div>
+            <div style={{marginBottom:12}}><label className="lbl">Paste your content here:</label><textarea className="inp" rows={8} placeholder={showBulk==="fc"?"Question | Answer | Hint\n...":"Q: Question\nA: Option\n*A: Correct Option\n..."} value={bulkText} onChange={e=>setBulkText(e.target.value)} style={{resize:"vertical",fontFamily:"monospace",fontSize:13}}/></div>
+            <button className="btn bg2 bsm" style={{marginBottom:12}} onClick={parseBulk} disabled={!bulkText.trim()}>Preview ({bulkParsed.length} items parsed)</button>
+            {bulkParsed.length>0&&(
+              <div style={{maxHeight:200,overflowY:"auto",border:"1px solid #e2e8f0",borderRadius:10,padding:10,marginBottom:12}}>
+                {bulkParsed.map((item,i)=>(
+                  <div key={i} style={{padding:"6px 10px",borderRadius:8,background:"#f8fafc",marginBottom:6,fontSize:12}}>
+                    <div style={{fontWeight:600}}>{i+1}. {item.question}</div>
+                    <div style={{color:"#276221",marginTop:2}}>{showBulk==="fc"?"Answer: "+item.answer:"Options: "+item.options?.join(" | ")}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{display:"flex",gap:10}}><button className="btn bg2" style={{flex:1}} onClick={()=>setShowBulk(null)}>Cancel</button><button className="btn bp" style={{flex:1}} onClick={saveBulk} disabled={bulkParsed.length===0}>Save {bulkParsed.length} Items</button></div>
+          </div>
+        </div>
+      )}
+
+      {/* Single Flashcard Modal */}
+      {showModal==="fc"&&(
+        <div className="modal-bg" onClick={()=>setShowModal(null)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}}><h3 style={{fontSize:18,fontWeight:700}}>Create Flashcard</h3><button onClick={()=>setShowModal(null)} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b"}}>✕</button></div>
+            <div className="g2" style={{marginBottom:12}}>
+              <div><label className="lbl">Subject</label><select className="inp" style={{appearance:"none"}} value={fcForm.subject} onChange={e=>setFcForm(f=>({...f,subject:e.target.value,chapter:"",topic:"",subtopic:""}))}><option value="">-- Select --</option>{SUBS.map(s=><option key={s} value={s}>{s}</option>)}</select></div>
+              <div><label className="lbl">Chapter</label><select className="inp" style={{appearance:"none"}} value={fcForm.chapter} onChange={e=>setFcForm(f=>({...f,chapter:e.target.value,topic:"",subtopic:""}))} disabled={!fcForm.subject}><option value="">-- Select --</option>{subChs.map(c=><option key={c.ch} value={c.ch}>{c.ch}</option>)}</select></div>
+            </div>
+            <div className="g2" style={{marginBottom:12}}>
+              <div><label className="lbl">Topic</label><select className="inp" style={{appearance:"none"}} value={fcForm.topic} onChange={e=>setFcForm(f=>({...f,topic:e.target.value,subtopic:""}))} disabled={!fcForm.chapter}><option value="">-- Select --</option>{chTps.map(t=><option key={t.name} value={t.name}>{t.name}</option>)}</select></div>
+              <div><label className="lbl">Sub-topic</label><select className="inp" style={{appearance:"none"}} value={fcForm.subtopic} onChange={e=>setFcForm(f=>({...f,subtopic:e.target.value}))} disabled={!fcForm.topic}><option value="">-- Select --</option>{tpSts.map(s=><option key={s} value={s}>{s}</option>)}</select></div>
+            </div>
+            <div style={{marginBottom:12}}><label className="lbl">Question / Front *</label><textarea className="inp" rows={2} placeholder="What is the question or term?" value={fcForm.question} onChange={e=>setFcForm(f=>({...f,question:e.target.value}))} style={{resize:"none"}}/></div>
+            <div style={{marginBottom:12}}><label className="lbl">Answer / Back *</label><textarea className="inp" rows={2} placeholder="What is the answer or definition?" value={fcForm.answer} onChange={e=>setFcForm(f=>({...f,answer:e.target.value}))} style={{resize:"none"}}/></div>
+            <div style={{marginBottom:18}}><label className="lbl">Hint (optional)</label><input className="inp" placeholder="Give a hint to help remember" value={fcForm.hint} onChange={e=>setFcForm(f=>({...f,hint:e.target.value}))}/></div>
+            <div style={{display:"flex",gap:10}}><button className="btn bg2" style={{flex:1}} onClick={()=>setShowModal(null)}>Cancel</button><button className="btn bp" style={{flex:1}} onClick={saveFC} disabled={!fcForm.question||!fcForm.answer}>Create Flashcard</button></div>
+          </div>
+        </div>
+      )}
+
+      {/* Quiz Modal */}
+      {showModal==="qz"&&(
+        <div className="modal-bg" onClick={()=>setShowModal(null)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}}><h3 style={{fontSize:18,fontWeight:700}}>Create Quiz Question</h3><button onClick={()=>setShowModal(null)} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b"}}>✕</button></div>
+            <div className="g2" style={{marginBottom:12}}>
+              <div><label className="lbl">Subject</label><select className="inp" style={{appearance:"none"}} value={qzForm.subject} onChange={e=>setQzForm(f=>({...f,subject:e.target.value}))}><option value="">-- Select --</option>{SUBS.map(s=><option key={s} value={s}>{s}</option>)}</select></div>
+              <div><label className="lbl">Topic</label><input className="inp" placeholder="Topic name" value={qzForm.topic} onChange={e=>setQzForm(f=>({...f,topic:e.target.value}))}/></div>
+            </div>
+            <div style={{marginBottom:12}}><label className="lbl">Question *</label><textarea className="inp" rows={2} placeholder="Enter the quiz question" value={qzForm.question} onChange={e=>setQzForm(f=>({...f,question:e.target.value}))} style={{resize:"none"}}/></div>
+            <div style={{marginBottom:12}}>
+              <label className="lbl">Options * (select correct answer)</label>
+              {(qzForm.options||[]).map((opt,i)=>(
+                <div key={i} style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                  <input type="radio" name="correct" checked={qzForm.correct===i} onChange={()=>setQzForm(f=>({...f,correct:i}))} style={{cursor:"pointer"}}/>
+                  <input className="inp" placeholder={`Option ${String.fromCharCode(65+i)}`} value={opt} onChange={e=>{const o=[...(qzForm.options||[])];o[i]=e.target.value;setQzForm(f=>({...f,options:o}));}} style={{flex:1}}/>
+                </div>
+              ))}
+            </div>
+            <div style={{marginBottom:18}}><label className="lbl">Explanation (optional)</label><input className="inp" placeholder="Explain why the answer is correct" value={qzForm.explanation} onChange={e=>setQzForm(f=>({...f,explanation:e.target.value}))}/></div>
+            <div style={{display:"flex",gap:10}}><button className="btn bg2" style={{flex:1}} onClick={()=>setShowModal(null)}>Cancel</button><button className="btn bp" style={{flex:1}} onClick={saveQZ} disabled={!qzForm.question||(qzForm.options||[]).some(o=>!o)}>Create Question</button></div>
+          </div>
+        </div>
+      )}
+
+      {/* Task Modal */}
+      {showModal==="tk"&&(
+        <div className="modal-bg" onClick={()=>setShowModal(null)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}}><h3 style={{fontSize:18,fontWeight:700}}>Assign Task to Baibhav</h3><button onClick={()=>setShowModal(null)} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b"}}>✕</button></div>
+            <div style={{marginBottom:12}}><label className="lbl">Task Title *</label><input className="inp" placeholder="e.g. Complete Maths exercises Ch-3" value={tkForm.title} onChange={e=>setTkForm(f=>({...f,title:e.target.value}))}/></div>
+            <div className="g2" style={{marginBottom:12}}><div><label className="lbl">Subject</label><select className="inp" style={{appearance:"none"}} value={tkForm.subject} onChange={e=>setTkForm(f=>({...f,subject:e.target.value}))}><option value="">-- Select --</option>{SUBS.map(s=><option key={s} value={s}>{s}</option>)}</select></div><div><label className="lbl">Due Date</label><input className="inp" type="date" value={tkForm.dueDate} onChange={e=>setTkForm(f=>({...f,dueDate:e.target.value}))}/></div></div>
+            <div style={{marginBottom:12}}><label className="lbl">Description</label><textarea className="inp" rows={2} placeholder="Describe what needs to be done..." value={tkForm.description} onChange={e=>setTkForm(f=>({...f,description:e.target.value}))} style={{resize:"none"}}/></div>
+            <div style={{marginBottom:18}}><label className="lbl">Priority</label><select className="inp" style={{appearance:"none"}} value={tkForm.priority} onChange={e=>setTkForm(f=>({...f,priority:e.target.value}))}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></div>
+            <div style={{display:"flex",gap:10}}><button className="btn bg2" style={{flex:1}} onClick={()=>setShowModal(null)}>Cancel</button><button className="btn bp" style={{flex:1}} onClick={saveTK} disabled={!tkForm.title}>Assign Task</button></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FlashCard({fc}){
+  const[flipped,setFlipped]=useState(false);
+  return(
+    <div onClick={()=>setFlipped(f=>!f)} style={{cursor:"pointer",perspective:"600px"}}>
+      <div style={{transition:"transform .5s",transformStyle:"preserve-3d",position:"relative",height:180,transform:flipped?"rotateY(180deg)":"none"}}>
+        <div style={{position:"absolute",inset:0,backfaceVisibility:"hidden",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",padding:20,textAlign:"center",background:"linear-gradient(135deg,#1F4E79,#2E75B6)",color:"#fff"}}>
+          <div>{fc.subject&&<div style={{fontSize:10,opacity:.8,marginBottom:6,fontWeight:600}}>{fc.subject}{fc.topic?" · "+fc.topic:""}</div>}<div style={{fontSize:14,fontWeight:700,lineHeight:1.4}}>{fc.question}</div>{fc.hint&&<div style={{fontSize:10,opacity:.7,marginTop:8}}>Hint: {fc.hint}</div>}<div style={{fontSize:10,opacity:.6,marginTop:10}}>Tap to reveal</div></div>
+        </div>
+        <div style={{position:"absolute",inset:0,backfaceVisibility:"hidden",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",padding:20,textAlign:"center",background:"linear-gradient(135deg,#276221,#4CAF50)",color:"#fff",transform:"rotateY(180deg)"}}>
+          <div><div style={{fontSize:10,opacity:.8,marginBottom:6,fontWeight:600}}>ANSWER</div><div style={{fontSize:14,fontWeight:700,lineHeight:1.4}}>{fc.answer}</div><div style={{fontSize:10,opacity:.6,marginTop:10}}>Tap to flip back</div></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function QuizQuestion({qz,num}){
+  const[selected,setSelected]=useState(null);
+  const[revealed,setReveal]=useState(false);
+  return(
+    <div className="card">
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+        <div style={{width:28,height:28,borderRadius:"50%",background:"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13,flexShrink:0}}>Q{num}</div>
+        {qz.subject&&<span className="tag tp">{qz.subject}</span>}
+        {qz.topic&&<span className="tag" style={{background:"#f1f5f9",color:"#334155"}}>{qz.topic}</span>}
+      </div>
+      <div style={{fontSize:15,fontWeight:600,marginBottom:14,lineHeight:1.5}}>{qz.question}</div>
+      <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:14}}>
+        {(qz.options||[]).map((opt,i)=>(
+          <button key={i} onClick={()=>{if(!revealed)setSelected(i);}}
+            style={{padding:"12px 16px",borderRadius:10,border:`2px solid ${revealed?(i===qz.correct?"#276221":i===selected?"#9C0006":"#e2e8f0"):(selected===i?"#1F4E79":"#e2e8f0")}`,background:revealed?(i===qz.correct?"#C6EFCE":i===selected&&i!==qz.correct?"#FFC7CE":"white"):(selected===i?"#DCE6F1":"white"),color:revealed?(i===qz.correct?"#276221":i===selected&&i!==qz.correct?"#9C0006":"#334155"):(selected===i?"#1F4E79":"#334155"),fontSize:14,fontWeight:selected===i?600:400,cursor:"pointer",textAlign:"left",width:"100%",fontFamily:"inherit"}}>
+            <span style={{fontWeight:700,marginRight:8}}>{String.fromCharCode(65+i)}.</span>{opt}
+          </button>
+        ))}
+      </div>
+      {!revealed?<button className="btn bp bsm" onClick={()=>{if(selected!==null)setReveal(true);}} disabled={selected===null}>Check Answer</button>:(
+        <div><div style={{padding:"10px 14px",borderRadius:10,background:selected===qz.correct?"#C6EFCE":"#FFC7CE",marginBottom:10}}><div style={{fontWeight:700,color:selected===qz.correct?"#276221":"#9C0006",fontSize:14}}>{selected===qz.correct?"Correct!":"Incorrect"}</div>{qz.explanation&&<div style={{fontSize:13,marginTop:4,color:"#334155"}}>{qz.explanation}</div>}</div><button className="btn bg2 bsm" onClick={()=>{setSelected(null);setReveal(false);}}>Try Again</button></div>
+      )}
+    </div>
+  );
+}
+
+function LearnPage({flashcards,quizzes,tasks,toggleTask,studyNotes}){
+  const[tab,setTab]=useState("notes");
+  const typeIcon={pdf:"📄",ppt:"📊",link:"🔗",video:"🎥",file:"📎"};
+  const typeColor={pdf:"#9C0006",ppt:"#C55A11",link:"#1F4E79",video:"#276221",file:"#4B2E83"};
+  return(
+    <div className="fi">
+      <div className="pt">🎯 Learn & Practice</div>
+      <div className="ps">Study notes, flashcards, quizzes and tasks from your teachers</div>
+      <div style={{display:"flex",gap:4,background:"#f1f5f9",padding:4,borderRadius:12,marginBottom:20}}>
+        {[{id:"notes",l:`Study Notes (${studyNotes.length})`},{id:"flashcards",l:`Flashcards (${flashcards.length})`},{id:"quizzes",l:`Quizzes (${quizzes.length})`},{id:"tasks",l:`Tasks (${tasks.length})`}].map(t=><div key={t.id} className={`tab ${tab===t.id?"act":""}`} onClick={()=>setTab(t.id)}>{t.l}</div>)}
+      </div>
+      {tab==="notes"&&(studyNotes.length===0?<div style={{textAlign:"center",padding:"40px 0",color:"#64748b"}}><div style={{fontSize:40,marginBottom:8}}>📎</div><p>No study materials yet. Ask your teacher to add some!</p></div>:(
+        <div>{studyNotes.map(n=>(
+          <div key={n.id} style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",borderRadius:12,border:"1px solid #e2e8f0",marginBottom:10,background:"#fff"}}>
+            <div style={{width:44,height:44,borderRadius:10,background:`${typeColor[n.type]||"#1F4E79"}15`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{typeIcon[n.type]||"📎"}</div>
+            <div style={{flex:1}}><div style={{fontSize:14,fontWeight:600,marginBottom:4}}>{n.title}</div><div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:4}}>{n.subject&&<span className="pill">{n.subject}</span>}{n.chapter&&<span className="pill">{n.chapter}</span>}{n.topic&&<span className="pill">{n.topic}</span>}{n.subtopic&&<span className="pill">{n.subtopic}</span>}</div>{n.description&&<div style={{fontSize:12,color:"#64748b"}}>{n.description}</div>}</div>
+            {n.url&&<a href={n.url} target="_blank" style={{padding:"8px 16px",background:SC[n.subject]||"#1F4E79",color:"white",borderRadius:8,fontSize:13,fontWeight:600,textDecoration:"none",flexShrink:0}}>Open</a>}
+          </div>
+        ))}</div>
+      ))}
+      {tab==="flashcards"&&(flashcards.length===0?<div style={{textAlign:"center",padding:"40px 0",color:"#64748b"}}><div style={{fontSize:40,marginBottom:8}}>🃏</div><p>No flashcards yet.</p></div>:<div className="g3">{flashcards.map(fc=><FlashCard key={fc.id} fc={fc}/>)}</div>)}
+      {tab==="quizzes"&&(quizzes.length===0?<div style={{textAlign:"center",padding:"40px 0",color:"#64748b"}}><div style={{fontSize:40,marginBottom:8}}>❓</div><p>No quiz questions yet.</p></div>:<div style={{display:"flex",flexDirection:"column",gap:16}}>{quizzes.map((qz,i)=><QuizQuestion key={qz.id} qz={qz} num={i+1}/>)}</div>)}
+      {tab==="tasks"&&(tasks.length===0?<div style={{textAlign:"center",padding:"40px 0",color:"#64748b"}}><div style={{fontSize:40,marginBottom:8}}>✅</div><p>No tasks assigned yet.</p></div>:(
+        <div style={{display:"flex",flexDirection:"column",gap:10}}>
+          {tasks.map(t=>(
+            <div key={t.id} className="task-item" style={{opacity:t.done?.8:1}}>
+              <div className={`task-check ${t.done?"done":""}`} style={{background:t.done?"#276221":"white",borderColor:t.done?"#276221":"#e2e8f0",color:"white",cursor:"pointer"}} onClick={()=>toggleTask(t.id,t.done)}>{t.done?"✓":""}</div>
+              <div style={{flex:1}}><div style={{fontSize:14,fontWeight:600,textDecoration:t.done?"line-through":"none",color:t.done?"#64748b":"#0f172a"}}>{t.title}</div>{t.subject&&<div style={{fontSize:12,color:"#64748b",marginTop:2}}>{t.subject}</div>}{t.description&&<div style={{fontSize:12,color:"#64748b",marginTop:2}}>{t.description}</div>}<div style={{display:"flex",gap:8,marginTop:4}}>{t.dueDate&&<span style={{fontSize:11,color:"#C55A11",fontWeight:600}}>Due: {t.dueDate}</span>}<span className={`tag ${t.priority==="high"?"td2":t.priority==="medium"?"tw":"ts"}`}>{t.priority}</span>{t.done&&<span className="tag ts">Done on {t.doneDate}</span>}</div></div>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TasksPage({tasks,addTask,toggleTask,isT}){
+  const[showModal,setShowModal]=useState(false);
+  const[form,setForm]=useState({title:"",subject:"",description:"",dueDate:"",priority:"medium"});
+  const save=async()=>{if(!form.title)return;await addTask(form);setForm({title:"",subject:"",description:"",dueDate:"",priority:"medium"});setShowModal(false);};
+  const pending=tasks.filter(t=>!t.done);const done=tasks.filter(t=>t.done);
+  return(
+    <div className="fi">
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
+        <div className="pt">{isT?"Manage Tasks":"My Tasks"}</div>
+        {isT&&<button className="btn bp" onClick={()=>setShowModal(true)}>+ Assign Task</button>}
+      </div>
+      <div className="ps">{isT?"Assign tasks and track Baibhav completion":"Complete your assigned tasks"}</div>
+      <div className="g2" style={{marginBottom:20}}>
+        <div style={{background:"#FCE4D6",borderRadius:16,padding:"16px 20px"}}><div style={{fontSize:28,fontWeight:800,color:"#C55A11"}}>{pending.length}</div><div style={{fontSize:13,color:"#C55A11",fontWeight:600}}>Pending Tasks</div></div>
+        <div style={{background:"#C6EFCE",borderRadius:16,padding:"16px 20px"}}><div style={{fontSize:28,fontWeight:800,color:"#276221"}}>{done.length}</div><div style={{fontSize:13,color:"#276221",fontWeight:600}}>Completed Tasks</div></div>
+      </div>
+      {pending.length>0&&<div style={{marginBottom:20}}><div style={{fontSize:14,fontWeight:700,marginBottom:10,color:"#C55A11"}}>Pending ({pending.length})</div>{pending.map(t=>(
+        <div key={t.id} className="task-item">
+          <div className="task-check" style={{cursor:"pointer"}} onClick={()=>toggleTask(t.id,t.done)}/>
+          <div style={{flex:1}}><div style={{fontSize:14,fontWeight:600}}>{t.title}</div>{t.subject&&<div style={{fontSize:12,color:"#64748b",marginTop:2}}>{t.subject}</div>}{t.description&&<div style={{fontSize:12,color:"#64748b",marginTop:2}}>{t.description}</div>}<div style={{display:"flex",gap:8,marginTop:4}}>{t.dueDate&&<span style={{fontSize:11,color:"#C55A11",fontWeight:600}}>Due: {t.dueDate}</span>}<span className={`tag ${t.priority==="high"?"td2":t.priority==="medium"?"tw":"ts"}`}>{t.priority}</span></div></div>
+          <span style={{fontSize:11,color:"#94a3b8"}}>by {t.createdBy}</span>
+        </div>
+      ))}</div>}
+      {done.length>0&&<div><div style={{fontSize:14,fontWeight:700,marginBottom:10,color:"#276221"}}>Completed ({done.length})</div>{done.map(t=>(
+        <div key={t.id} className="task-item" style={{opacity:.7}}>
+          <div className="task-check" style={{background:"#276221",borderColor:"#276221",color:"white",cursor:"pointer"}} onClick={()=>toggleTask(t.id,t.done)}>✓</div>
+          <div style={{flex:1}}><div style={{fontSize:14,fontWeight:600,textDecoration:"line-through",color:"#64748b"}}>{t.title}</div>{t.subject&&<div style={{fontSize:12,color:"#94a3b8",marginTop:2}}>{t.subject}</div>}<div style={{fontSize:11,color:"#94a3b8",marginTop:4}}>Done on {t.doneDate}</div></div>
+        </div>
+      ))}</div>}
+      {tasks.length===0&&<div style={{textAlign:"center",padding:"40px 0",color:"#64748b"}}><div style={{fontSize:40,marginBottom:8}}>✅</div><p>No tasks yet.{isT?" Assign some tasks to Baibhav!":""}</p></div>}
+      {showModal&&(
+        <div className="modal-bg" onClick={()=>setShowModal(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}}><h3 style={{fontSize:18,fontWeight:700}}>Assign Task to Baibhav</h3><button onClick={()=>setShowModal(false)} style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b"}}>✕</button></div>
+            <div style={{marginBottom:12}}><label className="lbl">Task Title *</label><input className="inp" placeholder="e.g. Complete Maths exercises Ch-3" value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))}/></div>
+            <div className="g2" style={{marginBottom:12}}><div><label className="lbl">Subject</label><select className="inp" style={{appearance:"none"}} value={form.subject} onChange={e=>setForm(f=>({...f,subject:e.target.value}))}><option value="">-- Select --</option>{SUBS.map(s=><option key={s} value={s}>{s}</option>)}</select></div><div><label className="lbl">Due Date</label><input className="inp" type="date" value={form.dueDate} onChange={e=>setForm(f=>({...f,dueDate:e.target.value}))}/></div></div>
+            <div style={{marginBottom:12}}><label className="lbl">Description</label><textarea className="inp" rows={2} placeholder="Describe what needs to be done..." value={form.description} onChange={e=>setForm(f=>({...f,description:e.target.value}))} style={{resize:"none"}}/></div>
+            <div style={{marginBottom:18}}><label className="lbl">Priority</label><select className="inp" style={{appearance:"none"}} value={form.priority} onChange={e=>setForm(f=>({...f,priority:e.target.value}))}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></div>
+            <div style={{display:"flex",gap:10}}><button className="btn bg2" style={{flex:1}} onClick={()=>setShowModal(false)}>Cancel</button><button className="btn bp" style={{flex:1}} onClick={save} disabled={!form.title}>Assign Task</button></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RevisionPage({revisions,markRevised}){
+  const[tab,setTab]=useState("today");
+  const today=new Date().toISOString().split("T")[0];
+  const tr=revisions.filter(r=>!r.done&&r.dueDate<=today);
+  const or=revisions.filter(r=>!r.done&&r.dueDate<today);
+  const ur=revisions.filter(r=>{const n=new Date();n.setDate(n.getDate()+7);return!r.done&&r.dueDate>today&&r.dueDate<=n.toISOString().split("T")[0];});
+  const dr=revisions.filter(r=>r.done);
+  const cl=tab==="today"?tr:tab==="overdue"?or:tab==="upcoming"?ur:dr;
+  const sc={English:"#1F4E79",Hindi:"#4B2E83",Odia:"#7F6000",Mathematics:"#1F6B5B",Science:"#375623","Social Studies":"#C55A11","Computer Science":"#1F3864","Moral Science":"#4A1942","General Knowledge":"#404040"};
+  return(
+    <div className="fi">
+      <div className="pt">Revision Planner</div>
+      <div className="ps">7-day revision cycle — auto-scheduled after each topic is taught</div>
+      <div className="g4" style={{marginBottom:20}}>
+        {[{l:"Overdue",v:or.length,c:"#9C0006",bg:"#FFC7CE"},{l:"Due Today",v:tr.length,c:"#C55A11",bg:"#FCE4D6"},{l:"This Week",v:ur.length,c:"#1F4E79",bg:"#DCE6F1"},{l:"Completed",v:dr.length,c:"#276221",bg:"#C6EFCE"}].map(s=><div key={s.l} style={{background:s.bg,borderRadius:16,padding:"14px 18px"}}><div style={{fontSize:26,fontWeight:800,color:s.c}}>{s.v}</div><div style={{fontSize:12,color:s.c,fontWeight:600}}>{s.l}</div></div>)}
+      </div>
+      {or.length>0&&<div style={{background:"#FFC7CE",border:"2px solid #9C0006",borderRadius:12,padding:"10px 14px",marginBottom:16,display:"flex",alignItems:"center",gap:10}}><span>⚠️</span><div style={{fontWeight:700,color:"#9C0006",fontSize:13}}>{or.length} overdue revision{or.length>1?"s":""}! Please revise these topics.</div></div>}
+      <div style={{display:"flex",gap:4,background:"#f1f5f9",padding:4,borderRadius:12,marginBottom:16}}>
+        {[{id:"today",l:`Today (${tr.length})`},{id:"overdue",l:`Overdue (${or.length})`},{id:"upcoming",l:`Upcoming (${ur.length})`},{id:"done",l:`Done (${dr.length})`}].map(t=><div key={t.id} className={`tab ${tab===t.id?"act":""}`} onClick={()=>setTab(t.id)}>{t.l}</div>)}
+      </div>
+      <div className="card">
+        {cl.length===0?<div style={{textAlign:"center",padding:"32px 0",color:"#64748b",fontSize:13}}>{tab==="today"?"No revisions due today — great job!":"No items here"}</div>:(
+          <div style={{maxHeight:500,overflowY:"auto"}}>
+            {cl.map(r=>(
+              <div key={r.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 14px",borderRadius:12,borderLeft:`4px solid ${sc[r.subject]||"#1F4E79"}`,marginBottom:8,background:"white",boxShadow:"0 2px 8px rgba(0,0,0,.06)"}}>
+                <div style={{flex:1}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}><span style={{fontSize:13,fontWeight:700,color:sc[r.subject]||"#1F4E79"}}>{r.subject}</span><span style={{fontSize:12,color:"#64748b"}}>{r.chapter}</span></div>
+                  <div style={{fontSize:13,color:"#334155",marginBottom:3}}>{r.topic}{r.subtopic?" → "+r.subtopic:""}</div>
+                  <div style={{fontSize:11,color:"#94a3b8"}}>Taught: {r.taughtDate} · Due: {r.dueDate}{r.doneDate?` · Done: ${r.doneDate}`:""}</div>
+                </div>
+                {tab!=="done"&&!r.done&&<button className="btn bs bsm" onClick={()=>markRevised(r.id)}>Done</button>}
+                {r.done&&<span className="tag ts">Revised</span>}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function NotesPage({notes,addNote,profile}){
+  const[text,setText]=useState("");const[saving,setSaving]=useState(false);
+  const qn=["Covered today topics as per timetable","Baibhav needs extra help with Maths fractions","Revision done for English Ch-1 and Ch-2","Maths test announced for next week","Baibhav did great in SST Olympiad today!","Please revise Science Ch-1 tomorrow","Focus needed on Hindi grammar this week","Homework given — complete by tomorrow","Tutor session scheduled for tomorrow","Study notes uploaded for Chapter 3"];
+  const add=async()=>{if(!text.trim())return;setSaving(true);await addNote(text.trim());setText("");setSaving(false);};
+  return(
+    <div className="fi">
+      <div className="pt">Team Coordination Notes</div>
+      <div className="ps">Saswat and Swagat — real-time shared notes from any location</div>
+      <div className="g2">
+        <div>
+          <div className="card" style={{marginBottom:16}}>
+            <div className="st">Add a Note</div>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12,padding:"10px 14px",background:"#f8fafc",borderRadius:10}}>
+              <div style={{width:32,height:32,borderRadius:"50%",background:"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>{profile?.avatar||"T"}</div>
+              <div><div style={{fontSize:13,fontWeight:700}}>{profile?.name||"Teacher"}</div><div style={{fontSize:11,color:"#64748b"}}>{profile?.role} · Online</div></div>
+              <span style={{width:7,height:7,borderRadius:"50%",background:"#22c55e",display:"inline-block",marginLeft:"auto"}}/>
+            </div>
+            <textarea value={text} onChange={e=>setText(e.target.value)} placeholder="Write a coordination note — visible to all teachers instantly..." style={{width:"100%",minHeight:100,padding:"10px 14px",border:"2px solid #e2e8f0",borderRadius:10,fontSize:14,fontFamily:"inherit",resize:"vertical",outline:"none"}}/>
+            <button className="btn bp bfw" style={{marginTop:10}} onClick={add} disabled={!text.trim()||saving}>{saving?"Saving...":"Post Note (syncs instantly)"}</button>
+          </div>
+          <div className="card"><div className="st">Quick Notes</div>{qn.map((n,i)=><button key={i} onClick={()=>setText(n)} style={{display:"block",width:"100%",padding:"8px 12px",borderRadius:8,border:"1px solid #e2e8f0",background:"#f8fafc",fontSize:12,cursor:"pointer",textAlign:"left",marginBottom:6,color:"#334155"}}>{n}</button>)}</div>
+        </div>
+        <div className="card">
+          <div className="st">Live Notes Feed</div>
+          {notes.length===0?<div style={{textAlign:"center",padding:"40px 0",color:"#64748b",fontSize:13}}><div style={{fontSize:36,marginBottom:8}}>💬</div>No notes yet. Be the first to post!</div>:(
+            <div style={{maxHeight:520,overflowY:"auto"}}>
+              {notes.map(n=>(
+                <div key={n.id} style={{padding:"12px 14px",borderRadius:10,background:"#f8fafc",border:"1px solid #e2e8f0",marginBottom:10,borderLeft:"3px solid #1F4E79"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                    <div style={{width:28,height:28,borderRadius:"50%",background:"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:12}}>{n.author?.[0]||"T"}</div>
+                    <span style={{fontSize:13,fontWeight:700}}>{n.author}</span>
+                    <span style={{fontSize:11,color:"#64748b",marginLeft:"auto"}}>{n.createdAt?.toDate?new Date(n.createdAt.toDate()).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"Just now"}</span>
+                  </div>
+                  <p style={{fontSize:13,color:"#334155",lineHeight:1.6}}>{n.text}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TimetablePage(){
+  const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const tn=days[new Date().getDay()];
+  const TT={Monday:["English","Odia","Maths","SST","BREAK","Science","GK","Games","Yoga"],Tuesday:["English","Hindi","Maths","Science","BREAK","SST","Odia","Art","CSPD"],Wednesday:["English","Maths","Science","Hindi","BREAK","Odia","SST","Music","GK"],Thursday:["English","Science","SST","Maths","BREAK","Hindi","Maths Lab","Comp Lab","Dance"],Friday:["English","GK","Hindi","Odia","BREAK","Maths","Science","SST","Library"],Saturday:["English","SST","Odia","Science","BREAK","Maths","Hindi","Comp","Art"]};
+  const DL=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const PR=["P1 10:30","P2 11:10","P3 11:50","P4 12:30","BREAK","P5 1:30","P6 2:10","P7 2:50","P8 3:30"];
+  const SCC={English:"#DCE6F1",Hindi:"#E8E0F0",Odia:"#FFF2CC",Maths:"#DAEEE6",Science:"#E2EFDA",SST:"#FCE4D6",GK:"#F2F2F2",Games:"#E2EFDA",Yoga:"#E2EFDA",Art:"#FCE4D6",CSPD:"#EAD1DC",Music:"#EAD1DC",Dance:"#EAD1DC","Maths Lab":"#DAEEE6","Comp Lab":"#D9E1F2",Comp:"#D9E1F2",Library:"#F2F2F2",BREAK:"#FFE699"};
+  return(
+    <div className="fi">
+      <div className="pt">School Timetable</div>
+      <div className="ps">Buxi Jagabandhu English Medium School-II · Std 5A · Mrs. Tarulata Mohanty</div>
+      <div style={{background:"white",borderRadius:16,boxShadow:"0 4px 16px rgba(0,0,0,.12)",overflow:"auto"}}>
+        <table style={{width:"100%",borderCollapse:"collapse",minWidth:700}}>
+          <thead><tr><th style={{padding:"12px 16px",background:"#1F4E79",color:"white",fontSize:13,fontWeight:700,textAlign:"left",minWidth:90}}>Day</th>{PR.map((p,i)=><th key={i} style={{padding:"10px 8px",background:"#1F4E79",color:"white",fontSize:11,fontWeight:600,textAlign:"center",minWidth:80}}>{p}</th>)}</tr></thead>
+          <tbody>{DL.map(day=><tr key={day} style={{background:day===tn?"#FFFDE7":"white"}}><td style={{padding:"10px 16px",fontWeight:700,fontSize:13,borderRight:"2px solid #e2e8f0",borderBottom:"1px solid #e2e8f0"}}>{day===tn&&<span style={{fontSize:10,background:"#C55A11",color:"white",padding:"1px 6px",borderRadius:9999,marginRight:6,fontWeight:700}}>TODAY</span>}{day}</td>{TT[day].map((subj,i)=><td key={i} style={{padding:"8px 6px",textAlign:"center",borderBottom:"1px solid #e2e8f0",borderRight:"1px solid #e2e8f0"}}><span style={{display:"inline-block",padding:"4px 8px",borderRadius:8,background:SCC[subj]||"#F2F2F2",fontSize:11,fontWeight:600,whiteSpace:"nowrap"}}>{subj}</span></td>)}</tr>)}</tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
