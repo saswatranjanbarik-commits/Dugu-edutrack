@@ -13,7 +13,7 @@
 <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 <!-- Load Babel for JSX -->
-<script src="https://unpkg.com/@babel/standalone@7.23.2/babel.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.2/babel.min.js" defer></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,sans-serif;background:#f0f4f8;color:#1a202c;min-height:100vh}
@@ -111,7 +111,7 @@ function hideLoading() {
   if(el) { el.style.opacity='0'; setTimeout(()=>el.remove(), 500); }
 }
 </script>
-<script type="text/babel" data-presets="react">
+<script type="text/babel" data-presets="react" data-type="module">
 
 const {useState, useEffect, useRef} = React;
 
