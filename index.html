@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Dugu EduTrack</title>
+<title>Dugu EduTrack v3.3</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -15,8 +15,11 @@ body{font-family:system-ui,sans-serif;background:#f0f4f8;color:#1a202c;min-heigh
 .card{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.08);padding:20px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
 .bp{background:#1F4E79;color:#fff}.bp:hover{background:#2E75B6}
+.ba{background:#C55A11;color:#fff}
 .bs{background:#276221;color:#fff}
+.bpu{background:#4B2E83;color:#fff}
 .bg2{background:#f1f5f9;color:#334155}.bg2:hover{background:#e2e8f0}
+.brd{background:#FFC7CE;color:#9C0006}
 .bsm{padding:6px 14px;font-size:12px}.bfw{width:100%}
 .inp{width:100%;padding:10px 14px;border:2px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:inherit;outline:none;background:#fff;transition:border-color .2s}
 .inp:focus{border-color:#1F4E79}
@@ -33,14 +36,22 @@ body{font-family:system-ui,sans-serif;background:#f0f4f8;color:#1a202c;min-heigh
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:600}
-.ts{background:#C6EFCE;color:#276221}.tw{background:#FFEB9C;color:#9C5700}.td2{background:#FFC7CE;color:#9C0006}.tp{background:#DCE6F1;color:#1F4E79}
+.ts{background:#C6EFCE;color:#276221}.tw{background:#FFEB9C;color:#9C5700}.td2{background:#FFC7CE;color:#9C0006}.tp{background:#DCE6F1;color:#1F4E79}.tpu{background:#E8E0F0;color:#4B2E83}
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-lg{max-width:800px}
 .pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:9999px;font-size:11px;font-weight:600;background:#f1f5f9;color:#334155}
 .mn{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;z-index:100;padding:6px 0 10px}
 .mi{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#64748b;cursor:pointer;padding:4px}
 .mi.act{color:#1F4E79;font-weight:600}
+.tt-cell{padding:6px 8px;border-radius:8px;font-size:12px;font-weight:600;text-align:center;display:flex;align-items:center;justify-content:center;min-height:36px}
+.tt-cell-edit{padding:4px;border:2px solid #e2e8f0;border-radius:8px;font-size:12px;font-family:inherit;outline:none;width:100%;text-align:center;background:white}
+.tt-cell-edit:focus{border-color:#1F4E79}
+.voice-btn{width:72px;height:72px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:32px;transition:all .2s;position:relative;margin:0 auto}
+.voice-idle{background:linear-gradient(135deg,#1F4E79,#2E75B6);box-shadow:0 4px 20px rgba(31,78,121,.4)}
+.voice-listening{background:linear-gradient(135deg,#9C0006,#C55A11);box-shadow:0 4px 20px rgba(156,0,6,.4)}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 @media(max-width:768px){.main{margin-left:0;padding:16px}.sb{display:none}.mn{display:flex!important}.g3,.g4{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
 </style>
@@ -59,9 +70,14 @@ const SUBS=["English","Hindi","Odia","Mathematics","Science","Social Studies","C
 const SC={English:"#1F4E79",Hindi:"#4B2E83",Odia:"#7F6000",Mathematics:"#1F6B5B",Science:"#375623","Social Studies":"#C55A11","Computer Science":"#1F3864","Moral Science":"#4A1942","General Knowledge":"#404040"};
 const SL={English:"#DCE6F1",Hindi:"#E8E0F0",Odia:"#FFF2CC",Mathematics:"#DAEEE6",Science:"#E2EFDA","Social Studies":"#FCE4D6","Computer Science":"#D9E1F2","Moral Science":"#EAD1DC","General Knowledge":"#F2F2F2"};
 const DS={English:{chapters:[{ch:"Ch-1",topics:[{name:"The Fire",subtopics:["Reading","Word Meanings","Q&A"]},{name:"Nouns Grammar",subtopics:["Types","Exercises"]}]},{ch:"Ch-2",topics:[{name:"Afternoon on a Hill",subtopics:["Poem Reading","Appreciation"]},{name:"Articles Grammar",subtopics:["A/An/The","Exercises"]}]},{ch:"Ch-3",topics:[{name:"Adventure in the Andamans",subtopics:["Reading","Vocabulary","Q&A"]},{name:"Pronouns Grammar",subtopics:["Types","Exercises"]}]},{ch:"Writing",topics:[{name:"Notice Writing",subtopics:["Format","Practice"]},{name:"Informal Letter",subtopics:["Format","Practice"]},{name:"Email Writing",subtopics:["Format","Practice"]}]}]},Hindi:{chapters:[{ch:"Ch-1",topics:[{name:"Pyare Bachcho",subtopics:["Paath","Shabdarth","Prashnottar"]},{name:"Shabd Vichar",subtopics:["Paribhasha","Abhyas"]}]},{ch:"Ch-2",topics:[{name:"Do Gauraiyaan",subtopics:["Paath","Prashnottar"]},{name:"Sangya",subtopics:["Paribhasha","Bhed","Abhyas"]}]},{ch:"Ch-3",topics:[{name:"Khel Divas",subtopics:["Paath","Prashnottar"]},{name:"Ling",subtopics:["Paribhasha","Abhyas"]}]}]},Odia:{chapters:[{ch:"Paath-7",topics:[{name:"Jatiya Dhwaja Poetry",subtopics:["Paath","Prashna Uttar"]}]},{ch:"Paath-8",topics:[{name:"Upayukta Besa Prose",subtopics:["Paath","Prashna Uttar"]}]},{ch:"Paath-1",topics:[{name:"Prose Chapter 1",subtopics:["Reading","Q&A"]}]}]},Mathematics:{chapters:[{ch:"Ch-1",topics:[{name:"Large Numbers",subtopics:["Introduction","Place Value","Comparison","Exercises"]},{name:"Operations on Large Numbers",subtopics:["Addition","Subtraction","Multiplication","Division"]}]},{ch:"Ch-2",topics:[{name:"Factors and Multiples",subtopics:["Factors","Multiples","HCF","LCM"]}]},{ch:"Ch-3",topics:[{name:"Fractions",subtopics:["Types","Equivalent","Addition","Subtraction"]}]},{ch:"Ch-4",topics:[{name:"Decimals",subtopics:["Introduction","Addition","Subtraction"]}]},{ch:"Ch-5",topics:[{name:"Basic Geometry",subtopics:["Points Lines","Angles","Triangles"]}]}]},Science:{chapters:[{ch:"Ch-1",topics:[{name:"Our Body",subtopics:["Body Systems","Digestive","Respiratory","Circulatory"]}]},{ch:"Ch-2",topics:[{name:"Deficiency Diseases",subtopics:["Vitamins","Minerals","Prevention"]}]},{ch:"Ch-3",topics:[{name:"Eat Well Keep Well",subtopics:["Nutrients","Balanced Diet"]}]},{ch:"Ch-4",topics:[{name:"Fuel for Vehicle",subtopics:["Types of Fuel","Alternative Energy"]}]},{ch:"Ch-5",topics:[{name:"In Times of Emergency",subtopics:["First Aid","Safety Rules"]}]}]},"Social Studies":{chapters:[{ch:"Ch-1",topics:[{name:"Why People Move",subtopics:["Reasons","Types","Effects"]}]},{ch:"Ch-2",topics:[{name:"Being Different",subtopics:["Diversity","Respect"]}]},{ch:"Ch-3",topics:[{name:"Different Jobs",subtopics:["Occupations","Importance"]}]},{ch:"Ch-6",topics:[{name:"Food for All",subtopics:["Food Security","Distribution"]}]},{ch:"Ch-9",topics:[{name:"Let Us Play",subtopics:["Importance of Sports"]}]}]},"Computer Science":{chapters:[{ch:"Ch-1",topics:[{name:"History of Computers",subtopics:["Generations","Types","Uses"]}]},{ch:"Ch-2",topics:[{name:"Tables in Word",subtopics:["Insert Table","Format","Practical"]}]},{ch:"Ch-3",topics:[{name:"Mail Merge",subtopics:["Introduction","Steps","Practical"]}]},{ch:"Ch-4",topics:[{name:"Exploring PowerPoint",subtopics:["Interface","Slides","Practical"]}]}]},"Moral Science":{chapters:[{ch:"Ch-1",topics:[{name:"Grandmas Beans",subtopics:["Story","Moral"]}]},{ch:"Ch-2",topics:[{name:"The Wise Judge",subtopics:["Story","Moral"]}]},{ch:"Ch-3",topics:[{name:"The Power of Forgiveness",subtopics:["Story","Moral"]}]}]},"General Knowledge":{chapters:[{ch:"Unit-1",topics:[{name:"Animals and Plants",subtopics:["Facts","Quiz"]}]},{ch:"Unit-2",topics:[{name:"Language and Literature",subtopics:["Authors","Books"]}]},{ch:"Unit-3",topics:[{name:"Our Environment",subtopics:["Facts","Current Affairs"]}]}]}};
-const DEFAULT_TT={Monday:["English","Odia","Maths","SST","Science","GK","Games","Yoga"],Tuesday:["English","Hindi","Maths","Science","SST","Odia","Art","CSPD"],Wednesday:["English","Maths","Science","Hindi","Odia","SST","Music","GK"],Thursday:["English","Science","SST","Maths","Hindi","Maths Lab","Comp Lab","Dance"],Friday:["English","GK","Hindi","Odia","Maths","Science","SST","Library"],Saturday:["English","SST","Odia","Science","Maths","Hindi","Comp","Art"]};
+const DEFAULT_TT={Monday:[{sub:"English",color:"#DCE6F1"},{sub:"Odia",color:"#FFF2CC"},{sub:"Maths",color:"#DAEEE6"},{sub:"SST",color:"#FCE4D6"},{sub:"BREAK",color:"#FFE699"},{sub:"Science",color:"#E2EFDA"},{sub:"GK",color:"#F2F2F2"},{sub:"Games",color:"#E2EFDA"},{sub:"Yoga",color:"#E2EFDA"}],Tuesday:[{sub:"English",color:"#DCE6F1"},{sub:"Hindi",color:"#E8E0F0"},{sub:"Maths",color:"#DAEEE6"},{sub:"Science",color:"#E2EFDA"},{sub:"BREAK",color:"#FFE699"},{sub:"SST",color:"#FCE4D6"},{sub:"Odia",color:"#FFF2CC"},{sub:"Art",color:"#FCE4D6"},{sub:"CSPD",color:"#EAD1DC"}],Wednesday:[{sub:"English",color:"#DCE6F1"},{sub:"Maths",color:"#DAEEE6"},{sub:"Science",color:"#E2EFDA"},{sub:"Hindi",color:"#E8E0F0"},{sub:"BREAK",color:"#FFE699"},{sub:"Odia",color:"#FFF2CC"},{sub:"SST",color:"#FCE4D6"},{sub:"Music",color:"#EAD1DC"},{sub:"GK",color:"#F2F2F2"}],Thursday:[{sub:"English",color:"#DCE6F1"},{sub:"Science",color:"#E2EFDA"},{sub:"SST",color:"#FCE4D6"},{sub:"Maths",color:"#DAEEE6"},{sub:"BREAK",color:"#FFE699"},{sub:"Hindi",color:"#E8E0F0"},{sub:"Maths Lab",color:"#DAEEE6"},{sub:"Comp Lab",color:"#D9E1F2"},{sub:"Dance",color:"#EAD1DC"}],Friday:[{sub:"English",color:"#DCE6F1"},{sub:"GK",color:"#F2F2F2"},{sub:"Hindi",color:"#E8E0F0"},{sub:"Odia",color:"#FFF2CC"},{sub:"BREAK",color:"#FFE699"},{sub:"Maths",color:"#DAEEE6"},{sub:"Science",color:"#E2EFDA"},{sub:"SST",color:"#FCE4D6"},{sub:"Library",color:"#F2F2F2"}],Saturday:[{sub:"English",color:"#DCE6F1"},{sub:"SST",color:"#FCE4D6"},{sub:"Odia",color:"#FFF2CC"},{sub:"Science",color:"#E2EFDA"},{sub:"BREAK",color:"#FFE699"},{sub:"Maths",color:"#DAEEE6"},{sub:"Hindi",color:"#E8E0F0"},{sub:"Comp",color:"#D9E1F2"},{sub:"Art",color:"#FCE4D6"}]};
+const PERIODS=["P1 10:30","P2 11:10","P3 11:50","P4 12:30","BREAK","P5 1:30","P6 2:10","P7 2:50","P8 3:30"];
+const DAYS_LIST=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const TTC={English:"#DCE6F1",Hindi:"#E8E0F0",Odia:"#FFF2CC",Maths:"#DAEEE6",Science:"#E2EFDA",SST:"#FCE4D6",GK:"#F2F2F2",Games:"#E2EFDA",Yoga:"#E2EFDA",Art:"#FCE4D6",CSPD:"#EAD1DC",Music:"#EAD1DC",Dance:"#EAD1DC","Maths Lab":"#DAEEE6","Comp Lab":"#D9E1F2",Comp:"#D9E1F2",Library:"#F2F2F2",BREAK:"#FFE699"};
 
-// Simple element helpers
+// Status options - NEW: Taught / Self Study / Missed
+const STATUS_OPTS=[{v:"taught",l:"✅ Taught",c:"#276221",bg:"#C6EFCE"},{v:"selfstudy",l:"📖 Self Study",c:"#1F4E79",bg:"#DCE6F1"},{v:"missed",l:"⚠️ Missed",c:"#9C0006",bg:"#FFC7CE"}];
+
 const e=(t,p,...c)=>h(t,p,...c.flat().filter(x=>x!==null&&x!==false&&x!==undefined));
 const div=(p,...c)=>e("div",p,...c);
 const span=(p,...c)=>e("span",p,...c);
@@ -72,16 +88,14 @@ const sel=(p,...c)=>e("select",p,...c);
 const opt=(p,...c)=>e("option",p,...c);
 const lbl=(p,...c)=>e("label",p,...c);
 const h1=(p,...c)=>e("h1",p,...c);
+const h2=(p,...c)=>e("h2",p,...c);
 const h3=(p,...c)=>e("h3",p,...c);
 const a=(p,...c)=>e("a",p,...c);
 const ta=(p)=>e("textarea",p);
 
 function App(){
   const[user,setUser]=useState(undefined);
-  const[email,setEmail]=useState("");
-  const[pass,setPass]=useState("");
-  const[err,setErr]=useState("");
-  const[loading,setLoading]=useState(false);
+  const[email,setEmail]=useState("");const[pass,setPass]=useState("");const[err,setErr]=useState("");const[loading,setLoading]=useState(false);
   useEffect(()=>auth.onAuthStateChanged(u=>setUser(u)),[]);
   const login=async(em,pw)=>{try{setErr("");setLoading(true);await auth.signInWithEmailAndPassword(em,pw);}catch{setErr("Invalid email or password.");}setLoading(false);};
   const setup=async()=>{
@@ -90,33 +104,17 @@ function App(){
     for(const u of users){try{const c=await auth.createUserWithEmailAndPassword(u.email,u.password);await db.collection("users").doc(c.user.uid).set({...u,online:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});await auth.signOut();}catch(ex){if(ex.code!=="auth/email-already-in-use")console.log(ex);}}
     setLoading(false);alert("Setup complete!");
   };
-  if(user===undefined)return div({style:{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#1F4E79,#2E75B6)",color:"white",flexDirection:"column",gap:16}},
-    div({style:{fontSize:56}},"🎓"),
-    h1({style:{fontSize:28,fontWeight:900}},"Dugu EduTrack"),
-    p2({style:{opacity:.8}},"Loading..."),
-    div({style:{width:40,height:40,border:"3px solid rgba(255,255,255,.3)",borderTopColor:"white",borderRadius:"50%",animation:"spin .8s linear infinite"}})
-  );
+  if(user===undefined)return div({style:{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#1F4E79,#2E75B6)",color:"white",flexDirection:"column",gap:16}},div({style:{fontSize:56}},"🎓"),h1({style:{fontSize:28,fontWeight:900}},"Dugu EduTrack"),p2({style:{opacity:.8}},"Loading..."),div({style:{width:40,height:40,border:"3px solid rgba(255,255,255,.3)",borderTopColor:"white",borderRadius:"50%",animation:"spin .8s linear infinite"}}));
   if(!user)return div({style:{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#1F4E79,#2E75B6)",padding:20}},
     div({style:{background:"white",padding:40,borderRadius:24,width:"100%",maxWidth:420,boxShadow:"0 20px 60px rgba(0,0,0,.3)"}},
-      div({style:{textAlign:"center",marginBottom:28}},
-        div({style:{fontSize:52,marginBottom:8}},"🎓"),
-        h1({style:{fontSize:26,fontWeight:900,color:"#1F4E79"}},"Dugu EduTrack"),
-        p2({style:{color:"#64748b",fontSize:13,marginTop:4}},"Baibhav Personal Learning Portal v3.1"),
-        div({style:{display:"inline-flex",alignItems:"center",gap:6,marginTop:8,background:"#C6EFCE",color:"#276221",padding:"4px 12px",borderRadius:9999,fontSize:12,fontWeight:600}},
-          span({style:{width:7,height:7,borderRadius:"50%",background:"#22c55e",display:"inline-block"}}),"Online Mode — No Babel Required"
-        )
-      ),
+      div({style:{textAlign:"center",marginBottom:28}},div({style:{fontSize:52,marginBottom:8}},"🎓"),h1({style:{fontSize:26,fontWeight:900,color:"#1F4E79"}},"Dugu EduTrack"),p2({style:{color:"#64748b",fontSize:13,marginTop:4}},"Baibhav Personal Learning Portal v3.3"),div({style:{display:"inline-flex",alignItems:"center",gap:6,marginTop:8,background:"#C6EFCE",color:"#276221",padding:"4px 12px",borderRadius:9999,fontSize:12,fontWeight:600}},span({style:{width:7,height:7,borderRadius:"50%",background:"#22c55e",display:"inline-block"}}),"Online Mode")),
       div({style:{marginBottom:12}},lbl({className:"lbl"},"Email"),inp({className:"inp",type:"email",placeholder:"Enter your email",value:email,onChange:ev=>setEmail(ev.target.value)})),
       div({style:{marginBottom:18}},lbl({className:"lbl"},"Password"),inp({className:"inp",type:"password",placeholder:"Enter your password",value:pass,onChange:ev=>setPass(ev.target.value)})),
       err&&div({style:{background:"#FFC7CE",color:"#9C0006",padding:"10px 14px",borderRadius:8,fontSize:13,marginBottom:14,fontWeight:500}},"⚠️ "+err),
       btn({className:"btn bp bfw",style:{fontSize:16,padding:"14px 28px"},onClick:()=>login(email,pass),disabled:loading},loading?"Signing in...":"Sign In"),
       div({style:{height:1,background:"#e2e8f0",margin:"16px 0"}}),
       p2({style:{fontSize:12,color:"#64748b",textAlign:"center",marginBottom:10,fontWeight:600}},"QUICK LOGIN"),
-      div({style:{display:"flex",gap:8,marginBottom:14}},
-        ...[{n:"Saswat",e:"saswat@dugu-edutrack.com",p:"Saswat@123",c:"#1F4E79"},{n:"Swagat",e:"swagat@dugu-edutrack.com",p:"Swagat@123",c:"#4B2E83"},{n:"Baibhav",e:"baibhav@dugu-edutrack.com",p:"Baibhav@123",c:"#1F6B5B"}].map(u=>
-          btn({key:u.n,onClick:()=>login(u.e,u.p),disabled:loading,style:{flex:1,padding:"10px 4px",borderRadius:10,border:`2px solid ${u.c}`,background:"white",color:u.c,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}},u.n)
-        )
-      ),
+      div({style:{display:"flex",gap:8,marginBottom:14}},...[{n:"Saswat",e:"saswat@dugu-edutrack.com",p:"Saswat@123",c:"#1F4E79"},{n:"Swagat",e:"swagat@dugu-edutrack.com",p:"Swagat@123",c:"#4B2E83"},{n:"Baibhav",e:"baibhav@dugu-edutrack.com",p:"Baibhav@123",c:"#1F6B5B"}].map(u=>btn({key:u.n,onClick:()=>login(u.e,u.p),disabled:loading,style:{flex:1,padding:"10px 4px",borderRadius:10,border:`2px solid ${u.c}`,background:"white",color:u.c,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}},u.n))),
       div({style:{textAlign:"center"}},btn({onClick:setup,disabled:loading,style:{background:"none",border:"none",color:"#94a3b8",fontSize:12,cursor:"pointer",textDecoration:"underline",fontFamily:"inherit"}},"First time? Set up accounts"))
     )
   );
@@ -124,19 +122,13 @@ function App(){
 }
 
 function MainApp({user}){
-  const[profile,setProfile]=useState(null);
-  const[page,setPage]=useState("dashboard");
-  const[topics,setTopics]=useState([]);
-  const[revisions,setRevisions]=useState([]);
-  const[notes,setNotes]=useState([]);
-  const[syllabus,setSyllabus]=useState({});
-  const[calEvents,setCalEvents]=useState([]);
-  const[flashcards,setFlashcards]=useState([]);
-  const[quizzes,setQuizzes]=useState([]);
-  const[tasks,setTasks]=useState([]);
-  const[studyNotes,setStudyNotes]=useState([]);
-  const[onlineUsers,setOnlineUsers]=useState([]);
-  const[toast,setToast]=useState("");
+  const[profile,setProfile]=useState(null);const[page,setPage]=useState("dashboard");
+  const[topics,setTopics]=useState([]);const[revisions,setRevisions]=useState([]);const[notes,setNotes]=useState([]);
+  const[syllabus,setSyllabus]=useState({});const[calEvents,setCalEvents]=useState([]);
+  const[flashcards,setFlashcards]=useState([]);const[quizzes,setQuizzes]=useState([]);
+  const[tasks,setTasks]=useState([]);const[studyNotes,setStudyNotes]=useState([]);
+  const[timetable,setTimetable]=useState(DEFAULT_TT);const[users,setUsers]=useState([]);
+  const[onlineUsers,setOnlineUsers]=useState([]);const[toast,setToast]=useState("");
   const showToast=m=>{setToast(m);setTimeout(()=>setToast(""),3000);};
   useEffect(()=>{
     db.collection("users").doc(user.uid).get().then(d=>{if(d.exists)setProfile(d.data());});
@@ -146,17 +138,38 @@ function MainApp({user}){
     uns.push(db.collection("revisions").orderBy("dueDate","asc").onSnapshot(s=>setRevisions(s.docs.map(d=>({id:d.id,...d.data()})))));
     uns.push(db.collection("notes").orderBy("createdAt","desc").limit(30).onSnapshot(s=>setNotes(s.docs.map(d=>({id:d.id,...d.data()})))));
     uns.push(db.collection("syllabus").doc("shared").onSnapshot(s=>{if(s.exists)setSyllabus(s.data().data||{});}));
+    uns.push(db.collection("timetable").doc("shared").onSnapshot(s=>{if(s.exists)setTimetable(s.data().data||DEFAULT_TT);}));
     uns.push(db.collection("calEvents").orderBy("date","asc").onSnapshot(s=>setCalEvents(s.docs.map(d=>({id:d.id,...d.data()})))));
     uns.push(db.collection("flashcards").orderBy("createdAt","desc").onSnapshot(s=>setFlashcards(s.docs.map(d=>({id:d.id,...d.data()})))));
     uns.push(db.collection("quizzes").orderBy("createdAt","desc").onSnapshot(s=>setQuizzes(s.docs.map(d=>({id:d.id,...d.data()})))));
     uns.push(db.collection("tasks").orderBy("createdAt","desc").onSnapshot(s=>setTasks(s.docs.map(d=>({id:d.id,...d.data()})))));
     uns.push(db.collection("studyNotes").orderBy("createdAt","desc").onSnapshot(s=>setStudyNotes(s.docs.map(d=>({id:d.id,...d.data()})))));
+    uns.push(db.collection("users").onSnapshot(s=>setUsers(s.docs.map(d=>({id:d.id,...d.data()})))));
     uns.push(db.collection("users").where("online","==",true).onSnapshot(s=>setOnlineUsers(s.docs.map(d=>d.data().name).filter(Boolean))));
     return()=>{uns.forEach(u=>u());db.collection("users").doc(user.uid).update({online:false}).catch(()=>{});};
   },[user.uid]);
   const logout=async()=>{await db.collection("users").doc(user.uid).update({online:false}).catch(()=>{});await auth.signOut();};
   const isT=profile?.role==="teacher"||profile?.role==="admin";
-  const logTopic=async entry=>{const rd=new Date(entry.date);rd.setDate(rd.getDate()+7);const rDue=rd.toISOString().split("T")[0];await db.collection("topics").add({...entry,revisionDue:rDue,loggedBy:profile?.name||"Teacher",createdAt:firebase.firestore.FieldValue.serverTimestamp()});if(entry.status==="taught"){await db.collection("revisions").add({subject:entry.subject,chapter:entry.chapter,topic:entry.topic,subtopic:entry.subtopic||"",taughtDate:entry.date,dueDate:rDue,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});}const upd=JSON.parse(JSON.stringify(syllabus));if(!upd[entry.subject])upd[entry.subject]={chapters:DS[entry.subject]?.chapters||[],progress:{}};if(!upd[entry.subject].progress)upd[entry.subject].progress={};const key=`${entry.subject}||${entry.chapter}||${entry.topic}${entry.subtopic?"||"+entry.subtopic:""}`;upd[entry.subject].progress[key]={status:entry.status,date:entry.date};await db.collection("syllabus").doc("shared").set({data:upd},{merge:true});showToast("Topic saved! Revision set for "+rDue);};
+  const logTopic=async entry=>{
+    const rd=new Date(entry.date);rd.setDate(rd.getDate()+7);const rDue=rd.toISOString().split("T")[0];
+    await db.collection("topics").add({...entry,revisionDue:rDue,loggedBy:profile?.name||"Teacher",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    if(entry.status==="taught"||entry.status==="selfstudy"){await db.collection("revisions").add({subject:entry.subject,chapter:entry.chapter,topic:entry.topic,subtopic:entry.subtopic||"",taughtDate:entry.date,dueDate:rDue,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});}
+    const upd=JSON.parse(JSON.stringify(syllabus));
+    if(!upd[entry.subject])upd[entry.subject]={chapters:DS[entry.subject]?.chapters||[],progress:{}};
+    if(!upd[entry.subject].progress)upd[entry.subject].progress={};
+    const key=`${entry.subject}||${entry.chapter}||${entry.topic}${entry.subtopic?"||"+entry.subtopic:""}`;
+    upd[entry.subject].progress[key]={status:entry.status,date:entry.date,completedBy:entry.status==="taught"?profile?.name:null};
+    await db.collection("syllabus").doc("shared").set({data:upd},{merge:true});
+    showToast("Topic saved! Revision set for "+rDue);
+  };
+  const markTopicComplete=async(subj,key)=>{
+    const upd=JSON.parse(JSON.stringify(syllabus));
+    if(!upd[subj])upd[subj]={chapters:DS[subj]?.chapters||[],progress:{}};
+    if(!upd[subj].progress)upd[subj].progress={};
+    upd[subj].progress[key]={status:"taught",date:new Date().toISOString().split("T")[0],completedBy:profile?.name};
+    await db.collection("syllabus").doc("shared").set({data:upd},{merge:true});
+    showToast("Topic marked as complete!");
+  };
   const markRevised=async id=>{await db.collection("revisions").doc(id).update({done:true,doneDate:new Date().toISOString().split("T")[0]});showToast("Marked as revised!");};
   const addNote=async text=>{await db.collection("notes").add({text,author:profile?.name||"Teacher",createdAt:firebase.firestore.FieldValue.serverTimestamp()});};
   const addCalEvent=async ev=>{await db.collection("calEvents").add({...ev,createdBy:profile?.name,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("Event added!");};
@@ -166,18 +179,27 @@ function MainApp({user}){
   const addTask=async tk=>{await db.collection("tasks").add({...tk,createdBy:profile?.name,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("Task assigned!");};
   const toggleTask=async(id,done)=>{await db.collection("tasks").doc(id).update({done:!done,doneDate:!done?new Date().toISOString().split("T")[0]:null});};
   const uploadSyllabus=async(subj,chapters)=>{const upd=JSON.parse(JSON.stringify(syllabus));if(!upd[subj])upd[subj]={};upd[subj].chapters=chapters;upd[subj].progress=upd[subj].progress||{};await db.collection("syllabus").doc("shared").set({data:upd},{merge:true});showToast("Syllabus updated!");};
+  const saveTimetable=async tt=>{await db.collection("timetable").doc("shared").set({data:tt},{merge:true});showToast("Timetable saved!");};
   const addStudyNote=async note=>{await db.collection("studyNotes").add({...note,uploadedBy:profile?.name,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("Study material added!");};
   const deleteStudyNote=async id=>{await db.collection("studyNotes").doc(id).delete();showToast("Deleted.");};
+  const addUser=async(userData)=>{
+    try{
+      const c=await auth.createUserWithEmailAndPassword(userData.email,userData.password);
+      await db.collection("users").doc(c.user.uid).set({name:userData.name,email:userData.email,role:userData.role,avatar:userData.name[0].toUpperCase(),online:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      showToast(userData.name+" added successfully!");return true;
+    }catch(ex){showToast("Error: "+ex.message);return false;}
+  };
+  const deleteEntry=async(collection,id)=>{await db.collection(collection).doc(id).delete();showToast("Entry deleted.");};
   const todayRevs=revisions.filter(r=>{const t=new Date().toISOString().split("T")[0];return!r.done&&r.dueDate<=t;});
-  const navT=[{id:"dashboard",l:"Dashboard",i:"📊"},{id:"log",l:"Log Topic",i:"✏️"},{id:"syllabus",l:"Syllabus",i:"📚"},{id:"studynotes",l:"Study Notes",i:"📎"},{id:"revision",l:"Revisions",i:"🔄"},{id:"notes",l:"Team Notes",i:"💬"},{id:"content",l:"Flashcards & Quiz",i:"🎯"},{id:"tasks",l:"Tasks",i:"✅"},{id:"calendar",l:"Calendar",i:"📅"}];
-  const navC=[{id:"dashboard",l:"Dashboard",i:"🏠"},{id:"syllabus",l:"My Syllabus",i:"📚"},{id:"studynotes",l:"Study Notes",i:"📎"},{id:"revision",l:"Revisions",i:"🔄"},{id:"learn",l:"Learn",i:"🎯"},{id:"tasks",l:"My Tasks",i:"✅"}];
+  const navT=[{id:"dashboard",l:"Dashboard",i:"📊"},{id:"log",l:"Log Topic",i:"✏️"},{id:"voice",l:"Voice Entry",i:"🎙️"},{id:"syllabus",l:"Syllabus",i:"📚"},{id:"studynotes",l:"Study Notes",i:"📎"},{id:"revision",l:"Revisions",i:"🔄"},{id:"notes",l:"Team Notes",i:"💬"},{id:"content",l:"Flashcards & Quiz",i:"🎯"},{id:"tasks",l:"Tasks",i:"✅"},{id:"calendar",l:"Calendar & Planner",i:"📅"},{id:"timetable",l:"Timetable",i:"🗓️"},{id:"users",l:"Manage Users",i:"👥"}];
+  const navC=[{id:"dashboard",l:"Dashboard",i:"🏠"},{id:"voice",l:"Voice Entry",i:"🎙️"},{id:"syllabus",l:"My Syllabus",i:"📚"},{id:"studynotes",l:"Study Notes",i:"📎"},{id:"revision",l:"Revisions",i:"🔄"},{id:"learn",l:"Learn",i:"🎯"},{id:"tasks",l:"My Tasks",i:"✅"},{id:"calendar",l:"Calendar",i:"📅"}];
   const nav=isT?navT:navC;
-  const props={profile,topics,revisions,notes,syllabus,calEvents,flashcards,quizzes,tasks,studyNotes,onlineUsers,todayRevs,logTopic,markRevised,addNote,addCalEvent,deleteCalEvent,addFlashcard,addQuiz,addTask,toggleTask,uploadSyllabus,addStudyNote,deleteStudyNote,showToast,isT,setPage};
-  const pages={dashboard:Dashboard,log:LogTopic,syllabus:SylPage,studynotes:StudyNotesPage,revision:RevPage,notes:TeamNotes,content:ContentPage,learn:LearnPage,tasks:TasksPage,calendar:CalPage};
+  const props={profile,topics,revisions,notes,syllabus,calEvents,flashcards,quizzes,tasks,studyNotes,timetable,users,onlineUsers,todayRevs,logTopic,markTopicComplete,markRevised,addNote,addCalEvent,deleteCalEvent,addFlashcard,addQuiz,addTask,toggleTask,uploadSyllabus,saveTimetable,addStudyNote,deleteStudyNote,addUser,deleteEntry,showToast,isT,setPage};
+  const pages={dashboard:Dashboard,log:LogTopic,voice:VoicePage,syllabus:SylPage,studynotes:StudyNotesPage,revision:RevPage,notes:TeamNotes,content:ContentPage,learn:LearnPage,tasks:TasksPage,calendar:CalPage,timetable:TTPage,users:UsersPage};
   const PageComp=pages[page]||Dashboard;
   return div({},
     e("nav",{className:"nav"},
-      div({style:{display:"flex",alignItems:"center",gap:10}},span({style:{fontSize:22}},"🎓"),span({style:{fontFamily:"sans-serif",fontSize:18,fontWeight:800}},"Dugu EduTrack"),span({style:{fontSize:10,background:"rgba(255,255,255,0.2)",padding:"2px 8px",borderRadius:9999,fontWeight:600}},"v3.1"),onlineUsers.length>0&&span({style:{fontSize:11,background:"rgba(34,197,94,0.2)",color:"#86efac",padding:"2px 8px",borderRadius:9999,fontWeight:600}},onlineUsers.length+" online")),
+      div({style:{display:"flex",alignItems:"center",gap:10}},span({style:{fontSize:22}},"🎓"),span({style:{fontFamily:"sans-serif",fontSize:18,fontWeight:800}},"Dugu EduTrack"),span({style:{fontSize:10,background:"rgba(255,255,255,0.2)",padding:"2px 8px",borderRadius:9999,fontWeight:600}},"v3.3"),onlineUsers.length>0&&span({style:{fontSize:11,background:"rgba(34,197,94,0.2)",color:"#86efac",padding:"2px 8px",borderRadius:9999,fontWeight:600}},onlineUsers.length+" online")),
       div({style:{display:"flex",alignItems:"center",gap:10}},div({style:{width:30,height:30,borderRadius:"50%",background:"rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13}},profile?.avatar||"?"),div({style:{display:"flex",flexDirection:"column",alignItems:"flex-end"}},span({style:{fontWeight:700,fontSize:13}},profile?.name||"..."),span({style:{fontSize:10,opacity:.75,textTransform:"capitalize"}},profile?.role)),btn({onClick:logout,style:{background:"rgba(255,255,255,0.15)",color:"white",border:"none",padding:"5px 12px",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,marginLeft:6,fontFamily:"inherit"}},"Exit"))
     ),
     div({className:"sb"},
@@ -191,10 +213,11 @@ function MainApp({user}){
   );
 }
 
-function Dashboard({profile,topics,todayRevs,onlineUsers,tasks,syllabus,setPage}){
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+function Dashboard({profile,topics,todayRevs,onlineUsers,tasks,syllabus,timetable,setPage}){
   const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
   const tn=days[new Date().getDay()];
-  const ts=DEFAULT_TT[tn]||[];
+  const ts=(timetable[tn]||[]).filter(p=>p.sub!=="BREAK");
   const pendingTasks=tasks.filter(t=>!t.done).length;
   const totalTopics=Object.values(DS).reduce((s,v)=>s+v.chapters.reduce((a,c)=>a+c.topics.reduce((b,t)=>b+1+(t.subtopics?.length||0),0),0),0);
   const taughtTopics=Object.values(syllabus).reduce((s,v)=>s+Object.keys(v.progress||{}).filter(k=>v.progress[k].status==="taught").length,0);
@@ -204,7 +227,7 @@ function Dashboard({profile,topics,todayRevs,onlineUsers,tasks,syllabus,setPage}
     p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})),
     div({className:"g4",style:{marginBottom:20}},...[{v:topics.length,l:"Topics Taught",c:"#1F4E79",i:"📚"},{v:todayRevs.length,l:"Revisions Due",c:"#C55A11",i:"🔄"},{v:pendingTasks,l:"Pending Tasks",c:"#4B2E83",i:"✅"},{v:overallPct+"%",l:"Overall Progress",c:"#276221",i:"📈"}].map((s,i)=>div({key:i,className:"card",style:{borderTop:`4px solid ${s.c}`}},div({style:{fontSize:22,marginBottom:4}},s.i),div({style:{fontSize:28,fontWeight:800,color:s.c}},s.v),div({style:{fontSize:12,color:"#64748b",fontWeight:500}},s.l)))),
     div({className:"g2",style:{marginBottom:20}},
-      div({className:"card"},div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"🗓️ Today — "+tn),ts.length>0?div({style:{display:"flex",flexWrap:"wrap",gap:6,marginBottom:12}},...ts.map((s,i)=>span({key:i,style:{padding:"4px 10px",borderRadius:9999,fontSize:12,fontWeight:600,background:"#DCE6F1",color:"#334155"}},"P"+(i+1)+": "+s))):p2({style:{color:"#64748b",fontSize:13,marginBottom:12}},"No school today!"),btn({className:"btn bp",style:{width:"100%",padding:"8px",fontSize:13},onClick:()=>setPage("log")},"✏️ Log Today Topics")),
+      div({className:"card"},div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"🗓️ Today — "+tn),ts.length>0?div({style:{display:"flex",flexWrap:"wrap",gap:6,marginBottom:12}},...ts.map((p,i)=>span({key:i,style:{padding:"4px 10px",borderRadius:9999,fontSize:12,fontWeight:600,background:p.color||"#DCE6F1",color:"#334155"}},"P"+(i+1)+": "+p.sub))):p2({style:{color:"#64748b",fontSize:13,marginBottom:12}},"No school today!"),div({style:{display:"flex",gap:8}},btn({className:"btn bp",style:{flex:1,padding:"8px",fontSize:13},onClick:()=>setPage("log")},"✏️ Log Topics"),btn({className:"btn",style:{flex:1,padding:"8px",fontSize:13,background:"#4B2E83",color:"white",border:"none",borderRadius:12,cursor:"pointer",fontFamily:"inherit"},onClick:()=>setPage("voice")},"🎙️ Voice Entry"))),
       div({className:"card"},div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"📊 Subject Progress"),...SUBS.slice(0,5).map(sub=>{const allT=DS[sub].chapters.reduce((a,c)=>a+c.topics.reduce((b,t)=>b+1+(t.subtopics?.length||0),0),0);const done=Object.keys(syllabus[sub]?.progress||{}).filter(k=>syllabus[sub].progress[k].status==="taught").length;const pct=allT?Math.round(done/allT*100):0;return div({key:sub,style:{marginBottom:10}},div({style:{display:"flex",justifyContent:"space-between",marginBottom:3}},span({style:{fontSize:12,fontWeight:600}},sub),span({style:{fontSize:11,color:"#64748b"}},done+"/"+allT+" · "+pct+"%")),div({className:"pb"},div({className:"pf",style:{width:pct+"%",background:SC[sub]||"#1F4E79"}})));}),btn({onClick:()=>setPage("syllabus"),style:{marginTop:8,width:"100%",padding:"6px",background:"transparent",color:"#1F4E79",border:"1px solid #1F4E79",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"inherit"}},"View All →"))
     ),
     div({className:"g2"},
@@ -214,7 +237,8 @@ function Dashboard({profile,topics,todayRevs,onlineUsers,tasks,syllabus,setPage}
   );
 }
 
-function LogTopic({logTopic,syllabus,profile}){
+// ── Log Topic (with Taught/Self Study/Missed + Teacher completion marking) ────
+function LogTopic({logTopic,syllabus,profile,isT,markTopicComplete}){
   const[form,setForm]=useState({date:new Date().toISOString().split("T")[0],subject:"",chapter:"",topic:"",subtopic:"",duration:40,notes:"",status:"taught"});
   const[entries,setEntries]=useState([]);const[saving,setSaving]=useState(false);const[ok,setOk]=useState(false);
   const subChs=form.subject?(syllabus[form.subject]?.chapters||DS[form.subject]?.chapters||[]):[];
@@ -223,6 +247,8 @@ function LogTopic({logTopic,syllabus,profile}){
   const sf=(k,v)=>setForm(f=>({...f,[k]:v}));
   const addEntry=()=>{if(!form.subject||!form.chapter||!form.topic)return;setEntries(p=>[...p,{...form,id:Date.now()}]);setForm(f=>({...f,chapter:"",topic:"",subtopic:"",notes:""}));};
   const submit=async()=>{const tl=entries.length>0?entries:[form];if(!tl[0].subject||!tl[0].chapter||!tl[0].topic)return;setSaving(true);for(const en of tl)await logTopic(en);setSaving(false);setOk(true);setEntries([]);setForm({date:new Date().toISOString().split("T")[0],subject:"",chapter:"",topic:"",subtopic:"",duration:40,notes:"",status:"taught"});setTimeout(()=>setOk(false),3000);};
+  const statusColor={taught:"#276221",selfstudy:"#1F4E79",missed:"#9C0006"};
+  const statusBg={taught:"#C6EFCE",selfstudy:"#DCE6F1",missed:"#FFC7CE"};
   return div({},
     div({style:{fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:4}},"✏️ Log Today Topics"),
     p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"Select subject → chapter → topic → sub-topic from syllabus"),
@@ -230,37 +256,87 @@ function LogTopic({logTopic,syllabus,profile}){
     div({className:"g2"},
       div({className:"card"},
         div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"📝 Add Topic Entry"),
-        div({className:"g2",style:{marginBottom:14}},div({},lbl({className:"lbl"},"Date"),inp({className:"inp",type:"date",value:form.date,onChange:ev=>sf("date",ev.target.value)})),div({},lbl({className:"lbl"},"Status"),sel({className:"inp",style:{appearance:"none"},value:form.status,onChange:ev=>sf("status",ev.target.value)},opt({value:"taught"},"✅ Taught"),opt({value:"missed"},"⚠️ Missed"),opt({value:"partial"},"🔶 Partial")))),
+        div({className:"g2",style:{marginBottom:14}},div({},lbl({className:"lbl"},"Date"),inp({className:"inp",type:"date",value:form.date,onChange:ev=>sf("date",ev.target.value)})),div({},lbl({className:"lbl"},"Logged by"),inp({className:"inp",value:profile?.name||"Teacher",disabled:true,style:{background:"#f8fafc",color:"#64748b"}}))),
+        // Status selector - NEW: Taught / Self Study / Missed
+        div({style:{marginBottom:14}},
+          lbl({className:"lbl"},"Status *"),
+          div({style:{display:"flex",gap:8}},
+            ...STATUS_OPTS.map(s=>btn({key:s.v,onClick:()=>sf("status",s.v),style:{flex:1,padding:"10px 8px",borderRadius:10,border:`2px solid ${form.status===s.v?statusColor[s.v]:"#e2e8f0"}`,background:form.status===s.v?statusBg[s.v]:"white",color:form.status===s.v?statusColor[s.v]:"#64748b",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit",transition:"all .15s"}},s.l))
+          )
+        ),
         div({style:{marginBottom:14}},lbl({className:"lbl"},"Subject *"),sel({className:"inp",style:{appearance:"none"},value:form.subject,onChange:ev=>sf("subject",ev.target.value)},opt({value:""},"-- Select Subject --"),...SUBS.map(s=>opt({key:s,value:s},s)))),
         div({style:{marginBottom:14}},lbl({className:"lbl"},"Chapter *"),sel({className:"inp",style:{appearance:"none"},value:form.chapter,onChange:ev=>sf("chapter",ev.target.value),disabled:!form.subject},opt({value:""},"-- Select Chapter --"),...subChs.map(c=>opt({key:c.ch,value:c.ch},c.ch)))),
         div({style:{marginBottom:14}},lbl({className:"lbl"},"Topic *"),sel({className:"inp",style:{appearance:"none"},value:form.topic,onChange:ev=>sf("topic",ev.target.value),disabled:!form.chapter},opt({value:""},"-- Select Topic --"),...chTps.map(t=>opt({key:t.name,value:t.name},t.name)))),
         div({style:{marginBottom:14}},lbl({className:"lbl"},"Sub-topic (optional)"),sel({className:"inp",style:{appearance:"none"},value:form.subtopic,onChange:ev=>sf("subtopic",ev.target.value),disabled:!form.topic},opt({value:""},"-- Select Sub-topic --"),...tpSts.map(s=>opt({key:s,value:s},s)))),
-        div({className:"g2",style:{marginBottom:14}},div({},lbl({className:"lbl"},"Duration (min)"),inp({className:"inp",type:"number",min:10,max:120,value:form.duration,onChange:ev=>sf("duration",+ev.target.value)})),div({},lbl({className:"lbl"},"Logged by"),inp({className:"inp",value:profile?.name||"Teacher",disabled:true,style:{background:"#f8fafc",color:"#64748b"}}))),
-        div({style:{marginBottom:16}},lbl({className:"lbl"},"Class Notes"),ta({className:"inp",rows:3,placeholder:"What was covered? Observations? Homework?",value:form.notes,onChange:ev=>sf("notes",ev.target.value),style:{resize:"vertical"}})),
+        div({style:{marginBottom:14}},lbl({className:"lbl"},"Duration (min)"),inp({className:"inp",type:"number",min:10,max:120,value:form.duration,onChange:ev=>sf("duration",+ev.target.value)})),
+        div({style:{marginBottom:16}},lbl({className:"lbl"},"Class Notes / Observations"),ta({className:"inp",rows:3,placeholder:"What was covered? Any observations? Homework given?",value:form.notes,onChange:ev=>sf("notes",ev.target.value),style:{resize:"vertical"}})),
         div({style:{display:"flex",gap:8}},btn({className:"btn",style:{flex:1,background:"transparent",border:"2px solid #1F4E79",color:"#1F4E79",fontFamily:"inherit"},onClick:addEntry,disabled:!form.subject||!form.chapter||!form.topic},"+ Add Another"),btn({className:"btn bp",style:{flex:1},onClick:submit,disabled:!form.subject||!form.chapter||!form.topic||saving},saving?"Saving...":"Save "+(entries.length>0?"All ("+(entries.length+1)+")":"Topic")))
       ),
       div({style:{display:"flex",flexDirection:"column",gap:16}},
-        entries.length>0&&div({className:"card"},div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"📋 Queued ("+entries.length+")"),...entries.map(en=>div({key:en.id,style:{display:"flex",alignItems:"flex-start",gap:10,padding:"10px 12px",borderRadius:8,background:"#f8fafc",border:"1px solid #e2e8f0",marginBottom:8}},div({style:{width:8,height:8,borderRadius:"50%",background:en.status==="taught"?"#276221":"#9C0006",flexShrink:0,marginTop:4}}),div({style:{flex:1}},div({style:{fontSize:13,fontWeight:600}},en.subject),div({style:{fontSize:12,color:"#64748b"}},en.chapter+" → "+en.topic+(en.subtopic?" → "+en.subtopic:""))),btn({onClick:()=>setEntries(p=>p.filter(x=>x.id!==en.id)),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:14,fontFamily:"inherit"}},"✕")))),
-        div({className:"card",style:{background:"linear-gradient(135deg,#1F4E79,#2E75B6)",color:"white"}},div({style:{fontSize:15,fontWeight:700,marginBottom:10}},"How It Works"),div({style:{fontSize:13,lineHeight:1.8,opacity:.9}},"1. Select Subject\n2. Chapter auto-loads\n3. Topic auto-loads\n4. Sub-topic auto-loads\n5. Add class notes\n6. Save — progress updates instantly"))
+        entries.length>0&&div({className:"card"},div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"📋 Queued ("+entries.length+")"),...entries.map(en=>div({key:en.id,style:{display:"flex",alignItems:"flex-start",gap:10,padding:"10px 12px",borderRadius:8,background:statusBg[en.status]||"#f8fafc",border:`1px solid ${statusColor[en.status]||"#e2e8f0"}`,marginBottom:8}},div({style:{width:8,height:8,borderRadius:"50%",background:statusColor[en.status]||"#276221",flexShrink:0,marginTop:4}}),div({style:{flex:1}},div({style:{fontSize:13,fontWeight:600}},en.subject),div({style:{fontSize:12,color:"#64748b"}},en.chapter+" → "+en.topic+(en.subtopic?" → "+en.subtopic:"")),div({style:{fontSize:11,color:statusColor[en.status]||"#276221",fontWeight:600}},STATUS_OPTS.find(s=>s.v===en.status)?.l||en.status)),btn({onClick:()=>setEntries(p=>p.filter(x=>x.id!==en.id)),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:14,fontFamily:"inherit"}},"✕")))),
+        div({className:"card",style:{background:"linear-gradient(135deg,#1F4E79,#2E75B6)",color:"white"}},
+          div({style:{fontSize:15,fontWeight:700,marginBottom:10}},"📋 Status Guide"),
+          div({style:{fontSize:13,lineHeight:2,opacity:.9}},
+            "✅ Taught — Teacher covered in class\n",
+            "📖 Self Study — Student studied independently\n",
+            "⚠️ Missed — Period was missed/cancelled"
+          )
+        ),
+        // Teacher-only: Mark topic as complete from syllabus
+        isT&&div({className:"card",style:{border:"2px solid #276221"}}),
+        div({className:"card"},div({style:{fontSize:15,fontWeight:700,color:"#0f172a",marginBottom:10}},"🗓️ Today Timetable"),div({style:{display:"flex",flexWrap:"wrap",gap:6}},...(()=>{const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];const tn=days[new Date().getDay()];const subs=(DEFAULT_TT[tn]||[]).filter(p=>p.sub!=="BREAK");return subs.map((p,i)=>span({key:i,style:{padding:"4px 10px",borderRadius:9999,fontSize:12,fontWeight:600,background:p.color||"#DCE6F1",color:"#334155"}},"P"+(i+1)+": "+p.sub));})()))
       )
     )
   );
 }
 
-function SylPage({syllabus,uploadSyllabus,isT}){
-  const[selSub,setSelSub]=useState(SUBS[0]);
-  const[expandedCh,setExpandedCh]=useState({});
-  const[showEdit,setShowEdit]=useState(false);
-  const[editChs,setEditChs]=useState([]);
-  const[newCh,setNewCh]=useState("");
-  const[newTp,setNewTp]=useState({ch:"",name:""});
-  const[newSt,setNewSt]=useState({ch:"",tp:"",name:""});
-  const customChs=syllabus[selSub]?.chapters||DS[selSub]?.chapters||[];
-  const progress=syllabus[selSub]?.progress||{};
+// ── Voice Entry ───────────────────────────────────────────────────────────────
+function VoicePage({logTopic,profile,showToast}){
+  const[listening,setListening]=useState(false);const[transcript,setTranscript]=useState("");const[parsed,setParsed]=useState(null);const[saving,setSaving]=useState(false);const[supported,setSupported]=useState(true);const[history,setHistory]=useState([]);const recogRef=useRef(null);
+  useEffect(()=>{if(!("webkitSpeechRecognition" in window)&&!("SpeechRecognition" in window))setSupported(false);},[]);
+  const startListening=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){setSupported(false);return;}const recog=new SR();recog.continuous=true;recog.interimResults=true;recog.lang="en-IN";recog.onresult=ev=>{let final="";let interim="";for(let i=ev.resultIndex;i<ev.results.length;i++){if(ev.results[i].isFinal)final+=ev.results[i][0].transcript;else interim+=ev.results[i][0].transcript;}setTranscript(prev=>prev+final+(interim?" ["+interim+"]":""));};recog.onerror=ev=>{setListening(false);showToast("Voice error: "+ev.error);};recog.onend=()=>setListening(false);recogRef.current=recog;recog.start();setListening(true);setTranscript("");setParsed(null);};
+  const stopListening=()=>{recogRef.current?.stop();setListening(false);};
+  const parseTranscript=()=>{const text=transcript.replace(/\[.*?\]/g,"").trim();if(!text){showToast("No speech detected. Try again!");return;}const subjectMap={english:"English",hindi:"Hindi",odia:"Odia",maths:"Mathematics",mathematics:"Mathematics",science:"Science","social studies":"Social Studies",social:"Social Studies",computer:"Computer Science","moral science":"Moral Science","general knowledge":"General Knowledge",gk:"General Knowledge"};let detectedSubject="";const lowerText=text.toLowerCase();for(const[key,val] of Object.entries(subjectMap)){if(lowerText.includes(key)){detectedSubject=val;break;}}const chMatch=text.match(/chapter\s+(\d+|[a-z]+)|ch[\s-]?(\d+)/i);const chapter=chMatch?`Ch-${chMatch[1]||chMatch[2]}`:"";const topicMatch=text.match(/(?:about|studied|covered|did|topic|lesson)\s+(.+?)(?:\.|$)/i);const topic=topicMatch?topicMatch[1].trim():text.slice(0,60);setParsed({subject:detectedSubject,chapter,topic,notes:text,date:new Date().toISOString().split("T")[0],status:"taught"});};
+  const saveEntry=async()=>{if(!parsed||!parsed.subject||!parsed.topic)return;setSaving(true);await logTopic(parsed);setHistory(h=>[{...parsed,id:Date.now(),savedAt:new Date().toLocaleTimeString("en-IN")},...h.slice(0,4)]);setSaving(false);setTranscript("");setParsed(null);showToast("Voice entry saved!");};
+  return div({},
+    div({style:{fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:4}},"🎙️ Voice Entry"),
+    p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"Speak to log what was studied today — easy input for Baibhav!"),
+    !supported?div({className:"card",style:{textAlign:"center",padding:"40px 20px"}},div({style:{fontSize:48,marginBottom:12}},"😔"),h3({style:{fontSize:16,fontWeight:700,marginBottom:8}},"Voice not supported"),p2({style:{color:"#64748b",fontSize:14}},"Please use Chrome or Edge browser for voice input.")):
+    div({},
+      div({className:"card",style:{textAlign:"center",padding:"32px 20px",marginBottom:20}},
+        div({style:{marginBottom:20}},btn({className:"voice-btn "+(listening?"voice-listening":"voice-idle"),onClick:listening?stopListening:startListening,style:{animation:listening?"pulse 1s infinite":"none"}},listening?"🔴":"🎙️")),
+        div({style:{fontSize:16,fontWeight:700,marginBottom:8,color:listening?"#9C0006":"#1F4E79"}},listening?"Listening... Speak now!":"Tap to Start Speaking"),
+        div({style:{fontSize:13,color:"#64748b",marginBottom:16}},listening?"Say what was studied today. Tap again to stop.":"Say: 'Today I studied Maths Chapter 1 Large Numbers'"),
+        !listening&&!transcript&&div({style:{background:"#f8fafc",borderRadius:12,padding:16,textAlign:"left"}},
+          div({style:{fontSize:12,fontWeight:700,color:"#64748b",marginBottom:8}},"💡 Example phrases:"),
+          ...["Today I studied Maths Chapter 1 Large Numbers","In English class we covered Nouns grammar","Science class was about Our Body digestive system","Hindi Chapter 2 Do Gauraiyaan was taught today"].map((ex,i)=>div({key:i,onClick:()=>setTranscript(ex),style:{fontSize:12,color:"#1F4E79",padding:"4px 0",cursor:"pointer",borderBottom:"1px solid #f1f5f9"}},ex))
+        )
+      ),
+      transcript&&div({className:"card",style:{marginBottom:16}},
+        div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"📝 What I Heard:"),
+        div({style:{background:"#f8fafc",borderRadius:10,padding:14,fontSize:14,color:"#334155",lineHeight:1.6,marginBottom:14,minHeight:60,border:"1px solid #e2e8f0"}},transcript.replace(/\[.*?\]/g,"").trim()||span({style:{color:"#94a3b8"}},"Listening...")),
+        div({style:{display:"flex",gap:8}},btn({className:"btn bg2",style:{flex:1},onClick:()=>{setTranscript("");setParsed(null);}},"Clear"),btn({className:"btn bp",style:{flex:1},onClick:parseTranscript,disabled:!transcript.trim()},"Parse & Review"))
+      ),
+      parsed&&div({className:"card",style:{marginBottom:16,border:"2px solid #276221"}},
+        div({style:{fontSize:16,fontWeight:700,color:"#276221",marginBottom:14}},"✅ Parsed Entry — Review & Save"),
+        div({className:"g2",style:{marginBottom:12}},div({},lbl({className:"lbl"},"Subject"),sel({className:"inp",style:{appearance:"none"},value:parsed.subject,onChange:ev=>setParsed(p=>({...p,subject:ev.target.value}))},opt({value:""},"-- Select --"),...SUBS.map(s=>opt({key:s,value:s},s)))),div({},lbl({className:"lbl"},"Date"),inp({className:"inp",type:"date",value:parsed.date,onChange:ev=>setParsed(p=>({...p,date:ev.target.value}))}))),
+        div({style:{marginBottom:12}},lbl({className:"lbl"},"Chapter"),inp({className:"inp",value:parsed.chapter,onChange:ev=>setParsed(p=>({...p,chapter:ev.target.value})),placeholder:"e.g. Ch-1"})),
+        div({style:{marginBottom:12}},lbl({className:"lbl"},"Topic"),inp({className:"inp",value:parsed.topic,onChange:ev=>setParsed(p=>({...p,topic:ev.target.value})),placeholder:"What was taught"})),
+        div({style:{marginBottom:12}},lbl({className:"lbl"},"Status"),div({style:{display:"flex",gap:8}},...STATUS_OPTS.map(s=>btn({key:s.v,onClick:()=>setParsed(p=>({...p,status:s.v})),style:{flex:1,padding:"8px 4px",borderRadius:10,border:`2px solid ${parsed.status===s.v?"#1F4E79":"#e2e8f0"}`,background:parsed.status===s.v?"#DCE6F1":"white",color:parsed.status===s.v?"#1F4E79":"#64748b",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}},s.l)))),
+        div({style:{marginBottom:16}},lbl({className:"lbl"},"Notes"),ta({className:"inp",rows:2,value:parsed.notes,onChange:ev=>setParsed(p=>({...p,notes:ev.target.value})),style:{resize:"none"}})),
+        div({style:{display:"flex",gap:8}},btn({className:"btn bg2",style:{flex:1},onClick:()=>setParsed(null)},"Edit Again"),btn({className:"btn bs",style:{flex:1},onClick:saveEntry,disabled:saving||!parsed.subject||!parsed.topic},saving?"Saving...":"💾 Save Entry"))
+      ),
+      history.length>0&&div({className:"card"},div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"📋 Recent Voice Entries"),...history.map(h=>div({key:h.id,style:{display:"flex",alignItems:"center",gap:10,padding:"8px 12px",borderRadius:8,background:"#C6EFCE",border:"1px solid #276221",marginBottom:6}},span({style:{fontSize:16}},"🎙️"),div({style:{flex:1}},div({style:{fontSize:13,fontWeight:600,color:"#276221"}},h.subject+" — "+h.topic),div({style:{fontSize:11,color:"#276221"}},"Saved at "+h.savedAt)),span({className:"tag ts"},"Saved"))))
+    )
+  );
+}
+
+// ── Syllabus with Teacher-only completion marking ─────────────────────────────
+function SylPage({syllabus,uploadSyllabus,isT,markTopicComplete}){
+  const[selSub,setSelSub]=useState(SUBS[0]);const[expandedCh,setExpandedCh]=useState({});const[showEdit,setShowEdit]=useState(false);const[editChs,setEditChs]=useState([]);const[newCh,setNewCh]=useState("");const[newTp,setNewTp]=useState({ch:"",name:""});const[newSt,setNewSt]=useState({ch:"",tp:"",name:""});
+  const customChs=syllabus[selSub]?.chapters||DS[selSub]?.chapters||[];const progress=syllabus[selSub]?.progress||{};
   const countAll=chs=>chs.reduce((a,c)=>a+c.topics.reduce((b,t)=>b+1+(t.subtopics?.length||0),0),0);
-  const allT=countAll(customChs);
-  const taughtT=Object.keys(progress).filter(k=>progress[k].status==="taught").length;
-  const pct=allT?Math.round(taughtT/allT*100):0;
+  const allT=countAll(customChs);const taughtT=Object.keys(progress).filter(k=>progress[k].status==="taught").length;const pct=allT?Math.round(taughtT/allT*100):0;
   const toggleCh=ch=>setExpandedCh(p=>({...p,[ch]:!p[ch]}));
   const startEdit=()=>{setEditChs(JSON.parse(JSON.stringify(customChs)));setShowEdit(true);};
   const addCh=()=>{if(!newCh.trim())return;setEditChs(p=>[...p,{ch:newCh.trim(),topics:[]}]);setNewCh("");};
@@ -272,42 +348,43 @@ function SylPage({syllabus,uploadSyllabus,isT}){
   const saveEdit=async()=>{await uploadSyllabus(selSub,editChs);setShowEdit(false);};
   return div({},
     div({style:{fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:4}},"📚 Syllabus & Progress"),
-    p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"Track topic and sub-topic completion for each subject"),
+    p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"Track topic and sub-topic completion"+(isT?" — Teachers can mark topics as complete":"")),
+    isT&&div({style:{background:"#DCE6F1",border:"1px solid #1F4E79",borderRadius:12,padding:"10px 16px",marginBottom:16,fontSize:13,color:"#1F4E79"}},"👨‍🏫 Teacher Mode: Click the ✓ button next to any topic to mark it as complete."),
     div({style:{display:"flex",flexWrap:"wrap",gap:8,marginBottom:20}},...SUBS.map(s=>{const chs=syllabus[s]?.chapters||DS[s]?.chapters||[];const tot=countAll(chs);const done=Object.keys(syllabus[s]?.progress||{}).filter(k=>syllabus[s].progress[k].status==="taught").length;const p=tot?Math.round(done/tot*100):0;return btn({key:s,onClick:()=>setSelSub(s),style:{padding:"8px 14px",borderRadius:10,fontSize:12,fontWeight:600,border:`2px solid ${SC[s]||"#1F4E79"}`,cursor:"pointer",background:selSub===s?(SC[s]||"#1F4E79"):"white",color:selSub===s?"white":(SC[s]||"#1F4E79"),fontFamily:"inherit"}},s+" ("+p+"%)");}) ),
     div({className:"card"},
       div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,padding:"16px 20px",background:SL[selSub]||"#f8fafc",borderRadius:12,margin:"-20px -20px 16px"}},
         div({},div({style:{fontSize:20,fontWeight:800,color:SC[selSub]||"#1F4E79"}},selSub),div({style:{fontSize:13,color:"#475569"}},taughtT+"/"+allT+" items taught")),
-        div({style:{textAlign:"right",display:"flex",alignItems:"center",gap:12}},
-          div({style:{fontSize:36,fontWeight:900,color:SC[selSub]||"#1F4E79"}},pct+"%"),
-          isT&&btn({onClick:startEdit,style:{padding:"8px 16px",background:SC[selSub]||"#1F4E79",color:"white",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:600,fontFamily:"inherit"}},"✏️ Edit Syllabus")
-        )
+        div({style:{textAlign:"right",display:"flex",alignItems:"center",gap:12}},div({style:{fontSize:36,fontWeight:900,color:SC[selSub]||"#1F4E79"}},pct+"%"),isT&&btn({onClick:startEdit,style:{padding:"8px 16px",background:SC[selSub]||"#1F4E79",color:"white",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:600,fontFamily:"inherit"}},"✏️ Edit Syllabus"))
       ),
       div({style:{marginBottom:20}},div({className:"pb",style:{height:12}},div({className:"pf",style:{width:pct+"%",background:SC[selSub]||"#1F4E79"}})),div({style:{display:"flex",justifyContent:"space-between",marginTop:6,fontSize:12,color:"#64748b"}},span({},"✅ "+taughtT+" taught"),span({},"⏳ "+(allT-taughtT)+" remaining"))),
       ...customChs.map(ch=>{
         const chAll=ch.topics.reduce((a,t)=>a+1+(t.subtopics?.length||0),0);
         const chDone=ch.topics.reduce((a,t)=>{const tk=`${selSub}||${ch.ch}||${t.name}`;const stDone=(t.subtopics||[]).filter(st=>progress[`${tk}||${st}`]?.status==="taught").length;return a+(progress[tk]?.status==="taught"?1:0)+stDone;},0);
-        const chP=chAll?Math.round(chDone/chAll*100):0;
-        const isExp=expandedCh[ch.ch]!==false;
+        const chP=chAll?Math.round(chDone/chAll*100):0;const isExp=expandedCh[ch.ch]!==false;
         return div({key:ch.ch,style:{marginBottom:12,border:"1px solid #e2e8f0",borderRadius:12,overflow:"hidden"}},
           div({style:{padding:"10px 14px",background:"#f8fafc",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer"},onClick:()=>toggleCh(ch.ch)},
             div({style:{display:"flex",alignItems:"center",gap:8}},span({style:{fontSize:14}},isExp?"▼":"▶"),span({style:{fontWeight:700,fontSize:14,color:SC[selSub]||"#1F4E79"}},ch.ch)),
             div({style:{display:"flex",alignItems:"center",gap:10}},div({style:{width:80}},div({className:"pb",style:{height:6}},div({className:"pf",style:{width:chP+"%",background:SC[selSub]||"#1F4E79"}}))),span({style:{fontSize:12,fontWeight:600,color:SC[selSub]||"#1F4E79"}},chP+"%"))
           ),
           isExp&&div({style:{padding:"8px 14px"}},...ch.topics.map(tp=>{
-            const tpKey=`${selSub}||${ch.ch}||${tp.name}`;
-            const tpSt=progress[tpKey]?.status;
+            const tpKey=`${selSub}||${ch.ch}||${tp.name}`;const tpSt=progress[tpKey]?.status;const completedBy=progress[tpKey]?.completedBy;
             return div({key:tp.name,style:{marginBottom:8}},
               div({style:{display:"flex",alignItems:"center",gap:10,padding:"6px 8px",borderRadius:8,background:tpSt==="taught"?SL[selSub]||"#f8fafc":"#f8fafc",border:`1px solid ${tpSt==="taught"?(SC[selSub]||"#1F4E79")+"33":"#e2e8f0"}`}},
                 div({style:{width:20,height:20,borderRadius:"50%",background:tpSt==="taught"?(SC[selSub]||"#1F4E79"):"#e2e8f0",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:tpSt==="taught"?"white":"#64748b",flexShrink:0,fontWeight:700}},tpSt==="taught"?"✓":"○"),
-                span({style:{fontSize:13,flex:1,fontWeight:tpSt==="taught"?600:400,color:tpSt==="taught"?(SC[selSub]||"#1F4E79"):"#334155"}},tp.name),
-                span({className:"tag "+(tpSt==="taught"?"ts":"tp")},tpSt==="taught"?"Done":"Pending")
+                div({style:{flex:1}},
+                  span({style:{fontSize:13,fontWeight:tpSt==="taught"?600:400,color:tpSt==="taught"?(SC[selSub]||"#1F4E79"):"#334155"}},tp.name),
+                  completedBy&&span({style:{fontSize:10,color:"#64748b",marginLeft:8}},"by "+completedBy)
+                ),
+                // Teacher-only: Mark complete button
+                isT&&tpSt!=="taught"&&btn({onClick:()=>markTopicComplete(selSub,tpKey),style:{padding:"4px 10px",background:"#276221",color:"white",border:"none",borderRadius:8,cursor:"pointer",fontSize:11,fontWeight:600,fontFamily:"inherit",marginRight:6}},"✓ Mark Done"),
+                span({className:"tag "+(tpSt==="taught"?"ts":tpSt==="selfstudy"?"tp":"tp")},tpSt==="taught"?"Done":tpSt==="selfstudy"?"Self Study":"Pending")
               ),
               (tp.subtopics||[]).length>0&&div({style:{marginLeft:28,marginTop:4}},...(tp.subtopics||[]).map(st=>{
-                const stKey=`${tpKey}||${st}`;
-                const stSt=progress[stKey]?.status;
+                const stKey=`${tpKey}||${st}`;const stSt=progress[stKey]?.status;
                 return div({key:st,style:{display:"flex",alignItems:"center",gap:8,padding:"4px 8px",borderRadius:6,marginBottom:3,background:stSt==="taught"?"#f0fdf4":"#fafafa",border:`1px solid ${stSt==="taught"?"#86efac":"#f1f5f9"}`}},
                   div({style:{width:14,height:14,borderRadius:"50%",background:stSt==="taught"?"#276221":"#e2e8f0",display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,color:stSt==="taught"?"white":"#94a3b8",flexShrink:0}},"✓"),
                   span({style:{fontSize:12,flex:1,color:stSt==="taught"?"#276221":"#64748b"}},st),
+                  isT&&stSt!=="taught"&&btn({onClick:()=>markTopicComplete(selSub,stKey),style:{padding:"2px 8px",background:"#276221",color:"white",border:"none",borderRadius:6,cursor:"pointer",fontSize:10,fontWeight:600,fontFamily:"inherit"}},"✓"),
                   stSt==="taught"&&span({style:{fontSize:10,color:"#276221",fontWeight:600}},"✅")
                 );
               }))
@@ -317,49 +394,24 @@ function SylPage({syllabus,uploadSyllabus,isT}){
       })
     ),
     showEdit&&div({className:"modal-bg",onClick:()=>setShowEdit(false)},
-      div({className:"modal",style:{maxWidth:700},onClick:ev=>ev.stopPropagation()},
-        div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}},
-          h3({style:{fontSize:18,fontWeight:700}},"✏️ Edit Syllabus — "+selSub),
-          btn({onClick:()=>setShowEdit(false),style:{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b",fontFamily:"inherit"}},"✕")
-        ),
-        div({style:{background:"#FFF2CC",border:"1px solid #9C5700",borderRadius:10,padding:"10px 14px",marginBottom:16,fontSize:13,color:"#9C5700"}},"💡 Add chapters, topics and sub-topics below. Click Save when done."),
+      div({className:"modal modal-lg",onClick:ev=>ev.stopPropagation()},
+        div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}},h3({style:{fontSize:18,fontWeight:700}},"✏️ Edit Syllabus — "+selSub),btn({onClick:()=>setShowEdit(false),style:{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b",fontFamily:"inherit"}},"✕")),
+        div({style:{background:"#FFF2CC",border:"1px solid #9C5700",borderRadius:10,padding:"10px 14px",marginBottom:16,fontSize:13,color:"#9C5700"}},"💡 Add chapters, topics and sub-topics. Click Save when done."),
         div({style:{maxHeight:260,overflowY:"auto",marginBottom:14,border:"1px solid #e2e8f0",borderRadius:10,padding:10}},
           ...editChs.map(ch=>div({key:ch.ch,style:{marginBottom:10}},
-            div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 10px",background:"#f8fafc",borderRadius:8,marginBottom:4}},
-              span({style:{fontWeight:700,fontSize:13,color:"#1F4E79"}},ch.ch),
-              btn({onClick:()=>remCh(ch.ch),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:12,fontFamily:"inherit"}},"Remove Chapter")
-            ),
+            div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 10px",background:"#f8fafc",borderRadius:8,marginBottom:4}},span({style:{fontWeight:700,fontSize:13,color:"#1F4E79"}},ch.ch),btn({onClick:()=>remCh(ch.ch),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:12,fontFamily:"inherit"}},"Remove Chapter")),
             ...ch.topics.map(tp=>div({key:tp.name,style:{marginLeft:12,marginBottom:4}},
-              div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"4px 8px",background:"#f0f7ff",borderRadius:6,marginBottom:2}},
-                span({style:{fontSize:12,fontWeight:600}},"📌 "+tp.name),
-                btn({onClick:()=>remTp(ch.ch,tp.name),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:12,fontFamily:"inherit"}},"✕")
-              ),
-              ...(tp.subtopics||[]).map(st=>div({key:st,style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"3px 8px",marginLeft:12,marginBottom:2}},
-                span({style:{fontSize:11,color:"#64748b"}},"→ "+st),
-                btn({onClick:()=>remSt(ch.ch,tp.name,st),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:11,fontFamily:"inherit"}},"✕")
-              ))
+              div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"4px 8px",background:"#f0f7ff",borderRadius:6,marginBottom:2}},span({style:{fontSize:12,fontWeight:600}},"📌 "+tp.name),btn({onClick:()=>remTp(ch.ch,tp.name),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:12,fontFamily:"inherit"}},"✕")),
+              ...(tp.subtopics||[]).map(st=>div({key:st,style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"3px 8px",marginLeft:12,marginBottom:2}},span({style:{fontSize:11,color:"#64748b"}},"→ "+st),btn({onClick:()=>remSt(ch.ch,tp.name,st),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:11,fontFamily:"inherit"}},"✕")))
             ))
           ))
         ),
         div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}},
-          div({style:{border:"1px solid #e2e8f0",borderRadius:10,padding:12}},
-            div({style:{fontSize:13,fontWeight:600,marginBottom:8,color:"#1F4E79"}},"➕ Add New Chapter"),
-            div({style:{display:"flex",gap:8}},
-              inp({className:"inp",placeholder:"e.g. Ch-8 or Unit-5",value:newCh,onChange:ev=>setNewCh(ev.target.value),style:{flex:1,fontSize:13}}),
-              btn({onClick:addCh,disabled:!newCh,style:{padding:"8px 14px",background:"#1F4E79",color:"white",border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"inherit"}},"Add")
-            )
-          ),
-          div({style:{border:"1px solid #e2e8f0",borderRadius:10,padding:12}},
-            div({style:{fontSize:13,fontWeight:600,marginBottom:8,color:"#1F4E79"}},"➕ Add Topic to Chapter"),
-            sel({className:"inp",style:{appearance:"none",fontSize:13,marginBottom:6},value:newTp.ch,onChange:ev=>setNewTp(f=>({...f,ch:ev.target.value}))},opt({value:""},"Select Chapter"),...editChs.map(c=>opt({key:c.ch,value:c.ch},c.ch))),
-            div({style:{display:"flex",gap:8}},
-              inp({className:"inp",placeholder:"Topic name",value:newTp.name,onChange:ev=>setNewTp(f=>({...f,name:ev.target.value})),style:{flex:1,fontSize:13}}),
-              btn({onClick:addTp,disabled:!newTp.ch||!newTp.name,style:{padding:"8px 14px",background:"#1F4E79",color:"white",border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"inherit"}},"Add")
-            )
-          )
+          div({style:{border:"1px solid #e2e8f0",borderRadius:10,padding:12}},div({style:{fontSize:13,fontWeight:600,marginBottom:8,color:"#1F4E79"}},"➕ Add Chapter"),div({style:{display:"flex",gap:8}},inp({className:"inp",placeholder:"e.g. Ch-8",value:newCh,onChange:ev=>setNewCh(ev.target.value),style:{flex:1,fontSize:13}}),btn({onClick:addCh,disabled:!newCh,style:{padding:"8px 14px",background:"#1F4E79",color:"white",border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"inherit"}},"Add"))),
+          div({style:{border:"1px solid #e2e8f0",borderRadius:10,padding:12}},div({style:{fontSize:13,fontWeight:600,marginBottom:8,color:"#1F4E79"}},"➕ Add Topic"),sel({className:"inp",style:{appearance:"none",fontSize:13,marginBottom:6},value:newTp.ch,onChange:ev=>setNewTp(f=>({...f,ch:ev.target.value}))},opt({value:""},"Select Chapter"),...editChs.map(c=>opt({key:c.ch,value:c.ch},c.ch))),div({style:{display:"flex",gap:8}},inp({className:"inp",placeholder:"Topic name",value:newTp.name,onChange:ev=>setNewTp(f=>({...f,name:ev.target.value})),style:{flex:1,fontSize:13}}),btn({onClick:addTp,disabled:!newTp.ch||!newTp.name,style:{padding:"8px 14px",background:"#1F4E79",color:"white",border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"inherit"}},"Add")))
         ),
         div({style:{border:"1px solid #e2e8f0",borderRadius:10,padding:12,marginBottom:16}},
-          div({style:{fontSize:13,fontWeight:600,marginBottom:8,color:"#276221"}},"➕ Add Sub-topic to Topic"),
+          div({style:{fontSize:13,fontWeight:600,marginBottom:8,color:"#276221"}},"➕ Add Sub-topic"),
           div({style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr auto",gap:8,alignItems:"end"}},
             sel({className:"inp",style:{appearance:"none",fontSize:13},value:newSt.ch,onChange:ev=>setNewSt(f=>({...f,ch:ev.target.value,tp:""}))},opt({value:""},"Chapter"),...editChs.map(c=>opt({key:c.ch,value:c.ch},c.ch))),
             sel({className:"inp",style:{appearance:"none",fontSize:13},value:newSt.tp,onChange:ev=>setNewSt(f=>({...f,tp:ev.target.value})),disabled:!newSt.ch},opt({value:""},"Topic"),...(editChs.find(c=>c.ch===newSt.ch)?.topics||[]).map(t=>opt({key:t.name,value:t.name},t.name))),
@@ -367,31 +419,199 @@ function SylPage({syllabus,uploadSyllabus,isT}){
             btn({onClick:addSt,disabled:!newSt.ch||!newSt.tp||!newSt.name,style:{padding:"8px 14px",background:"#276221",color:"white",border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"inherit"}},"Add")
           )
         ),
-        div({style:{display:"flex",gap:10}},
-          btn({onClick:()=>setShowEdit(false),style:{flex:1,padding:"12px",background:"#f1f5f9",color:"#334155",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Cancel"),
-          btn({onClick:saveEdit,style:{flex:1,padding:"12px",background:"#1F4E79",color:"white",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"💾 Save Syllabus")
-        )
+        div({style:{display:"flex",gap:10}},btn({onClick:()=>setShowEdit(false),style:{flex:1,padding:"12px",background:"#f1f5f9",color:"#334155",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Cancel"),btn({onClick:saveEdit,style:{flex:1,padding:"12px",background:"#1F4E79",color:"white",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"💾 Save Syllabus"))
       )
     )
   );
 }
 
-function StudyNotesPage({studyNotes,addStudyNote,deleteStudyNote,isT}){
-  const[showAdd,setShowAdd]=useState(false);
-  const[form,setForm]=useState({subject:"",chapter:"",topic:"",subtopic:"",title:"",type:"link",url:"",description:""});
-  const[filter,setFilter]=useState({subject:"",chapter:"",topic:""});
+// ── Timetable (Editable) ──────────────────────────────────────────────────────
+function TTPage({timetable,saveTimetable,isT,showToast}){
+  const[editMode,setEditMode]=useState(false);const[editTT,setEditTT]=useState(null);const[saving,setSaving]=useState(false);
+  const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];const todayName=days[new Date().getDay()];
+  const startEdit=()=>{setEditTT(JSON.parse(JSON.stringify(timetable)));setEditMode(true);};
+  const cancelEdit=()=>{setEditTT(null);setEditMode(false);};
+  const updateCell=(day,idx,value)=>setEditTT(prev=>{const upd=JSON.parse(JSON.stringify(prev));if(!upd[day])upd[day]=[];upd[day][idx]={sub:value,color:TTC[value]||"#f1f5f9"};return upd;});
+  const addPeriod=day=>setEditTT(prev=>{const upd=JSON.parse(JSON.stringify(prev));if(!upd[day])upd[day]=[];upd[day].push({sub:"New",color:"#f1f5f9"});return upd;});
+  const removePeriod=(day,idx)=>setEditTT(prev=>{const upd=JSON.parse(JSON.stringify(prev));upd[day].splice(idx,1);return upd;});
+  const saveEdit=async()=>{setSaving(true);await saveTimetable(editTT);setSaving(false);setEditMode(false);setEditTT(null);};
+  const resetDefault=async()=>{if(!window.confirm("Reset to default timetable?"))return;setSaving(true);await saveTimetable(DEFAULT_TT);setSaving(false);showToast("Timetable reset to default!");};
+  const displayTT=editMode?editTT:timetable;
+  return div({},
+    div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}},
+      div({style:{fontSize:24,fontWeight:800,color:"#0f172a"}},"🗓️ School Timetable"),
+      isT&&div({style:{display:"flex",gap:8}},
+        !editMode?div({style:{display:"flex",gap:8}},btn({onClick:startEdit,style:{padding:"8px 16px",background:"#1F4E79",color:"white",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:600,fontFamily:"inherit"}},"✏️ Edit Timetable"),btn({onClick:resetDefault,style:{padding:"8px 16px",background:"#f1f5f9",color:"#334155",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:600,fontFamily:"inherit"}},"↺ Reset")):
+        div({style:{display:"flex",gap:8}},btn({onClick:cancelEdit,style:{padding:"8px 16px",background:"#f1f5f9",color:"#334155",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:600,fontFamily:"inherit"}},"Cancel"),btn({onClick:saveEdit,disabled:saving,style:{padding:"8px 16px",background:"#276221",color:"white",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:600,fontFamily:"inherit"}},saving?"Saving...":"💾 Save Timetable"))
+      )
+    ),
+    p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"Buxi Jagabandhu English Medium School-II · Std 5A · Mrs. Tarulata Mohanty"+(editMode?" — EDIT MODE: Click cells to change subjects":"")),
+    editMode&&div({style:{background:"#FFF2CC",border:"2px solid #9C5700",borderRadius:12,padding:"12px 16px",marginBottom:20,fontSize:13,color:"#9C5700"}},"✏️ Click any subject cell to edit. Use + to add periods, ✕ to remove. Click Save when done."),
+    div({style:{background:"white",borderRadius:16,boxShadow:"0 4px 16px rgba(0,0,0,.12)",overflow:"auto",marginBottom:20}},
+      e("table",{style:{width:"100%",borderCollapse:"collapse",minWidth:700}},
+        e("thead",{},e("tr",{},
+          e("th",{style:{padding:"12px 16px",background:"#1F4E79",color:"white",fontSize:13,fontWeight:700,textAlign:"left",minWidth:90}},"Day"),
+          ...PERIODS.map((p,i)=>e("th",{key:i,style:{padding:"10px 8px",background:"#1F4E79",color:"white",fontSize:11,fontWeight:600,textAlign:"center",minWidth:90}},p)),
+          editMode&&e("th",{style:{padding:"10px 8px",background:"#1F4E79",color:"white",fontSize:11,textAlign:"center",minWidth:50}},"Add")
+        )),
+        e("tbody",{},...DAYS_LIST.map(day=>{
+          const periods=displayTT[day]||[];
+          return e("tr",{key:day,style:{background:day===todayName?"#FFFDE7":"white"}},
+            e("td",{style:{padding:"10px 16px",fontWeight:700,fontSize:13,borderRight:"2px solid #e2e8f0",borderBottom:"1px solid #e2e8f0"}},
+              day===todayName&&span({style:{fontSize:10,background:"#C55A11",color:"white",padding:"1px 6px",borderRadius:9999,marginRight:6,fontWeight:700}},"TODAY"),day
+            ),
+            ...periods.map((p,i)=>e("td",{key:i,style:{padding:"6px",textAlign:"center",borderBottom:"1px solid #e2e8f0",borderRight:"1px solid #e2e8f0",minWidth:90}},
+              editMode?div({style:{position:"relative"}},
+                e("input",{className:"tt-cell-edit",value:p.sub,onChange:ev=>updateCell(day,i,ev.target.value),style:{background:TTC[p.sub]||"#f1f5f9"}}),
+                p.sub!=="BREAK"&&btn({onClick:()=>removePeriod(day,i),style:{position:"absolute",top:-6,right:-6,width:16,height:16,borderRadius:"50%",background:"#9C0006",color:"white",border:"none",cursor:"pointer",fontSize:10,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"inherit"}},"✕")
+              ):span({className:"tt-cell",style:{background:TTC[p.sub]||"#f1f5f9",color:"#334155",display:"block"}},p.sub)
+            )),
+            ...Array(Math.max(0,PERIODS.length-periods.length)).fill(null).map((_,i)=>e("td",{key:"e"+i,style:{borderBottom:"1px solid #e2e8f0",borderRight:"1px solid #e2e8f0"}})),
+            editMode&&e("td",{style:{padding:"6px",textAlign:"center",borderBottom:"1px solid #e2e8f0"}},
+              btn({onClick:()=>addPeriod(day),style:{width:28,height:28,borderRadius:"50%",background:"#1F4E79",color:"white",border:"none",cursor:"pointer",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",fontFamily:"inherit"}},"+")
+            )
+          );
+        }))
+      )
+    ),
+    div({className:"card"},div({style:{fontSize:15,fontWeight:700,color:"#0f172a",marginBottom:10}},"Subject Color Guide"),div({style:{display:"flex",flexWrap:"wrap",gap:8}},...Object.entries(TTC).filter(([k])=>k!=="BREAK").map(([sub,color])=>span({key:sub,style:{padding:"4px 12px",borderRadius:9999,fontSize:12,fontWeight:600,background:color,color:"#334155"}},sub))))
+  );
+}
+
+// ── Calendar & Teaching Planner with Meeting Links ────────────────────────────
+function CalPage({calEvents,addCalEvent,deleteCalEvent,topics,isT}){
+  const today=new Date();const[year,setYear]=useState(today.getFullYear());const[month,setMonth]=useState(today.getMonth());const[selected,setSelected]=useState(today.toISOString().split("T")[0]);const[showAdd,setShowAdd]=useState(false);
+  const[form,setForm]=useState({title:"",type:"study",subject:"",time:"",endTime:"",notes:"",meetLink:"",tutorName:"",platform:"googlemeet"});
+  const daysInMonth=new Date(year,month+1,0).getDate();const firstDay=new Date(year,month,1).getDay();
+  const MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const todayStr=today.toISOString().split("T")[0];
+  const getDS=d=>`${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+  const evOnDate=d=>calEvents.filter(ev=>ev.date===getDS(d));const tpOnDate=d=>topics.filter(t=>t.date===getDS(d));
+  const selEvs=calEvents.filter(ev=>ev.date===selected);const selTps=topics.filter(t=>t.date===selected);
+  const TC={study:"#1F4E79",exam:"#9C0006",revision:"#C55A11",activity:"#276221",holiday:"#4B2E83",tutor:"#0891b2",meeting:"#7c3aed",selfstudy:"#375623"};
+  const TI={study:"📚",exam:"📝",revision:"🔄",activity:"⚽",holiday:"🏖️",tutor:"📹",meeting:"🤝",selfstudy:"📖"};
+  const PLATFORMS={googlemeet:{name:"Google Meet",icon:"🟢",placeholder:"https://meet.google.com/xxx-xxxx-xxx"},zoom:{name:"Zoom",icon:"🔵",placeholder:"https://zoom.us/j/123456789"},teams:{name:"MS Teams",icon:"🟣",placeholder:"https://teams.microsoft.com/l/meetup-join/..."},other:{name:"Other Link",icon:"🔗",placeholder:"https://..."}};
   const sf=(k,v)=>setForm(f=>({...f,[k]:v}));
-  const subChs=form.subject?(DS[form.subject]?.chapters||[]):[];
-  const chTps=form.chapter?(subChs.find(c=>c.ch===form.chapter)?.topics||[]):[];
-  const tpSts=form.topic?(chTps.find(t=>t.name===form.topic)?.subtopics||[]):[];
+  const save=async()=>{if(!form.title)return;await addCalEvent({...form,date:selected});setForm({title:"",type:"study",subject:"",time:"",endTime:"",notes:"",meetLink:"",tutorName:"",platform:"googlemeet"});setShowAdd(false);};
+  return div({},
+    div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}},div({style:{fontSize:24,fontWeight:800,color:"#0f172a"}},"📅 Calendar & Teaching Planner"),isT&&btn({onClick:()=>setShowAdd(true),style:{padding:"8px 16px",background:"#1F4E79",color:"white",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:600,fontFamily:"inherit"}},"+ Add Event / Meeting")),
+    p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"Plan studies, schedule tutor sessions and add online meeting links"),
+    div({className:"g2"},
+      div({className:"card"},
+        div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}},btn({className:"btn bg2 bsm",onClick:()=>{if(month===0){setMonth(11);setYear(y=>y-1);}else setMonth(m=>m-1);}},"←"),span({style:{fontWeight:700,fontSize:16}},MN[month]+" "+year),btn({className:"btn bg2 bsm",onClick:()=>{if(month===11){setMonth(0);setYear(y=>y+1);}else setMonth(m=>m+1);}},"→")),
+        div({style:{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2,marginBottom:8}},...["Su","Mo","Tu","We","Th","Fr","Sa"].map(d=>div({key:d,style:{textAlign:"center",fontSize:11,fontWeight:700,color:"#64748b",padding:"4px 0"}},d))),
+        div({style:{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2}},
+          ...Array(firstDay).fill(null).map((_,i)=>div({key:"e"+i})),
+          ...Array(daysInMonth).fill(null).map((_,i)=>{const d=i+1;const ds=getDS(d);const evs=evOnDate(d);const tps=tpOnDate(d);const isToday=ds===todayStr;const isSel=ds===selected;const hasMeeting=evs.some(ev=>ev.type==="tutor"||ev.type==="meeting"||ev.meetLink);return div({key:d,onClick:()=>setSelected(ds),style:{aspectRatio:"1",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:isToday||isSel?700:400,background:isToday?"#1F4E79":isSel?"#DCE6F1":"transparent",color:isToday?"white":isSel?"#1F4E79":"inherit",minHeight:36,padding:4}},d,(evs.length>0||tps.length>0)&&div({style:{display:"flex",gap:2,marginTop:2}},tps.length>0&&span({style:{width:4,height:4,borderRadius:"50%",background:isToday?"white":"#276221",display:"inline-block"}}),evs.length>0&&span({style:{width:4,height:4,borderRadius:"50%",background:isToday?"white":hasMeeting?"#0891b2":"#C55A11",display:"inline-block"}})));})
+        ),
+        div({style:{marginTop:12,display:"flex",gap:6,flexWrap:"wrap"}},...Object.entries(TC).map(([t,c])=>span({key:t,style:{fontSize:10,display:"flex",alignItems:"center",gap:3}},span({style:{width:7,height:7,borderRadius:"50%",background:c,display:"inline-block"}}),t)))
+      ),
+      div({},
+        div({className:"card",style:{marginBottom:16}},
+          div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}},div({style:{fontSize:16,fontWeight:700,color:"#0f172a"}},new Date(selected+"T00:00:00").toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"})),isT&&btn({onClick:()=>setShowAdd(true),style:{padding:"6px 12px",background:"#1F4E79",color:"white",border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"inherit"}},"+ Add")),
+          selEvs.length===0&&selTps.length===0?div({style:{textAlign:"center",padding:"20px 0",color:"#64748b",fontSize:13}},div({style:{fontSize:32,marginBottom:8}},"📭"),"No events for this day.",isT&&div({style:{marginTop:8}},btn({onClick:()=>setShowAdd(true),style:{padding:"6px 14px",background:"#1F4E79",color:"white",border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"inherit"}},"Plan this day"))):
+          div({},
+            selTps.length>0&&div({style:{marginBottom:12}},div({style:{fontSize:12,fontWeight:700,color:"#64748b",marginBottom:6}},"TOPICS TAUGHT"),...selTps.map(t=>div({key:t.id,style:{padding:"8px 12px",borderRadius:8,background:"#C6EFCE",border:"1px solid #276221",marginBottom:6}},div({style:{fontSize:13,fontWeight:600,color:"#276221"}},t.subject+" — "+t.chapter),div({style:{fontSize:11,color:"#276221"}},t.topic+(t.subtopic?" → "+t.subtopic:"")+" · by "+t.loggedBy)))),
+            ...selEvs.map(ev=>div({key:ev.id,style:{padding:"12px 14px",borderRadius:10,background:`${TC[ev.type]||"#1F4E79"}12`,border:`1px solid ${TC[ev.type]||"#1F4E79"}33`,marginBottom:8}},
+              div({style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between"}},
+                div({style:{flex:1}},
+                  div({style:{display:"flex",alignItems:"center",gap:6,marginBottom:4}},span({style:{fontSize:16}},TI[ev.type]||"📌"),span({style:{fontSize:13,fontWeight:700,color:TC[ev.type]||"#1F4E79"}},ev.title)),
+                  ev.time&&div({style:{fontSize:12,color:"#64748b"}},"⏰ "+ev.time+(ev.endTime?" – "+ev.endTime:"")),
+                  ev.subject&&div({style:{fontSize:12,color:"#64748b"}},"📚 "+ev.subject),
+                  ev.tutorName&&div({style:{fontSize:12,color:"#64748b"}},"👨‍🏫 "+ev.tutorName),
+                  ev.notes&&div({style:{fontSize:11,color:"#64748b",marginTop:4}},ev.notes),
+                  ev.meetLink&&div({style:{marginTop:8}},a({href:ev.meetLink,target:"_blank",style:{display:"inline-flex",alignItems:"center",gap:6,padding:"8px 16px",background:TC[ev.type]||"#1F4E79",color:"white",borderRadius:10,fontSize:13,fontWeight:700,textDecoration:"none"}},"📹 Join Online Meeting →"))
+                ),
+                isT&&btn({onClick:()=>deleteCalEvent(ev.id),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:16,padding:"0 4px",flexShrink:0,fontFamily:"inherit"}},"✕")
+              )
+            ))
+          )
+        ),
+        div({className:"card"},
+          div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"📌 Upcoming Events & Meetings"),
+          calEvents.filter(ev=>ev.date>=todayStr).slice(0,6).map(ev=>div({key:ev.id,style:{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #f1f5f9"}},
+            div({style:{width:36,height:36,borderRadius:8,background:`${TC[ev.type]||"#1F4E79"}20`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:TC[ev.type]||"#1F4E79",flexShrink:0,lineHeight:1.2}},span({},ev.date.slice(8)),span({style:{fontSize:9}},MN[parseInt(ev.date.slice(5,7))-1].slice(0,3))),
+            div({style:{flex:1}},div({style:{fontSize:13,fontWeight:600}},(TI[ev.type]||"📌")+" "+ev.title),div({style:{fontSize:11,color:"#64748b"}},(ev.time||ev.type)+(ev.tutorName?" · "+ev.tutorName:""))),
+            ev.meetLink&&a({href:ev.meetLink,target:"_blank",style:{fontSize:11,color:"#0891b2",fontWeight:700,textDecoration:"none",padding:"4px 10px",background:"#E0F2FE",borderRadius:8}},"Join →")
+          )),
+          calEvents.filter(ev=>ev.date>=todayStr).length===0&&p2({style:{color:"#64748b",fontSize:13,textAlign:"center",padding:"12px 0"}},"No upcoming events")
+        )
+      )
+    ),
+    showAdd&&div({className:"modal-bg",onClick:()=>setShowAdd(false)},
+      div({className:"modal",onClick:ev=>ev.stopPropagation()},
+        div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}},h3({style:{fontSize:18,fontWeight:700}},"Add Event / Meeting — "+selected),btn({onClick:()=>setShowAdd(false),style:{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b",fontFamily:"inherit"}},"✕")),
+        div({style:{marginBottom:12}},lbl({className:"lbl"},"Event Title *"),inp({className:"inp",placeholder:"e.g. Maths Tutor Session, English Test",value:form.title,onChange:ev=>sf("title",ev.target.value)})),
+        div({className:"g2",style:{marginBottom:12}},
+          div({},lbl({className:"lbl"},"Type"),sel({className:"inp",style:{appearance:"none"},value:form.type,onChange:ev=>sf("type",ev.target.value)},opt({value:"study"},"📚 Study"),opt({value:"exam"},"📝 Exam/Test"),opt({value:"revision"},"🔄 Revision"),opt({value:"selfstudy"},"📖 Self Study"),opt({value:"activity"},"⚽ Activity"),opt({value:"holiday"},"🏖️ Holiday"),opt({value:"tutor"},"📹 Tutor Session"),opt({value:"meeting"},"🤝 Online Meeting"))),
+          div({},lbl({className:"lbl"},"Subject"),sel({className:"inp",style:{appearance:"none"},value:form.subject,onChange:ev=>sf("subject",ev.target.value)},opt({value:""},"-- Select --"),...SUBS.map(s=>opt({key:s,value:s},s))))
+        ),
+        div({className:"g2",style:{marginBottom:12}},div({},lbl({className:"lbl"},"Start Time"),inp({className:"inp",type:"time",value:form.time,onChange:ev=>sf("time",ev.target.value)})),div({},lbl({className:"lbl"},"End Time"),inp({className:"inp",type:"time",value:form.endTime,onChange:ev=>sf("endTime",ev.target.value)}))),
+        (form.type==="tutor"||form.type==="meeting")&&div({},
+          div({style:{marginBottom:12}},lbl({className:"lbl"},"Tutor / Host Name"),inp({className:"inp",placeholder:"e.g. Saswat, Swagat",value:form.tutorName,onChange:ev=>sf("tutorName",ev.target.value)})),
+          div({style:{marginBottom:12}},
+            lbl({className:"lbl"},"Meeting Platform"),
+            div({style:{display:"flex",gap:8,marginBottom:10}},...Object.entries(PLATFORMS).map(([k,v])=>btn({key:k,onClick:()=>sf("platform",k),style:{flex:1,padding:"8px 4px",borderRadius:10,border:`2px solid ${form.platform===k?"#1F4E79":"#e2e8f0"}`,background:form.platform===k?"#DCE6F1":"white",color:form.platform===k?"#1F4E79":"#64748b",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}},v.icon+" "+v.name))),
+            lbl({className:"lbl"},"Meeting Link *"),
+            inp({className:"inp",placeholder:PLATFORMS[form.platform]?.placeholder||"https://...",value:form.meetLink,onChange:ev=>sf("meetLink",ev.target.value)}),
+            div({style:{fontSize:11,color:"#64748b",marginTop:6,lineHeight:1.5}},"📋 How to get link: Open "+PLATFORMS[form.platform]?.name+" → Create/Schedule meeting → Copy invite link → Paste here. Baibhav can click to join directly!")
+          )
+        ),
+        div({style:{marginBottom:20}},lbl({className:"lbl"},"Notes"),inp({className:"inp",placeholder:"Any additional notes...",value:form.notes,onChange:ev=>sf("notes",ev.target.value)})),
+        div({style:{display:"flex",gap:10}},btn({onClick:()=>setShowAdd(false),style:{flex:1,padding:"12px",background:"#f1f5f9",color:"#334155",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Cancel"),btn({onClick:save,disabled:!form.title,style:{flex:1,padding:"12px",background:"#1F4E79",color:"white",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Add Event"))
+      )
+    )
+  );
+}
+
+// ── User Management (Add Teacher/Student) ─────────────────────────────────────
+function UsersPage({users,addUser,deleteEntry,profile,showToast}){
+  const[showAdd,setShowAdd]=useState(false);const[form,setForm]=useState({name:"",email:"",password:"",role:"teacher"});const[saving,setSaving]=useState(false);
+  const sf=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const save=async()=>{if(!form.name||!form.email||!form.password)return;setSaving(true);const ok=await addUser(form);setSaving(false);if(ok){setForm({name:"",email:"",password:"",role:"teacher"});setShowAdd(false);}};
+  const roleColor={teacher:"#1F4E79",admin:"#9C0006",child:"#276221"};const roleIcon={teacher:"👨‍🏫",admin:"👑",child:"👦"};
+  return div({},
+    div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}},div({style:{fontSize:24,fontWeight:800,color:"#0f172a"}},"👥 Manage Users"),btn({onClick:()=>setShowAdd(true),style:{padding:"8px 16px",background:"#1F4E79",color:"white",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:600,fontFamily:"inherit"}},"+ Add Teacher / Student")),
+    p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"Add teachers, tutors or students to the portal"),
+    div({className:"g3",style:{marginBottom:20}},...[{l:"Total Users",v:users.length,c:"#1F4E79"},{l:"Teachers",v:users.filter(u=>u.role==="teacher"||u.role==="admin").length,c:"#4B2E83"},{l:"Students",v:users.filter(u=>u.role==="child").length,c:"#276221"}].map((s,i)=>div({key:i,className:"card",style:{borderTop:`4px solid ${s.c}`,textAlign:"center"}},div({style:{fontSize:28,fontWeight:800,color:s.c}},s.v),div({style:{fontSize:13,color:"#64748b"}},s.l)))),
+    div({className:"card"},
+      div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:16}},"All Users"),
+      ...users.map(u=>div({key:u.id,style:{display:"flex",alignItems:"center",gap:14,padding:"12px 16px",borderRadius:12,border:"1px solid #e2e8f0",marginBottom:10,background:"#f8fafc"}},
+        div({style:{width:44,height:44,borderRadius:"50%",background:roleColor[u.role]||"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:18,flexShrink:0}},u.avatar||u.name?.[0]||"?"),
+        div({style:{flex:1}},
+          div({style:{display:"flex",alignItems:"center",gap:8,marginBottom:3}},span({style:{fontSize:15,fontWeight:700}},u.name),span({className:"tag "+(u.role==="teacher"||u.role==="admin"?"tp":"ts")},roleIcon[u.role]||"👤"+" "+u.role),u.online&&span({style:{width:8,height:8,borderRadius:"50%",background:"#22c55e",display:"inline-block"}})),
+          div({style:{fontSize:13,color:"#64748b"}},u.email)
+        ),
+        u.id===profile?.uid&&span({className:"tag ts"},"You")
+      ))
+    ),
+    showAdd&&div({className:"modal-bg",onClick:()=>setShowAdd(false)},
+      div({className:"modal",onClick:ev=>ev.stopPropagation()},
+        div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}},h3({style:{fontSize:18,fontWeight:700}},"Add New User"),btn({onClick:()=>setShowAdd(false),style:{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b",fontFamily:"inherit"}},"✕")),
+        div({style:{background:"#FFF2CC",border:"1px solid #9C5700",borderRadius:10,padding:"10px 14px",marginBottom:16,fontSize:13,color:"#9C5700"}},"⚠️ This will create a new login account. Share the email and password with the new user."),
+        div({style:{marginBottom:12}},lbl({className:"lbl"},"Full Name *"),inp({className:"inp",placeholder:"e.g. Ravi Kumar",value:form.name,onChange:ev=>sf("name",ev.target.value)})),
+        div({style:{marginBottom:12}},lbl({className:"lbl"},"Email *"),inp({className:"inp",type:"email",placeholder:"e.g. ravi@dugu-edutrack.com",value:form.email,onChange:ev=>sf("email",ev.target.value)})),
+        div({className:"g2",style:{marginBottom:12}},
+          div({},lbl({className:"lbl"},"Password *"),inp({className:"inp",type:"password",placeholder:"Set a password",value:form.password,onChange:ev=>sf("password",ev.target.value)})),
+          div({},lbl({className:"lbl"},"Role"),sel({className:"inp",style:{appearance:"none"},value:form.role,onChange:ev=>sf("role",ev.target.value)},opt({value:"teacher"},"👨‍🏫 Teacher"),opt({value:"admin"},"👑 Admin"),opt({value:"child"},"👦 Student")))
+        ),
+        div({style:{display:"flex",gap:10}},btn({onClick:()=>setShowAdd(false),style:{flex:1,padding:"12px",background:"#f1f5f9",color:"#334155",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Cancel"),btn({onClick:save,disabled:!form.name||!form.email||!form.password||saving,style:{flex:1,padding:"12px",background:"#1F4E79",color:"white",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},saving?"Creating...":"Create User"))
+      )
+    )
+  );
+}
+
+// ── Study Notes ───────────────────────────────────────────────────────────────
+function StudyNotesPage({studyNotes,addStudyNote,deleteStudyNote,isT}){
+  const[showAdd,setShowAdd]=useState(false);const[form,setForm]=useState({subject:"",chapter:"",topic:"",subtopic:"",title:"",type:"link",url:"",description:""});const[filter,setFilter]=useState({subject:"",chapter:"",topic:""});
+  const sf=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const subChs=form.subject?(DS[form.subject]?.chapters||[]):[];const chTps=form.chapter?(subChs.find(c=>c.ch===form.chapter)?.topics||[]):[];const tpSts=form.topic?(chTps.find(t=>t.name===form.topic)?.subtopics||[]):[];
   const save=async()=>{if(!form.title||!form.subject)return;await addStudyNote(form);setForm({subject:"",chapter:"",topic:"",subtopic:"",title:"",type:"link",url:"",description:""});setShowAdd(false);};
   const filtered=studyNotes.filter(n=>{if(filter.subject&&n.subject!==filter.subject)return false;if(filter.chapter&&n.chapter!==filter.chapter)return false;if(filter.topic&&n.topic!==filter.topic)return false;return true;});
-  const typeIcon={pdf:"📄",ppt:"📊",link:"🔗",video:"🎥",file:"📎"};
-  const typeColor={pdf:"#9C0006",ppt:"#C55A11",link:"#1F4E79",video:"#276221",file:"#4B2E83"};
-  const filterChs=filter.subject?(DS[filter.subject]?.chapters||[]):[];
-  const filterTps=filter.chapter?(filterChs.find(c=>c.ch===filter.chapter)?.topics||[]):[];
+  const typeIcon={pdf:"📄",ppt:"📊",link:"🔗",video:"🎥",file:"📎"};const typeColor={pdf:"#9C0006",ppt:"#C55A11",link:"#1F4E79",video:"#276221",file:"#4B2E83"};
+  const filterChs=filter.subject?(DS[filter.subject]?.chapters||[]):[];const filterTps=filter.chapter?(filterChs.find(c=>c.ch===filter.chapter)?.topics||[]):[];
   return div({},
-    div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}},div({style:{fontSize:24,fontWeight:800,color:"#0f172a"}},"📎 Study Notes & Materials"),isT&&btn({className:"btn bp",onClick:()=>setShowAdd(true)},"+ Add Material")),
+    div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}},div({style:{fontSize:24,fontWeight:800,color:"#0f172a"}},"📎 Study Notes & Materials"),isT&&btn({onClick:()=>setShowAdd(true),style:{padding:"8px 16px",background:"#1F4E79",color:"white",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:600,fontFamily:"inherit"}},"+ Add Material")),
     p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"PDFs, PPTs, links and videos — use Google Drive links for easy sharing"),
     div({style:{background:"#DCE6F1",border:"1px solid #1F4E79",borderRadius:12,padding:"12px 16px",marginBottom:20,fontSize:13,color:"#1F4E79"}},"💡 Tip: Upload to Google Drive → Right-click → Share → Anyone with link → Copy link → Paste below!"),
     div({className:"card",style:{marginBottom:20}},div({style:{fontSize:13,fontWeight:600,marginBottom:10}},"Filter by:"),div({style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}},sel({className:"inp",style:{appearance:"none",fontSize:13},value:filter.subject,onChange:ev=>setFilter(f=>({...f,subject:ev.target.value,chapter:"",topic:""}))},opt({value:""},"All Subjects"),...SUBS.map(s=>opt({key:s,value:s},s))),sel({className:"inp",style:{appearance:"none",fontSize:13},value:filter.chapter,onChange:ev=>setFilter(f=>({...f,chapter:ev.target.value,topic:""})),disabled:!filter.subject},opt({value:""},"All Chapters"),...filterChs.map(c=>opt({key:c.ch,value:c.ch},c.ch))),sel({className:"inp",style:{appearance:"none",fontSize:13},value:filter.topic,onChange:ev=>setFilter(f=>({...f,topic:ev.target.value})),disabled:!filter.chapter},opt({value:""},"All Topics"),...filterTps.map(t=>opt({key:t.name,value:t.name},t.name))))),
@@ -405,23 +625,21 @@ function StudyNotesPage({studyNotes,addStudyNote,deleteStudyNote,isT}){
       div({style:{marginBottom:12}},lbl({className:"lbl"},"Type"),sel({className:"inp",style:{appearance:"none"},value:form.type,onChange:ev=>sf("type",ev.target.value)},opt({value:"pdf"},"📄 PDF Document"),opt({value:"ppt"},"📊 PowerPoint"),opt({value:"link"},"🔗 Web Link"),opt({value:"video"},"🎥 Video Link"),opt({value:"file"},"📎 Other File"))),
       div({style:{marginBottom:12}},lbl({className:"lbl"},"URL / Link *"),inp({className:"inp",placeholder:"Paste Google Drive link, YouTube URL, or any web link...",value:form.url,onChange:ev=>sf("url",ev.target.value)}),div({style:{fontSize:11,color:"#64748b",marginTop:6,lineHeight:1.5}},"📁 Google Drive: Upload → Right-click → Share → Anyone with link → Copy link")),
       div({style:{marginBottom:18}},lbl({className:"lbl"},"Description"),inp({className:"inp",placeholder:"Brief description...",value:form.description,onChange:ev=>sf("description",ev.target.value)})),
-      div({style:{display:"flex",gap:10}},btn({className:"btn bg2",style:{flex:1},onClick:()=>setShowAdd(false)},"Cancel"),btn({className:"btn bp",style:{flex:1},onClick:save,disabled:!form.title||!form.subject},"Add Material"))
+      div({style:{display:"flex",gap:10}},btn({onClick:()=>setShowAdd(false),style:{flex:1,padding:"12px",background:"#f1f5f9",color:"#334155",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Cancel"),btn({onClick:save,disabled:!form.title||!form.subject,style:{flex:1,padding:"12px",background:"#1F4E79",color:"white",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Add Material"))
     ))
   );
 }
 
+// ── Revision ──────────────────────────────────────────────────────────────────
 function RevPage({revisions,markRevised}){
-  const[tab,setTab]=useState("today");
-  const today=new Date().toISOString().split("T")[0];
-  const tr=revisions.filter(r=>!r.done&&r.dueDate<=today);
-  const or=revisions.filter(r=>!r.done&&r.dueDate<today);
+  const[tab,setTab]=useState("today");const today=new Date().toISOString().split("T")[0];
+  const tr=revisions.filter(r=>!r.done&&r.dueDate<=today);const or=revisions.filter(r=>!r.done&&r.dueDate<today);
   const ur=revisions.filter(r=>{const n=new Date();n.setDate(n.getDate()+7);return!r.done&&r.dueDate>today&&r.dueDate<=n.toISOString().split("T")[0];});
-  const dr=revisions.filter(r=>r.done);
-  const cl=tab==="today"?tr:tab==="overdue"?or:tab==="upcoming"?ur:dr;
+  const dr=revisions.filter(r=>r.done);const cl=tab==="today"?tr:tab==="overdue"?or:tab==="upcoming"?ur:dr;
   const sc={English:"#1F4E79",Hindi:"#4B2E83",Odia:"#7F6000",Mathematics:"#1F6B5B",Science:"#375623","Social Studies":"#C55A11","Computer Science":"#1F3864","Moral Science":"#4A1942","General Knowledge":"#404040"};
   return div({},
     div({style:{fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:4}},"🔄 Revision Planner"),
-    p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"7-day revision cycle — auto-scheduled after each topic is taught"),
+    p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"7-day revision cycle — auto-scheduled after each topic is taught or self-studied"),
     div({className:"g4",style:{marginBottom:20}},...[{l:"Overdue",v:or.length,c:"#9C0006",bg:"#FFC7CE"},{l:"Due Today",v:tr.length,c:"#C55A11",bg:"#FCE4D6"},{l:"This Week",v:ur.length,c:"#1F4E79",bg:"#DCE6F1"},{l:"Completed",v:dr.length,c:"#276221",bg:"#C6EFCE"}].map(s=>div({key:s.l,style:{background:s.bg,borderRadius:16,padding:"14px 18px"}},div({style:{fontSize:26,fontWeight:800,color:s.c}},s.v),div({style:{fontSize:12,color:s.c,fontWeight:600}},s.l)))),
     or.length>0&&div({style:{background:"#FFC7CE",border:"2px solid #9C0006",borderRadius:12,padding:"10px 14px",marginBottom:16,display:"flex",alignItems:"center",gap:10}},span({},"⚠️"),div({style:{fontWeight:700,color:"#9C0006",fontSize:13}},or.length+" overdue revision"+(or.length>1?"s":"")+"!")),
     div({style:{display:"flex",gap:4,background:"#f1f5f9",padding:4,borderRadius:12,marginBottom:16}},...[{id:"today",l:`Today (${tr.length})`},{id:"overdue",l:`Overdue (${or.length})`},{id:"upcoming",l:`Upcoming (${ur.length})`},{id:"done",l:`Done (${dr.length})`}].map(t=>div({key:t.id,onClick:()=>setTab(t.id),style:{flex:1,padding:"8px",textAlign:"center",fontSize:13,fontWeight:600,borderRadius:8,cursor:"pointer",color:tab===t.id?"#1F4E79":"#64748b",background:tab===t.id?"white":"transparent",boxShadow:tab===t.id?"0 2px 8px rgba(0,0,0,.08)":"none"}},t.l))),
@@ -429,77 +647,62 @@ function RevPage({revisions,markRevised}){
   );
 }
 
+// ── Team Notes ────────────────────────────────────────────────────────────────
 function TeamNotes({notes,addNote,profile}){
   const[text,setText]=useState("");const[saving,setSaving]=useState(false);
-  const qn=["Covered today topics as per timetable","Baibhav needs extra help with Maths fractions","Revision done for English Ch-1 and Ch-2","Maths test announced for next week","Baibhav did great in SST Olympiad today!","Please revise Science Ch-1 tomorrow","Focus needed on Hindi grammar this week","Homework given — complete by tomorrow"];
+  const qn=["Covered today topics as per timetable","Baibhav needs extra help with Maths fractions","Revision done for English Ch-1 and Ch-2","Maths test announced for next week","Baibhav did great in SST Olympiad today!","Please revise Science Ch-1 tomorrow","Focus needed on Hindi grammar this week","Homework given — complete by tomorrow","Tutor session scheduled for tomorrow","Study notes uploaded for Chapter 3"];
   const add=async()=>{if(!text.trim())return;setSaving(true);await addNote(text.trim());setText("");setSaving(false);};
   return div({},
     div({style:{fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:4}},"💬 Team Coordination Notes"),
     p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"Saswat and Swagat — real-time shared notes from any location"),
     div({className:"g2"},
       div({},
-        div({className:"card",style:{marginBottom:16}},
-          div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"Add a Note"),
-          div({style:{display:"flex",alignItems:"center",gap:10,marginBottom:12,padding:"10px 14px",background:"#f8fafc",borderRadius:10}},div({style:{width:32,height:32,borderRadius:"50%",background:"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}},profile?.avatar||"T"),div({},div({style:{fontSize:13,fontWeight:700}},profile?.name||"Teacher"),div({style:{fontSize:11,color:"#64748b"}},(profile?.role||"")+" · Online")),span({style:{width:7,height:7,borderRadius:"50%",background:"#22c55e",display:"inline-block",marginLeft:"auto"}})),
-          ta({className:"inp",rows:4,placeholder:"Write a coordination note...",value:text,onChange:ev=>setText(ev.target.value),style:{resize:"vertical"}}),
-          btn({className:"btn bp bfw",style:{marginTop:10},onClick:add,disabled:!text.trim()||saving},saving?"Saving...":"Post Note")
-        ),
+        div({className:"card",style:{marginBottom:16}},div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"Add a Note"),div({style:{display:"flex",alignItems:"center",gap:10,marginBottom:12,padding:"10px 14px",background:"#f8fafc",borderRadius:10}},div({style:{width:32,height:32,borderRadius:"50%",background:"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}},profile?.avatar||"T"),div({},div({style:{fontSize:13,fontWeight:700}},profile?.name||"Teacher"),div({style:{fontSize:11,color:"#64748b"}},(profile?.role||"")+" · Online")),span({style:{width:7,height:7,borderRadius:"50%",background:"#22c55e",display:"inline-block",marginLeft:"auto"}})),ta({className:"inp",rows:4,placeholder:"Write a coordination note...",value:text,onChange:ev=>setText(ev.target.value),style:{resize:"vertical"}}),btn({className:"btn bp bfw",style:{marginTop:10},onClick:add,disabled:!text.trim()||saving},saving?"Saving...":"Post Note")),
         div({className:"card"},div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"Quick Notes"),...qn.map((n,i)=>btn({key:i,onClick:()=>setText(n),style:{display:"block",width:"100%",padding:"8px 12px",borderRadius:8,border:"1px solid #e2e8f0",background:"#f8fafc",fontSize:12,cursor:"pointer",textAlign:"left",marginBottom:6,color:"#334155",fontFamily:"inherit"}},n)))
       ),
-      div({className:"card"},
-        div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"Live Notes Feed"),
-        notes.length===0?div({style:{textAlign:"center",padding:"40px 0",color:"#64748b",fontSize:13}},div({style:{fontSize:36,marginBottom:8}},"💬"),p2({},"No notes yet.")):
-        div({style:{maxHeight:520,overflowY:"auto"}},...notes.map(n=>div({key:n.id,style:{padding:"12px 14px",borderRadius:10,background:"#f8fafc",border:"1px solid #e2e8f0",marginBottom:10,borderLeft:"3px solid #1F4E79"}},div({style:{display:"flex",alignItems:"center",gap:8,marginBottom:6}},div({style:{width:28,height:28,borderRadius:"50%",background:"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:12}},n.author?.[0]||"T"),span({style:{fontSize:13,fontWeight:700}},n.author),span({style:{fontSize:11,color:"#64748b",marginLeft:"auto"}},n.createdAt?.toDate?new Date(n.createdAt.toDate()).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"Just now")),p2({style:{fontSize:13,color:"#334155",lineHeight:1.6}},n.text))))
-      )
+      div({className:"card"},div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"Live Notes Feed"),notes.length===0?div({style:{textAlign:"center",padding:"40px 0",color:"#64748b",fontSize:13}},div({style:{fontSize:36,marginBottom:8}},"💬"),p2({},"No notes yet.")):div({style:{maxHeight:520,overflowY:"auto"}},...notes.map(n=>div({key:n.id,style:{padding:"12px 14px",borderRadius:10,background:"#f8fafc",border:"1px solid #e2e8f0",marginBottom:10,borderLeft:"3px solid #1F4E79"}},div({style:{display:"flex",alignItems:"center",gap:8,marginBottom:6}},div({style:{width:28,height:28,borderRadius:"50%",background:"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:12}},n.author?.[0]||"T"),span({style:{fontSize:13,fontWeight:700}},n.author),span({style:{fontSize:11,color:"#64748b",marginLeft:"auto"}},n.createdAt?.toDate?new Date(n.createdAt.toDate()).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"Just now")),p2({style:{fontSize:13,color:"#334155",lineHeight:1.6}},n.text)))))
     )
   );
 }
 
+// ── Flashcard & Quiz ──────────────────────────────────────────────────────────
 function FlashCard({fc}){
   const[flipped,setFlipped]=useState(false);
-  return div({onClick:()=>setFlipped(f=>!f),style:{cursor:"pointer",perspective:"600px"}},
-    div({style:{transition:"transform .5s",transformStyle:"preserve-3d",position:"relative",height:180,transform:flipped?"rotateY(180deg)":"none"}},
-      div({style:{position:"absolute",inset:0,backfaceVisibility:"hidden",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",padding:20,textAlign:"center",background:"linear-gradient(135deg,#1F4E79,#2E75B6)",color:"#fff"}},div({},fc.subject&&div({style:{fontSize:10,opacity:.8,marginBottom:6,fontWeight:600}},fc.subject+(fc.topic?" · "+fc.topic:"")),div({style:{fontSize:14,fontWeight:700,lineHeight:1.4}},fc.question),fc.hint&&div({style:{fontSize:10,opacity:.7,marginTop:8}},"Hint: "+fc.hint),div({style:{fontSize:10,opacity:.6,marginTop:10}},"Tap to reveal"))),
-      div({style:{position:"absolute",inset:0,backfaceVisibility:"hidden",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",padding:20,textAlign:"center",background:"linear-gradient(135deg,#276221,#4CAF50)",color:"#fff",transform:"rotateY(180deg)"}},div({},div({style:{fontSize:10,opacity:.8,marginBottom:6,fontWeight:600}},"ANSWER"),div({style:{fontSize:14,fontWeight:700,lineHeight:1.4}},fc.answer),div({style:{fontSize:10,opacity:.6,marginTop:10}},"Tap to flip back")))
-    )
-  );
+  return div({onClick:()=>setFlipped(f=>!f),style:{cursor:"pointer",perspective:"600px"}},div({style:{transition:"transform .5s",transformStyle:"preserve-3d",position:"relative",height:180,transform:flipped?"rotateY(180deg)":"none"}},div({style:{position:"absolute",inset:0,backfaceVisibility:"hidden",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",padding:20,textAlign:"center",background:"linear-gradient(135deg,#1F4E79,#2E75B6)",color:"#fff"}},div({},fc.subject&&div({style:{fontSize:10,opacity:.8,marginBottom:6,fontWeight:600}},fc.subject+(fc.topic?" · "+fc.topic:"")),div({style:{fontSize:14,fontWeight:700,lineHeight:1.4}},fc.question),fc.hint&&div({style:{fontSize:10,opacity:.7,marginTop:8}},"Hint: "+fc.hint),div({style:{fontSize:10,opacity:.6,marginTop:10}},"Tap to reveal"))),div({style:{position:"absolute",inset:0,backfaceVisibility:"hidden",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",padding:20,textAlign:"center",background:"linear-gradient(135deg,#276221,#4CAF50)",color:"#fff",transform:"rotateY(180deg)"}},div({},div({style:{fontSize:10,opacity:.8,marginBottom:6,fontWeight:600}},"ANSWER"),div({style:{fontSize:14,fontWeight:700,lineHeight:1.4}},fc.answer),div({style:{fontSize:10,opacity:.6,marginTop:10}},"Tap to flip back")))));
 }
 
 function QuizQ({qz,num}){
   const[selected,setSelected]=useState(null);const[revealed,setReveal]=useState(false);
-  return div({className:"card"},
-    div({style:{display:"flex",alignItems:"center",gap:8,marginBottom:12}},div({style:{width:28,height:28,borderRadius:"50%",background:"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13,flexShrink:0}},"Q"+num),qz.subject&&span({className:"tag tp"},qz.subject),qz.topic&&span({className:"tag",style:{background:"#f1f5f9",color:"#334155"}},qz.topic)),
-    div({style:{fontSize:15,fontWeight:600,marginBottom:14,lineHeight:1.5}},qz.question),
-    div({style:{display:"flex",flexDirection:"column",gap:8,marginBottom:14}},...(qz.options||[]).map((opt2,i)=>btn({key:i,onClick:()=>{if(!revealed)setSelected(i);},style:{padding:"12px 16px",borderRadius:10,border:`2px solid ${revealed?(i===qz.correct?"#276221":i===selected?"#9C0006":"#e2e8f0"):(selected===i?"#1F4E79":"#e2e8f0")}`,background:revealed?(i===qz.correct?"#C6EFCE":i===selected&&i!==qz.correct?"#FFC7CE":"white"):(selected===i?"#DCE6F1":"white"),color:revealed?(i===qz.correct?"#276221":i===selected&&i!==qz.correct?"#9C0006":"#334155"):(selected===i?"#1F4E79":"#334155"),fontSize:14,fontWeight:selected===i?600:400,cursor:"pointer",textAlign:"left",width:"100%",fontFamily:"inherit"}},span({style:{fontWeight:700,marginRight:8}},String.fromCharCode(65+i)+"."),opt2))),
-    !revealed?btn({className:"btn bp bsm",onClick:()=>{if(selected!==null)setReveal(true);},disabled:selected===null},"Check Answer"):
-    div({},div({style:{padding:"10px 14px",borderRadius:10,background:selected===qz.correct?"#C6EFCE":"#FFC7CE",marginBottom:10}},div({style:{fontWeight:700,color:selected===qz.correct?"#276221":"#9C0006",fontSize:14}},selected===qz.correct?"Correct!":"Incorrect"),qz.explanation&&div({style:{fontSize:13,marginTop:4,color:"#334155"}},qz.explanation)),btn({className:"btn bg2 bsm",onClick:()=>{setSelected(null);setReveal(false);}},"Try Again"))
-  );
+  return div({className:"card"},div({style:{display:"flex",alignItems:"center",gap:8,marginBottom:12}},div({style:{width:28,height:28,borderRadius:"50%",background:"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13,flexShrink:0}},"Q"+num),qz.subject&&span({className:"tag tp"},qz.subject),qz.topic&&span({className:"tag",style:{background:"#f1f5f9",color:"#334155"}},qz.topic)),div({style:{fontSize:15,fontWeight:600,marginBottom:14,lineHeight:1.5}},qz.question),div({style:{display:"flex",flexDirection:"column",gap:8,marginBottom:14}},...(qz.options||[]).map((opt2,i)=>btn({key:i,onClick:()=>{if(!revealed)setSelected(i);},style:{padding:"12px 16px",borderRadius:10,border:`2px solid ${revealed?(i===qz.correct?"#276221":i===selected?"#9C0006":"#e2e8f0"):(selected===i?"#1F4E79":"#e2e8f0")}`,background:revealed?(i===qz.correct?"#C6EFCE":i===selected&&i!==qz.correct?"#FFC7CE":"white"):(selected===i?"#DCE6F1":"white"),color:revealed?(i===qz.correct?"#276221":i===selected&&i!==qz.correct?"#9C0006":"#334155"):(selected===i?"#1F4E79":"#334155"),fontSize:14,fontWeight:selected===i?600:400,cursor:"pointer",textAlign:"left",width:"100%",fontFamily:"inherit"}},span({style:{fontWeight:700,marginRight:8}},String.fromCharCode(65+i)+"."),opt2))),!revealed?btn({className:"btn bp bsm",onClick:()=>{if(selected!==null)setReveal(true);},disabled:selected===null},"Check Answer"):div({},div({style:{padding:"10px 14px",borderRadius:10,background:selected===qz.correct?"#C6EFCE":"#FFC7CE",marginBottom:10}},div({style:{fontWeight:700,color:selected===qz.correct?"#276221":"#9C0006",fontSize:14}},selected===qz.correct?"Correct!":"Incorrect"),qz.explanation&&div({style:{fontSize:13,marginTop:4,color:"#334155"}},qz.explanation)),btn({className:"btn bg2 bsm",onClick:()=>{setSelected(null);setReveal(false);}},"Try Again")));
 }
 
 function ContentPage({flashcards,quizzes,tasks,addFlashcard,addQuiz,addTask,isT,showToast}){
-  const[tab,setTab]=useState("flashcards");const[showModal,setShowModal]=useState(null);
+  const[tab,setTab]=useState("flashcards");const[showModal,setShowModal]=useState(null);const[showBulk,setShowBulk]=useState(null);
   const[fcForm,setFcForm]=useState({subject:"",topic:"",question:"",answer:"",hint:""});
   const[qzForm,setQzForm]=useState({subject:"",topic:"",question:"",options:["","","",""],correct:0,explanation:""});
   const[tkForm,setTkForm]=useState({title:"",subject:"",description:"",dueDate:"",priority:"medium"});
+  const[bulkText,setBulkText]=useState("");const[bulkSub,setBulkSub]=useState({subject:"",topic:""});const[bulkParsed,setBulkParsed]=useState([]);
   const saveFC=async()=>{if(!fcForm.question||!fcForm.answer)return;await addFlashcard(fcForm);setFcForm({subject:"",topic:"",question:"",answer:"",hint:""});setShowModal(null);};
   const saveQZ=async()=>{if(!qzForm.question||(qzForm.options||[]).some(o=>!o))return;await addQuiz(qzForm);setQzForm({subject:"",topic:"",question:"",options:["","","",""],correct:0,explanation:""});setShowModal(null);};
   const saveTK=async()=>{if(!tkForm.title)return;await addTask(tkForm);setTkForm({title:"",subject:"",description:"",dueDate:"",priority:"medium"});setShowModal(null);};
+  const parseBulk=()=>{const lines=bulkText.trim().split("\n").filter(l=>l.trim());if(showBulk==="fc"){setBulkParsed(lines.map(l=>{const p=l.split("|");return{question:(p[0]||"").trim(),answer:(p[1]||"").trim(),hint:(p[2]||"").trim()};}).filter(p=>p.question&&p.answer));}else{const parsed=[];let cur=null;lines.forEach(l=>{if(l.startsWith("Q:")){if(cur)parsed.push(cur);cur={question:l.slice(2).trim(),options:[],correct:0,explanation:""};} else if(l.startsWith("*A:")&&cur){cur.options.push(l.slice(3).trim());cur.correct=cur.options.length-1;} else if(l.startsWith("A:")&&cur){cur.options.push(l.slice(2).trim());} else if(l.startsWith("E:")&&cur){cur.explanation=l.slice(2).trim();}});if(cur)parsed.push(cur);setBulkParsed(parsed.filter(p=>p.question&&p.options.length>=2));}};
+  const saveBulk=async()=>{for(const item of bulkParsed){if(showBulk==="fc")await addFlashcard({...bulkSub,...item});else await addQuiz({...bulkSub,...item});}setBulkText("");setBulkParsed([]);setShowBulk(null);showToast(bulkParsed.length+" items added!");};
   return div({},
     div({style:{fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:4}},"🎯 Flashcards, Quizzes & Tasks"),
     p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"Create learning content and tasks for Baibhav"),
     div({style:{display:"flex",gap:4,background:"#f1f5f9",padding:4,borderRadius:12,marginBottom:20}},...[{id:"flashcards",l:`Flashcards (${flashcards.length})`},{id:"quizzes",l:`Quizzes (${quizzes.length})`},{id:"tasks",l:`Tasks (${tasks.length})`}].map(t=>div({key:t.id,onClick:()=>setTab(t.id),style:{flex:1,padding:"8px",textAlign:"center",fontSize:13,fontWeight:600,borderRadius:8,cursor:"pointer",color:tab===t.id?"#1F4E79":"#64748b",background:tab===t.id?"white":"transparent",boxShadow:tab===t.id?"0 2px 8px rgba(0,0,0,.08)":"none"}},t.l))),
-    tab==="flashcards"&&div({},isT&&btn({className:"btn bp",style:{marginBottom:16},onClick:()=>setShowModal("fc")},"+ Create Flashcard"),flashcards.length===0?div({style:{textAlign:"center",padding:"40px 0",color:"#64748b"}},div({style:{fontSize:40,marginBottom:8}},"🃏"),p2({},"No flashcards yet.")):div({className:"g3"},...flashcards.map(fc=>h(FlashCard,{key:fc.id,fc})))),
-    tab==="quizzes"&&div({},isT&&btn({className:"btn bp",style:{marginBottom:16},onClick:()=>setShowModal("qz")},"+ Create Quiz"),quizzes.length===0?div({style:{textAlign:"center",padding:"40px 0",color:"#64748b"}},div({style:{fontSize:40,marginBottom:8}},"❓"),p2({},"No quiz questions yet.")):div({style:{display:"flex",flexDirection:"column",gap:16}},...quizzes.map((qz,i)=>h(QuizQ,{key:qz.id,qz,num:i+1})))),
+    tab==="flashcards"&&div({},isT&&div({style:{display:"flex",gap:8,marginBottom:16}},btn({className:"btn bp",onClick:()=>setShowModal("fc")},"+ Create Flashcard"),btn({className:"btn bpu",onClick:()=>{setShowBulk("fc");setBulkParsed([]);}},"📤 Bulk Upload")),flashcards.length===0?div({style:{textAlign:"center",padding:"40px 0",color:"#64748b"}},div({style:{fontSize:40,marginBottom:8}},"🃏"),p2({},"No flashcards yet.")):div({className:"g3"},...flashcards.map(fc=>h(FlashCard,{key:fc.id,fc})))),
+    tab==="quizzes"&&div({},isT&&div({style:{display:"flex",gap:8,marginBottom:16}},btn({className:"btn bp",onClick:()=>setShowModal("qz")},"+ Create Quiz"),btn({className:"btn bpu",onClick:()=>{setShowBulk("qz");setBulkParsed([]);}},"📤 Bulk Upload")),quizzes.length===0?div({style:{textAlign:"center",padding:"40px 0",color:"#64748b"}},div({style:{fontSize:40,marginBottom:8}},"❓"),p2({},"No quiz questions yet.")):div({style:{display:"flex",flexDirection:"column",gap:16}},...quizzes.map((qz,i)=>h(QuizQ,{key:qz.id,qz,num:i+1})))),
     tab==="tasks"&&div({},isT&&btn({className:"btn bp",style:{marginBottom:16},onClick:()=>setShowModal("tk")},"+ Assign Task"),tasks.length===0?div({style:{textAlign:"center",padding:"40px 0",color:"#64748b"}},div({style:{fontSize:40,marginBottom:8}},"✅"),p2({},"No tasks assigned yet.")):div({style:{display:"flex",flexDirection:"column",gap:10}},...tasks.map(t=>div({key:t.id,style:{display:"flex",alignItems:"flex-start",gap:12,padding:"14px 16px",borderRadius:12,background:"#f8fafc",border:"1px solid #e2e8f0",marginBottom:10,opacity:t.done?.8:1}},div({style:{width:22,height:22,borderRadius:6,border:`2px solid ${t.done?"#276221":"#e2e8f0"}`,cursor:"pointer",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",background:t.done?"#276221":"white",color:"white",marginTop:2}},t.done?"✓":""),div({style:{flex:1}},div({style:{fontSize:14,fontWeight:600,textDecoration:t.done?"line-through":"none",color:t.done?"#64748b":"#0f172a"}},t.title),t.subject&&div({style:{fontSize:12,color:"#64748b",marginTop:2}},t.subject),t.description&&div({style:{fontSize:12,color:"#64748b",marginTop:2}},t.description),div({style:{display:"flex",gap:8,marginTop:4}},t.dueDate&&span({style:{fontSize:11,color:"#C55A11",fontWeight:600}},"Due: "+t.dueDate),span({className:"tag "+(t.priority==="high"?"td2":t.priority==="medium"?"tw":"ts")},t.priority),t.done&&span({className:"tag ts"},"Done"))),span({style:{fontSize:11,color:"#94a3b8"}},"by "+t.createdBy))))),
-    showModal==="fc"&&div({className:"modal-bg",onClick:()=>setShowModal(null)},div({className:"modal",onClick:ev=>ev.stopPropagation()},div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}},h3({style:{fontSize:18,fontWeight:700}},"Create Flashcard"),btn({onClick:()=>setShowModal(null),style:{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b",fontFamily:"inherit"}},"✕")),div({className:"g2",style:{marginBottom:12}},div({},lbl({className:"lbl"},"Subject"),sel({className:"inp",style:{appearance:"none"},value:fcForm.subject,onChange:ev=>setFcForm(f=>({...f,subject:ev.target.value}))},opt({value:""},"-- Select --"),...SUBS.map(s=>opt({key:s,value:s},s)))),div({},lbl({className:"lbl"},"Topic"),inp({className:"inp",placeholder:"Topic name",value:fcForm.topic,onChange:ev=>setFcForm(f=>({...f,topic:ev.target.value}))}))),div({style:{marginBottom:12}},lbl({className:"lbl"},"Question / Front *"),ta({className:"inp",rows:2,placeholder:"What is the question or term?",value:fcForm.question,onChange:ev=>setFcForm(f=>({...f,question:ev.target.value})),style:{resize:"none"}})),div({style:{marginBottom:12}},lbl({className:"lbl"},"Answer / Back *"),ta({className:"inp",rows:2,placeholder:"What is the answer?",value:fcForm.answer,onChange:ev=>setFcForm(f=>({...f,answer:ev.target.value})),style:{resize:"none"}})),div({style:{marginBottom:18}},lbl({className:"lbl"},"Hint (optional)"),inp({className:"inp",placeholder:"Give a hint",value:fcForm.hint,onChange:ev=>setFcForm(f=>({...f,hint:ev.target.value}))})),div({style:{display:"flex",gap:10}},btn({className:"btn bg2",style:{flex:1},onClick:()=>setShowModal(null)},"Cancel"),btn({className:"btn bp",style:{flex:1},onClick:saveFC,disabled:!fcForm.question||!fcForm.answer},"Create Flashcard")))),
-    showModal==="qz"&&div({className:"modal-bg",onClick:()=>setShowModal(null)},div({className:"modal",onClick:ev=>ev.stopPropagation()},div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}},h3({style:{fontSize:18,fontWeight:700}},"Create Quiz Question"),btn({onClick:()=>setShowModal(null),style:{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b",fontFamily:"inherit"}},"✕")),div({className:"g2",style:{marginBottom:12}},div({},lbl({className:"lbl"},"Subject"),sel({className:"inp",style:{appearance:"none"},value:qzForm.subject,onChange:ev=>setQzForm(f=>({...f,subject:ev.target.value}))},opt({value:""},"-- Select --"),...SUBS.map(s=>opt({key:s,value:s},s)))),div({},lbl({className:"lbl"},"Topic"),inp({className:"inp",placeholder:"Topic name",value:qzForm.topic,onChange:ev=>setQzForm(f=>({...f,topic:ev.target.value}))}))),div({style:{marginBottom:12}},lbl({className:"lbl"},"Question *"),ta({className:"inp",rows:2,placeholder:"Enter the quiz question",value:qzForm.question,onChange:ev=>setQzForm(f=>({...f,question:ev.target.value})),style:{resize:"none"}})),div({style:{marginBottom:12}},lbl({className:"lbl"},"Options * (select correct answer)"),...(qzForm.options||[]).map((opt2,i)=>div({key:i,style:{display:"flex",alignItems:"center",gap:8,marginBottom:8}},e("input",{type:"radio",name:"correct",checked:qzForm.correct===i,onChange:()=>setQzForm(f=>({...f,correct:i})),style:{cursor:"pointer"}}),inp({className:"inp",placeholder:"Option "+String.fromCharCode(65+i),value:opt2,onChange:ev=>{const o=[...(qzForm.options||[])];o[i]=ev.target.value;setQzForm(f=>({...f,options:o}));},style:{flex:1}})))),div({style:{marginBottom:18}},lbl({className:"lbl"},"Explanation (optional)"),inp({className:"inp",placeholder:"Explain why the answer is correct",value:qzForm.explanation,onChange:ev=>setQzForm(f=>({...f,explanation:ev.target.value}))})),div({style:{display:"flex",gap:10}},btn({className:"btn bg2",style:{flex:1},onClick:()=>setShowModal(null)},"Cancel"),btn({className:"btn bp",style:{flex:1},onClick:saveQZ,disabled:!qzForm.question||(qzForm.options||[]).some(o=>!o)},"Create Question")))),
-    showModal==="tk"&&div({className:"modal-bg",onClick:()=>setShowModal(null)},div({className:"modal",onClick:ev=>ev.stopPropagation()},div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}},h3({style:{fontSize:18,fontWeight:700}},"Assign Task to Baibhav"),btn({onClick:()=>setShowModal(null),style:{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b",fontFamily:"inherit"}},"✕")),div({style:{marginBottom:12}},lbl({className:"lbl"},"Task Title *"),inp({className:"inp",placeholder:"e.g. Complete Maths exercises Ch-3",value:tkForm.title,onChange:ev=>setTkForm(f=>({...f,title:ev.target.value}))})),div({className:"g2",style:{marginBottom:12}},div({},lbl({className:"lbl"},"Subject"),sel({className:"inp",style:{appearance:"none"},value:tkForm.subject,onChange:ev=>setTkForm(f=>({...f,subject:ev.target.value}))},opt({value:""},"-- Select --"),...SUBS.map(s=>opt({key:s,value:s},s)))),div({},lbl({className:"lbl"},"Due Date"),inp({className:"inp",type:"date",value:tkForm.dueDate,onChange:ev=>setTkForm(f=>({...f,dueDate:ev.target.value}))}))),div({style:{marginBottom:12}},lbl({className:"lbl"},"Description"),ta({className:"inp",rows:2,placeholder:"Describe what needs to be done...",value:tkForm.description,onChange:ev=>setTkForm(f=>({...f,description:ev.target.value})),style:{resize:"none"}})),div({style:{marginBottom:18}},lbl({className:"lbl"},"Priority"),sel({className:"inp",style:{appearance:"none"},value:tkForm.priority,onChange:ev=>setTkForm(f=>({...f,priority:ev.target.value}))},opt({value:"low"},"Low"),opt({value:"medium"},"Medium"),opt({value:"high"},"High"))),div({style:{display:"flex",gap:10}},btn({className:"btn bg2",style:{flex:1},onClick:()=>setShowModal(null)},"Cancel"),btn({className:"btn bp",style:{flex:1},onClick:saveTK,disabled:!tkForm.title},"Assign Task"))))
+    showBulk&&div({className:"modal-bg",onClick:()=>setShowBulk(null)},div({className:"modal modal-lg",onClick:ev=>ev.stopPropagation()},div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}},h3({style:{fontSize:18,fontWeight:700}},"Bulk Upload "+(showBulk==="fc"?"Flashcards":"Quiz Questions")),btn({onClick:()=>setShowBulk(null),style:{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b",fontFamily:"inherit"}},"✕")),div({style:{background:"#f8fafc",borderRadius:10,padding:14,marginBottom:16,fontSize:13}},div({style:{fontWeight:700,marginBottom:6,color:"#1F4E79"}},showBulk==="fc"?"Format: Question | Answer | Hint (one per line)":"Format: Q: Question, A: Option, *A: Correct Option, E: Explanation"),showBulk==="fc"?e("pre",{style:{fontSize:11,color:"#64748b",lineHeight:1.6}},"What is a Noun? | A naming word | Think of names\nWhat is an Article? | A, An, The | Used before nouns"):e("pre",{style:{fontSize:11,color:"#64748b",lineHeight:1.6}},"Q: What is the capital of India?\nA: Mumbai\n*A: New Delhi\nA: Kolkata\nA: Chennai\nE: New Delhi is the capital of India")),div({style:{marginBottom:12}},lbl({className:"lbl"},"Assign to Subject/Topic (optional):"),div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}},sel({className:"inp",style:{appearance:"none",fontSize:12},value:bulkSub.subject,onChange:ev=>setBulkSub(f=>({...f,subject:ev.target.value}))},opt({value:""},"Subject"),...SUBS.map(s=>opt({key:s,value:s},s))),inp({className:"inp",placeholder:"Topic name",value:bulkSub.topic,onChange:ev=>setBulkSub(f=>({...f,topic:ev.target.value})),style:{fontSize:12}}))),div({style:{marginBottom:12}},lbl({className:"lbl"},"Paste your content here:"),ta({className:"inp",rows:8,placeholder:showBulk==="fc"?"Question | Answer | Hint\n...":"Q: Question\nA: Option\n*A: Correct Option\n...",value:bulkText,onChange:ev=>setBulkText(ev.target.value),style:{resize:"vertical",fontFamily:"monospace",fontSize:13}})),btn({className:"btn bg2 bsm",style:{marginBottom:12},onClick:parseBulk,disabled:!bulkText.trim()},"Preview ("+bulkParsed.length+" items parsed)"),bulkParsed.length>0&&div({style:{maxHeight:200,overflowY:"auto",border:"1px solid #e2e8f0",borderRadius:10,padding:10,marginBottom:12}},...bulkParsed.map((item,i)=>div({key:i,style:{padding:"6px 10px",borderRadius:8,background:"#f8fafc",marginBottom:6,fontSize:12}},div({style:{fontWeight:600}},(i+1)+". "+item.question),div({style:{color:"#276221",marginTop:2}},showBulk==="fc"?"Answer: "+item.answer:"Options: "+(item.options||[]).join(" | "))))),div({style:{display:"flex",gap:10}},btn({onClick:()=>setShowBulk(null),style:{flex:1,padding:"12px",background:"#f1f5f9",color:"#334155",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Cancel"),btn({onClick:saveBulk,disabled:bulkParsed.length===0,style:{flex:1,padding:"12px",background:"#1F4E79",color:"white",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Save "+bulkParsed.length+" Items")))),
+    showModal==="fc"&&div({className:"modal-bg",onClick:()=>setShowModal(null)},div({className:"modal",onClick:ev=>ev.stopPropagation()},div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}},h3({style:{fontSize:18,fontWeight:700}},"Create Flashcard"),btn({onClick:()=>setShowModal(null),style:{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b",fontFamily:"inherit"}},"✕")),div({className:"g2",style:{marginBottom:12}},div({},lbl({className:"lbl"},"Subject"),sel({className:"inp",style:{appearance:"none"},value:fcForm.subject,onChange:ev=>setFcForm(f=>({...f,subject:ev.target.value}))},opt({value:""},"-- Select --"),...SUBS.map(s=>opt({key:s,value:s},s)))),div({},lbl({className:"lbl"},"Topic"),inp({className:"inp",placeholder:"Topic name",value:fcForm.topic,onChange:ev=>setFcForm(f=>({...f,topic:ev.target.value}))}))),div({style:{marginBottom:12}},lbl({className:"lbl"},"Question / Front *"),ta({className:"inp",rows:2,placeholder:"What is the question or term?",value:fcForm.question,onChange:ev=>setFcForm(f=>({...f,question:ev.target.value})),style:{resize:"none"}})),div({style:{marginBottom:12}},lbl({className:"lbl"},"Answer / Back *"),ta({className:"inp",rows:2,placeholder:"What is the answer?",value:fcForm.answer,onChange:ev=>setFcForm(f=>({...f,answer:ev.target.value})),style:{resize:"none"}})),div({style:{marginBottom:18}},lbl({className:"lbl"},"Hint (optional)"),inp({className:"inp",placeholder:"Give a hint",value:fcForm.hint,onChange:ev=>setFcForm(f=>({...f,hint:ev.target.value}))})),div({style:{display:"flex",gap:10}},btn({onClick:()=>setShowModal(null),style:{flex:1,padding:"12px",background:"#f1f5f9",color:"#334155",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Cancel"),btn({onClick:saveFC,disabled:!fcForm.question||!fcForm.answer,style:{flex:1,padding:"12px",background:"#1F4E79",color:"white",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Create Flashcard")))),
+    showModal==="qz"&&div({className:"modal-bg",onClick:()=>setShowModal(null)},div({className:"modal",onClick:ev=>ev.stopPropagation()},div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}},h3({style:{fontSize:18,fontWeight:700}},"Create Quiz Question"),btn({onClick:()=>setShowModal(null),style:{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b",fontFamily:"inherit"}},"✕")),div({className:"g2",style:{marginBottom:12}},div({},lbl({className:"lbl"},"Subject"),sel({className:"inp",style:{appearance:"none"},value:qzForm.subject,onChange:ev=>setQzForm(f=>({...f,subject:ev.target.value}))},opt({value:""},"-- Select --"),...SUBS.map(s=>opt({key:s,value:s},s)))),div({},lbl({className:"lbl"},"Topic"),inp({className:"inp",placeholder:"Topic name",value:qzForm.topic,onChange:ev=>setQzForm(f=>({...f,topic:ev.target.value}))}))),div({style:{marginBottom:12}},lbl({className:"lbl"},"Question *"),ta({className:"inp",rows:2,placeholder:"Enter the quiz question",value:qzForm.question,onChange:ev=>setQzForm(f=>({...f,question:ev.target.value})),style:{resize:"none"}})),div({style:{marginBottom:12}},lbl({className:"lbl"},"Options * (select correct answer)"),...(qzForm.options||[]).map((opt2,i)=>div({key:i,style:{display:"flex",alignItems:"center",gap:8,marginBottom:8}},e("input",{type:"radio",name:"correct",checked:qzForm.correct===i,onChange:()=>setQzForm(f=>({...f,correct:i})),style:{cursor:"pointer"}}),inp({className:"inp",placeholder:"Option "+String.fromCharCode(65+i),value:opt2,onChange:ev=>{const o=[...(qzForm.options||[])];o[i]=ev.target.value;setQzForm(f=>({...f,options:o}));},style:{flex:1}})))),div({style:{marginBottom:18}},lbl({className:"lbl"},"Explanation (optional)"),inp({className:"inp",placeholder:"Explain why the answer is correct",value:qzForm.explanation,onChange:ev=>setQzForm(f=>({...f,explanation:ev.target.value}))})),div({style:{display:"flex",gap:10}},btn({onClick:()=>setShowModal(null),style:{flex:1,padding:"12px",background:"#f1f5f9",color:"#334155",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Cancel"),btn({onClick:saveQZ,disabled:!qzForm.question||(qzForm.options||[]).some(o=>!o),style:{flex:1,padding:"12px",background:"#1F4E79",color:"white",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Create Question")))),
+    showModal==="tk"&&div({className:"modal-bg",onClick:()=>setShowModal(null)},div({className:"modal",onClick:ev=>ev.stopPropagation()},div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}},h3({style:{fontSize:18,fontWeight:700}},"Assign Task to Baibhav"),btn({onClick:()=>setShowModal(null),style:{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b",fontFamily:"inherit"}},"✕")),div({style:{marginBottom:12}},lbl({className:"lbl"},"Task Title *"),inp({className:"inp",placeholder:"e.g. Complete Maths exercises Ch-3",value:tkForm.title,onChange:ev=>setTkForm(f=>({...f,title:ev.target.value}))})),div({className:"g2",style:{marginBottom:12}},div({},lbl({className:"lbl"},"Subject"),sel({className:"inp",style:{appearance:"none"},value:tkForm.subject,onChange:ev=>setTkForm(f=>({...f,subject:ev.target.value}))},opt({value:""},"-- Select --"),...SUBS.map(s=>opt({key:s,value:s},s)))),div({},lbl({className:"lbl"},"Due Date"),inp({className:"inp",type:"date",value:tkForm.dueDate,onChange:ev=>setTkForm(f=>({...f,dueDate:ev.target.value}))}))),div({style:{marginBottom:12}},lbl({className:"lbl"},"Description"),ta({className:"inp",rows:2,placeholder:"Describe what needs to be done...",value:tkForm.description,onChange:ev=>setTkForm(f=>({...f,description:ev.target.value})),style:{resize:"none"}})),div({style:{marginBottom:18}},lbl({className:"lbl"},"Priority"),sel({className:"inp",style:{appearance:"none"},value:tkForm.priority,onChange:ev=>setTkForm(f=>({...f,priority:ev.target.value}))},opt({value:"low"},"Low"),opt({value:"medium"},"Medium"),opt({value:"high"},"High"))),div({style:{display:"flex",gap:10}},btn({onClick:()=>setShowModal(null),style:{flex:1,padding:"12px",background:"#f1f5f9",color:"#334155",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Cancel"),btn({onClick:saveTK,disabled:!tkForm.title,style:{flex:1,padding:"12px",background:"#1F4E79",color:"white",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Assign Task"))))
   );
 }
 
 function LearnPage({flashcards,quizzes,tasks,toggleTask,studyNotes}){
-  const[tab,setTab]=useState("notes");
-  const typeIcon={pdf:"📄",ppt:"📊",link:"🔗",video:"🎥",file:"📎"};
+  const[tab,setTab]=useState("notes");const typeIcon={pdf:"📄",ppt:"📊",link:"🔗",video:"🎥",file:"📎"};
   return div({},
     div({style:{fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:4}},"🎯 Learn & Practice"),
     p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"Study notes, flashcards, quizzes and tasks from your teachers"),
@@ -512,12 +715,11 @@ function LearnPage({flashcards,quizzes,tasks,toggleTask,studyNotes}){
 }
 
 function TasksPage({tasks,addTask,toggleTask,isT}){
-  const[showModal,setShowModal]=useState(false);
-  const[form,setForm]=useState({title:"",subject:"",description:"",dueDate:"",priority:"medium"});
+  const[showModal,setShowModal]=useState(false);const[form,setForm]=useState({title:"",subject:"",description:"",dueDate:"",priority:"medium"});
   const save=async()=>{if(!form.title)return;await addTask(form);setForm({title:"",subject:"",description:"",dueDate:"",priority:"medium"});setShowModal(false);};
   const pending=tasks.filter(t=>!t.done);const done=tasks.filter(t=>t.done);
   return div({},
-    div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}},div({style:{fontSize:24,fontWeight:800,color:"#0f172a"}},isT?"Manage Tasks":"My Tasks"),isT&&btn({className:"btn bp",onClick:()=>setShowModal(true)},"+ Assign Task")),
+    div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}},div({style:{fontSize:24,fontWeight:800,color:"#0f172a"}},isT?"Manage Tasks":"My Tasks"),isT&&btn({onClick:()=>setShowModal(true),style:{padding:"8px 16px",background:"#1F4E79",color:"white",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:600,fontFamily:"inherit"}},"+ Assign Task")),
     p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},isT?"Assign tasks and track Baibhav completion":"Complete your assigned tasks"),
     div({className:"g2",style:{marginBottom:20}},div({style:{background:"#FCE4D6",borderRadius:16,padding:"16px 20px"}},div({style:{fontSize:28,fontWeight:800,color:"#C55A11"}},pending.length),div({style:{fontSize:13,color:"#C55A11",fontWeight:600}},"Pending Tasks")),div({style:{background:"#C6EFCE",borderRadius:16,padding:"16px 20px"}},div({style:{fontSize:28,fontWeight:800,color:"#276221"}},done.length),div({style:{fontSize:13,color:"#276221",fontWeight:600}},"Completed Tasks"))),
     pending.length>0&&div({style:{marginBottom:20}},div({style:{fontSize:14,fontWeight:700,marginBottom:10,color:"#C55A11"}},"Pending ("+pending.length+")"),...pending.map(t=>div({key:t.id,style:{display:"flex",alignItems:"flex-start",gap:12,padding:"14px 16px",borderRadius:12,background:"#f8fafc",border:"1px solid #e2e8f0",marginBottom:10}},div({onClick:()=>toggleTask(t.id,t.done),style:{width:22,height:22,borderRadius:6,border:"2px solid #e2e8f0",cursor:"pointer",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",marginTop:2}}),div({style:{flex:1}},div({style:{fontSize:14,fontWeight:600}},t.title),t.subject&&div({style:{fontSize:12,color:"#64748b",marginTop:2}},t.subject),t.description&&div({style:{fontSize:12,color:"#64748b",marginTop:2}},t.description),div({style:{display:"flex",gap:8,marginTop:4}},t.dueDate&&span({style:{fontSize:11,color:"#C55A11",fontWeight:600}},"Due: "+t.dueDate),span({className:"tag "+(t.priority==="high"?"td2":t.priority==="medium"?"tw":"ts")},t.priority))),span({style:{fontSize:11,color:"#94a3b8"}},"by "+t.createdBy)))),
@@ -529,73 +731,7 @@ function TasksPage({tasks,addTask,toggleTask,isT}){
       div({className:"g2",style:{marginBottom:12}},div({},lbl({className:"lbl"},"Subject"),sel({className:"inp",style:{appearance:"none"},value:form.subject,onChange:ev=>setForm(f=>({...f,subject:ev.target.value}))},opt({value:""},"-- Select --"),...SUBS.map(s=>opt({key:s,value:s},s)))),div({},lbl({className:"lbl"},"Due Date"),inp({className:"inp",type:"date",value:form.dueDate,onChange:ev=>setForm(f=>({...f,dueDate:ev.target.value}))}))),
       div({style:{marginBottom:12}},lbl({className:"lbl"},"Description"),ta({className:"inp",rows:2,placeholder:"Describe what needs to be done...",value:form.description,onChange:ev=>setForm(f=>({...f,description:ev.target.value})),style:{resize:"none"}})),
       div({style:{marginBottom:18}},lbl({className:"lbl"},"Priority"),sel({className:"inp",style:{appearance:"none"},value:form.priority,onChange:ev=>setForm(f=>({...f,priority:ev.target.value}))},opt({value:"low"},"Low"),opt({value:"medium"},"Medium"),opt({value:"high"},"High"))),
-      div({style:{display:"flex",gap:10}},btn({className:"btn bg2",style:{flex:1},onClick:()=>setShowModal(false)},"Cancel"),btn({className:"btn bp",style:{flex:1},onClick:save,disabled:!form.title},"Assign Task"))
-    ))
-  );
-}
-
-function CalPage({calEvents,addCalEvent,deleteCalEvent,topics,isT}){
-  const today=new Date();
-  const[year,setYear]=useState(today.getFullYear());
-  const[month,setMonth]=useState(today.getMonth());
-  const[selected,setSelected]=useState(today.toISOString().split("T")[0]);
-  const[showAdd,setShowAdd]=useState(false);
-  const[form,setForm]=useState({title:"",type:"study",subject:"",time:"",endTime:"",notes:"",meetLink:"",tutorName:""});
-  const daysInMonth=new Date(year,month+1,0).getDate();
-  const firstDay=new Date(year,month,1).getDay();
-  const MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
-  const todayStr=today.toISOString().split("T")[0];
-  const getDS=d=>`${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-  const evOnDate=d=>calEvents.filter(ev=>ev.date===getDS(d));
-  const tpOnDate=d=>topics.filter(t=>t.date===getDS(d));
-  const selEvs=calEvents.filter(ev=>ev.date===selected);
-  const selTps=topics.filter(t=>t.date===selected);
-  const TC={study:"#1F4E79",exam:"#9C0006",revision:"#C55A11",activity:"#276221",holiday:"#4B2E83",tutor:"#0891b2",meeting:"#7c3aed"};
-  const TI={study:"📚",exam:"📝",revision:"🔄",activity:"⚽",holiday:"🏖️",tutor:"📹",meeting:"🤝"};
-  const sf=(k,v)=>setForm(f=>({...f,[k]:v}));
-  const save=async()=>{if(!form.title)return;await addCalEvent({...form,date:selected});setForm({title:"",type:"study",subject:"",time:"",endTime:"",notes:"",meetLink:"",tutorName:""});setShowAdd(false);};
-  return div({},
-    div({style:{fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:4}},"📅 Study Calendar"),
-    p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"Plan studies, schedule tutor sessions and set meeting links"),
-    div({className:"g2"},
-      div({className:"card"},
-        div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}},btn({className:"btn bg2 bsm",onClick:()=>{if(month===0){setMonth(11);setYear(y=>y-1);}else setMonth(m=>m-1);}},"←"),span({style:{fontWeight:700,fontSize:16}},MN[month]+" "+year),btn({className:"btn bg2 bsm",onClick:()=>{if(month===11){setMonth(0);setYear(y=>y+1);}else setMonth(m=>m+1);}},"→")),
-        div({style:{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2,marginBottom:8}},...["Su","Mo","Tu","We","Th","Fr","Sa"].map(d=>div({key:d,style:{textAlign:"center",fontSize:11,fontWeight:700,color:"#64748b",padding:"4px 0"}},d))),
-        div({style:{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2}},
-          ...Array(firstDay).fill(null).map((_,i)=>div({key:"e"+i})),
-          ...Array(daysInMonth).fill(null).map((_,i)=>{const d=i+1;const ds=getDS(d);const evs=evOnDate(d);const tps=tpOnDate(d);const isToday=ds===todayStr;const isSel=ds===selected;const hasTutor=evs.some(ev=>ev.type==="tutor"||ev.type==="meeting");return div({key:d,onClick:()=>setSelected(ds),style:{aspectRatio:"1",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:isToday||isSel?700:400,background:isToday?"#1F4E79":isSel?"#DCE6F1":"transparent",color:isToday?"white":isSel?"#1F4E79":"inherit",minHeight:36,padding:4}},d,(evs.length>0||tps.length>0)&&div({style:{display:"flex",gap:2,marginTop:2}},tps.length>0&&span({style:{width:4,height:4,borderRadius:"50%",background:isToday?"white":"#276221",display:"inline-block"}}),evs.length>0&&span({style:{width:4,height:4,borderRadius:"50%",background:isToday?"white":hasTutor?"#0891b2":"#C55A11",display:"inline-block"}})));})
-        ),
-        div({style:{marginTop:12,display:"flex",gap:6,flexWrap:"wrap"}},...Object.entries(TC).map(([t,c])=>span({key:t,style:{fontSize:10,display:"flex",alignItems:"center",gap:3}},span({style:{width:7,height:7,borderRadius:"50%",background:c,display:"inline-block"}}),t)))
-      ),
-      div({},
-        div({className:"card",style:{marginBottom:16}},
-          div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}},div({style:{fontSize:16,fontWeight:700,color:"#0f172a"}},new Date(selected+"T00:00:00").toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"})),isT&&btn({className:"btn bp bsm",onClick:()=>setShowAdd(true)},"+ Add Event")),
-          selEvs.length===0&&selTps.length===0?div({style:{textAlign:"center",padding:"20px 0",color:"#64748b",fontSize:13}},div({style:{fontSize:32,marginBottom:8}},"📭"),"No events for this day.",isT&&div({style:{marginTop:8}},btn({className:"btn bp bsm",onClick:()=>setShowAdd(true)},"Plan this day"))):
-          div({},
-            selTps.length>0&&div({style:{marginBottom:12}},div({style:{fontSize:12,fontWeight:700,color:"#64748b",marginBottom:6}},"TOPICS TAUGHT"),...selTps.map(t=>div({key:t.id,style:{padding:"8px 12px",borderRadius:8,background:"#C6EFCE",border:"1px solid #276221",marginBottom:6}},div({style:{fontSize:13,fontWeight:600,color:"#276221"}},t.subject+" — "+t.chapter),div({style:{fontSize:11,color:"#276221"}},t.topic+(t.subtopic?" → "+t.subtopic:"")+" · by "+t.loggedBy)))),
-            ...selEvs.map(ev=>div({key:ev.id,style:{padding:"12px 14px",borderRadius:10,background:`${TC[ev.type]||"#1F4E79"}12`,border:`1px solid ${TC[ev.type]||"#1F4E79"}33`,marginBottom:8}},
-              div({style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between"}},
-                div({style:{flex:1}},div({style:{display:"flex",alignItems:"center",gap:6,marginBottom:4}},span({style:{fontSize:16}},TI[ev.type]||"📌"),span({style:{fontSize:13,fontWeight:700,color:TC[ev.type]||"#1F4E79"}},ev.title)),ev.time&&div({style:{fontSize:12,color:"#64748b"}},"⏰ "+ev.time+(ev.endTime?" – "+ev.endTime:"")),ev.subject&&div({style:{fontSize:12,color:"#64748b"}},"📚 "+ev.subject),ev.tutorName&&div({style:{fontSize:12,color:"#64748b"}},"👨‍🏫 "+ev.tutorName),ev.notes&&div({style:{fontSize:11,color:"#64748b",marginTop:4}},ev.notes),ev.meetLink&&a({href:ev.meetLink,target:"_blank",style:{display:"inline-flex",alignItems:"center",gap:4,marginTop:6,padding:"5px 12px",background:TC[ev.type]||"#1F4E79",color:"white",borderRadius:8,fontSize:12,fontWeight:600,textDecoration:"none"}},"📹 Join Meeting")),
-                isT&&btn({onClick:()=>deleteCalEvent(ev.id),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:16,padding:"0 4px",flexShrink:0,fontFamily:"inherit"}},"✕")
-              )
-            ))
-          )
-        ),
-        div({className:"card"},
-          div({style:{fontSize:16,fontWeight:700,color:"#0f172a",marginBottom:14}},"📌 Upcoming Events"),
-          calEvents.filter(ev=>ev.date>=todayStr).slice(0,5).map(ev=>div({key:ev.id,style:{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #f1f5f9"}},div({style:{width:36,height:36,borderRadius:8,background:`${TC[ev.type]||"#1F4E79"}20`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:TC[ev.type]||"#1F4E79",flexShrink:0,lineHeight:1.2}},span({},ev.date.slice(8)),span({style:{fontSize:9}},MN[parseInt(ev.date.slice(5,7))-1].slice(0,3))),div({style:{flex:1}},div({style:{fontSize:13,fontWeight:600}},(TI[ev.type]||"📌")+" "+ev.title),div({style:{fontSize:11,color:"#64748b"}},(ev.time||ev.type)+(ev.tutorName?" · "+ev.tutorName:""))),ev.meetLink&&a({href:ev.meetLink,target:"_blank",style:{fontSize:11,color:"#0891b2",fontWeight:600,textDecoration:"none"}},"Join →"))),
-          calEvents.filter(ev=>ev.date>=todayStr).length===0&&p2({style:{color:"#64748b",fontSize:13,textAlign:"center",padding:"12px 0"}},"No upcoming events")
-        )
-      )
-    ),
-    showAdd&&div({className:"modal-bg",onClick:()=>setShowAdd(false)},div({className:"modal",onClick:ev=>ev.stopPropagation()},
-      div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}},h3({style:{fontSize:18,fontWeight:700}},"Add Event — "+selected),btn({onClick:()=>setShowAdd(false),style:{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b",fontFamily:"inherit"}},"✕")),
-      div({style:{marginBottom:12}},lbl({className:"lbl"},"Event Title *"),inp({className:"inp",placeholder:"e.g. Maths Tutor Session",value:form.title,onChange:ev=>sf("title",ev.target.value)})),
-      div({className:"g2",style:{marginBottom:12}},div({},lbl({className:"lbl"},"Type"),sel({className:"inp",style:{appearance:"none"},value:form.type,onChange:ev=>sf("type",ev.target.value)},opt({value:"study"},"📚 Study"),opt({value:"exam"},"📝 Exam/Test"),opt({value:"revision"},"🔄 Revision"),opt({value:"activity"},"⚽ Activity"),opt({value:"holiday"},"🏖️ Holiday"),opt({value:"tutor"},"📹 Tutor Session"),opt({value:"meeting"},"🤝 Meeting"))),div({},lbl({className:"lbl"},"Subject"),sel({className:"inp",style:{appearance:"none"},value:form.subject,onChange:ev=>sf("subject",ev.target.value)},opt({value:""},"-- Select --"),...SUBS.map(s=>opt({key:s,value:s},s))))),
-      div({className:"g2",style:{marginBottom:12}},div({},lbl({className:"lbl"},"Start Time"),inp({className:"inp",type:"time",value:form.time,onChange:ev=>sf("time",ev.target.value)})),div({},lbl({className:"lbl"},"End Time"),inp({className:"inp",type:"time",value:form.endTime,onChange:ev=>sf("endTime",ev.target.value)}))),
-      (form.type==="tutor"||form.type==="meeting")&&div({},div({style:{marginBottom:12}},lbl({className:"lbl"},"Tutor / Host Name"),inp({className:"inp",placeholder:"e.g. Saswat, Swagat",value:form.tutorName,onChange:ev=>sf("tutorName",ev.target.value)})),div({style:{marginBottom:12}},lbl({className:"lbl"},"Meeting Link (Google Meet / Zoom / Teams)"),inp({className:"inp",placeholder:"https://meet.google.com/xxx-xxxx-xxx",value:form.meetLink,onChange:ev=>sf("meetLink",ev.target.value)}),div({style:{fontSize:11,color:"#64748b",marginTop:4}},"Paste your Google Meet, Zoom or Teams link. Baibhav can click to join directly."))),
-      div({style:{marginBottom:20}},lbl({className:"lbl"},"Notes"),inp({className:"inp",placeholder:"Any additional notes...",value:form.notes,onChange:ev=>sf("notes",ev.target.value)})),
-      div({style:{display:"flex",gap:10}},btn({className:"btn bg2",style:{flex:1},onClick:()=>setShowAdd(false)},"Cancel"),btn({className:"btn bp",style:{flex:1},onClick:save,disabled:!form.title},"Add Event"))
+      div({style:{display:"flex",gap:10}},btn({onClick:()=>setShowModal(false),style:{flex:1,padding:"12px",background:"#f1f5f9",color:"#334155",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Cancel"),btn({onClick:save,disabled:!form.title,style:{flex:1,padding:"12px",background:"#1F4E79",color:"white",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Assign Task"))
     ))
   );
 }
