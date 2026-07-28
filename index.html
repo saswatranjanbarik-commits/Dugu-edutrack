@@ -250,6 +250,11 @@ function LogTopic({logTopic,syllabus,profile}){
 function SylPage({syllabus,uploadSyllabus,isT}){
   const[selSub,setSelSub]=useState(SUBS[0]);
   const[expandedCh,setExpandedCh]=useState({});
+  const[showEdit,setShowEdit]=useState(false);
+  const[editChs,setEditChs]=useState([]);
+  const[newCh,setNewCh]=useState("");
+  const[newTp,setNewTp]=useState({ch:"",name:""});
+  const[newSt,setNewSt]=useState({ch:"",tp:"",name:""});
   const customChs=syllabus[selSub]?.chapters||DS[selSub]?.chapters||[];
   const progress=syllabus[selSub]?.progress||{};
   const countAll=chs=>chs.reduce((a,c)=>a+c.topics.reduce((b,t)=>b+1+(t.subtopics?.length||0),0),0);
@@ -257,12 +262,26 @@ function SylPage({syllabus,uploadSyllabus,isT}){
   const taughtT=Object.keys(progress).filter(k=>progress[k].status==="taught").length;
   const pct=allT?Math.round(taughtT/allT*100):0;
   const toggleCh=ch=>setExpandedCh(p=>({...p,[ch]:!p[ch]}));
+  const startEdit=()=>{setEditChs(JSON.parse(JSON.stringify(customChs)));setShowEdit(true);};
+  const addCh=()=>{if(!newCh.trim())return;setEditChs(p=>[...p,{ch:newCh.trim(),topics:[]}]);setNewCh("");};
+  const addTp=()=>{if(!newTp.ch||!newTp.name.trim())return;setEditChs(p=>p.map(c=>c.ch===newTp.ch?{...c,topics:[...c.topics,{name:newTp.name.trim(),subtopics:[]}]}:c));setNewTp({ch:"",name:""});};
+  const addSt=()=>{if(!newSt.ch||!newSt.tp||!newSt.name.trim())return;setEditChs(p=>p.map(c=>c.ch===newSt.ch?{...c,topics:c.topics.map(t=>t.name===newSt.tp?{...t,subtopics:[...(t.subtopics||[]),newSt.name.trim()]}:t)}:c));setNewSt({ch:"",tp:"",name:""});};
+  const remTp=(ch,tp)=>setEditChs(p=>p.map(c=>c.ch===ch?{...c,topics:c.topics.filter(t=>t.name!==tp)}:c));
+  const remSt=(ch,tp,st)=>setEditChs(p=>p.map(c=>c.ch===ch?{...c,topics:c.topics.map(t=>t.name===tp?{...t,subtopics:(t.subtopics||[]).filter(s=>s!==st)}:t)}:c));
+  const remCh=ch=>setEditChs(p=>p.filter(c=>c.ch!==ch));
+  const saveEdit=async()=>{await uploadSyllabus(selSub,editChs);setShowEdit(false);};
   return div({},
     div({style:{fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:4}},"📚 Syllabus & Progress"),
     p2({style:{fontSize:14,color:"#64748b",marginBottom:24}},"Track topic and sub-topic completion for each subject"),
     div({style:{display:"flex",flexWrap:"wrap",gap:8,marginBottom:20}},...SUBS.map(s=>{const chs=syllabus[s]?.chapters||DS[s]?.chapters||[];const tot=countAll(chs);const done=Object.keys(syllabus[s]?.progress||{}).filter(k=>syllabus[s].progress[k].status==="taught").length;const p=tot?Math.round(done/tot*100):0;return btn({key:s,onClick:()=>setSelSub(s),style:{padding:"8px 14px",borderRadius:10,fontSize:12,fontWeight:600,border:`2px solid ${SC[s]||"#1F4E79"}`,cursor:"pointer",background:selSub===s?(SC[s]||"#1F4E79"):"white",color:selSub===s?"white":(SC[s]||"#1F4E79"),fontFamily:"inherit"}},s+" ("+p+"%)");}) ),
     div({className:"card"},
-      div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,padding:"16px 20px",background:SL[selSub]||"#f8fafc",borderRadius:12,margin:"-20px -20px 16px"}},div({},div({style:{fontSize:20,fontWeight:800,color:SC[selSub]||"#1F4E79"}},selSub),div({style:{fontSize:13,color:"#475569"}},taughtT+"/"+allT+" items taught")),div({style:{textAlign:"right"}},div({style:{fontSize:36,fontWeight:900,color:SC[selSub]||"#1F4E79"}},pct+"%"))),
+      div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,padding:"16px 20px",background:SL[selSub]||"#f8fafc",borderRadius:12,margin:"-20px -20px 16px"}},
+        div({},div({style:{fontSize:20,fontWeight:800,color:SC[selSub]||"#1F4E79"}},selSub),div({style:{fontSize:13,color:"#475569"}},taughtT+"/"+allT+" items taught")),
+        div({style:{textAlign:"right",display:"flex",alignItems:"center",gap:12}},
+          div({style:{fontSize:36,fontWeight:900,color:SC[selSub]||"#1F4E79"}},pct+"%"),
+          isT&&btn({onClick:startEdit,style:{padding:"8px 16px",background:SC[selSub]||"#1F4E79",color:"white",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:600,fontFamily:"inherit"}},"✏️ Edit Syllabus")
+        )
+      ),
       div({style:{marginBottom:20}},div({className:"pb",style:{height:12}},div({className:"pf",style:{width:pct+"%",background:SC[selSub]||"#1F4E79"}})),div({style:{display:"flex",justifyContent:"space-between",marginTop:6,fontSize:12,color:"#64748b"}},span({},"✅ "+taughtT+" taught"),span({},"⏳ "+(allT-taughtT)+" remaining"))),
       ...customChs.map(ch=>{
         const chAll=ch.topics.reduce((a,t)=>a+1+(t.subtopics?.length||0),0);
@@ -296,6 +315,63 @@ function SylPage({syllabus,uploadSyllabus,isT}){
           }))
         );
       })
+    ),
+    showEdit&&div({className:"modal-bg",onClick:()=>setShowEdit(false)},
+      div({className:"modal",style:{maxWidth:700},onClick:ev=>ev.stopPropagation()},
+        div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}},
+          h3({style:{fontSize:18,fontWeight:700}},"✏️ Edit Syllabus — "+selSub),
+          btn({onClick:()=>setShowEdit(false),style:{background:"none",border:"none",cursor:"pointer",fontSize:20,color:"#64748b",fontFamily:"inherit"}},"✕")
+        ),
+        div({style:{background:"#FFF2CC",border:"1px solid #9C5700",borderRadius:10,padding:"10px 14px",marginBottom:16,fontSize:13,color:"#9C5700"}},"💡 Add chapters, topics and sub-topics below. Click Save when done."),
+        div({style:{maxHeight:260,overflowY:"auto",marginBottom:14,border:"1px solid #e2e8f0",borderRadius:10,padding:10}},
+          ...editChs.map(ch=>div({key:ch.ch,style:{marginBottom:10}},
+            div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 10px",background:"#f8fafc",borderRadius:8,marginBottom:4}},
+              span({style:{fontWeight:700,fontSize:13,color:"#1F4E79"}},ch.ch),
+              btn({onClick:()=>remCh(ch.ch),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:12,fontFamily:"inherit"}},"Remove Chapter")
+            ),
+            ...ch.topics.map(tp=>div({key:tp.name,style:{marginLeft:12,marginBottom:4}},
+              div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"4px 8px",background:"#f0f7ff",borderRadius:6,marginBottom:2}},
+                span({style:{fontSize:12,fontWeight:600}},"📌 "+tp.name),
+                btn({onClick:()=>remTp(ch.ch,tp.name),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:12,fontFamily:"inherit"}},"✕")
+              ),
+              ...(tp.subtopics||[]).map(st=>div({key:st,style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"3px 8px",marginLeft:12,marginBottom:2}},
+                span({style:{fontSize:11,color:"#64748b"}},"→ "+st),
+                btn({onClick:()=>remSt(ch.ch,tp.name,st),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:11,fontFamily:"inherit"}},"✕")
+              ))
+            ))
+          ))
+        ),
+        div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}},
+          div({style:{border:"1px solid #e2e8f0",borderRadius:10,padding:12}},
+            div({style:{fontSize:13,fontWeight:600,marginBottom:8,color:"#1F4E79"}},"➕ Add New Chapter"),
+            div({style:{display:"flex",gap:8}},
+              inp({className:"inp",placeholder:"e.g. Ch-8 or Unit-5",value:newCh,onChange:ev=>setNewCh(ev.target.value),style:{flex:1,fontSize:13}}),
+              btn({onClick:addCh,disabled:!newCh,style:{padding:"8px 14px",background:"#1F4E79",color:"white",border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"inherit"}},"Add")
+            )
+          ),
+          div({style:{border:"1px solid #e2e8f0",borderRadius:10,padding:12}},
+            div({style:{fontSize:13,fontWeight:600,marginBottom:8,color:"#1F4E79"}},"➕ Add Topic to Chapter"),
+            sel({className:"inp",style:{appearance:"none",fontSize:13,marginBottom:6},value:newTp.ch,onChange:ev=>setNewTp(f=>({...f,ch:ev.target.value}))},opt({value:""},"Select Chapter"),...editChs.map(c=>opt({key:c.ch,value:c.ch},c.ch))),
+            div({style:{display:"flex",gap:8}},
+              inp({className:"inp",placeholder:"Topic name",value:newTp.name,onChange:ev=>setNewTp(f=>({...f,name:ev.target.value})),style:{flex:1,fontSize:13}}),
+              btn({onClick:addTp,disabled:!newTp.ch||!newTp.name,style:{padding:"8px 14px",background:"#1F4E79",color:"white",border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"inherit"}},"Add")
+            )
+          )
+        ),
+        div({style:{border:"1px solid #e2e8f0",borderRadius:10,padding:12,marginBottom:16}},
+          div({style:{fontSize:13,fontWeight:600,marginBottom:8,color:"#276221"}},"➕ Add Sub-topic to Topic"),
+          div({style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr auto",gap:8,alignItems:"end"}},
+            sel({className:"inp",style:{appearance:"none",fontSize:13},value:newSt.ch,onChange:ev=>setNewSt(f=>({...f,ch:ev.target.value,tp:""}))},opt({value:""},"Chapter"),...editChs.map(c=>opt({key:c.ch,value:c.ch},c.ch))),
+            sel({className:"inp",style:{appearance:"none",fontSize:13},value:newSt.tp,onChange:ev=>setNewSt(f=>({...f,tp:ev.target.value})),disabled:!newSt.ch},opt({value:""},"Topic"),...(editChs.find(c=>c.ch===newSt.ch)?.topics||[]).map(t=>opt({key:t.name,value:t.name},t.name))),
+            inp({className:"inp",placeholder:"Sub-topic name",value:newSt.name,onChange:ev=>setNewSt(f=>({...f,name:ev.target.value})),style:{fontSize:13}}),
+            btn({onClick:addSt,disabled:!newSt.ch||!newSt.tp||!newSt.name,style:{padding:"8px 14px",background:"#276221",color:"white",border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"inherit"}},"Add")
+          )
+        ),
+        div({style:{display:"flex",gap:10}},
+          btn({onClick:()=>setShowEdit(false),style:{flex:1,padding:"12px",background:"#f1f5f9",color:"#334155",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"Cancel"),
+          btn({onClick:saveEdit,style:{flex:1,padding:"12px",background:"#1F4E79",color:"white",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:600,fontFamily:"inherit"}},"💾 Save Syllabus")
+        )
+      )
     )
   );
 }
