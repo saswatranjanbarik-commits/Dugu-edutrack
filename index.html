@@ -147,80 +147,150 @@ function pgDashboard(isT){
     var td=today(),tn=dayName(),hour=new Date().getHours();
     var gr=hour<12?'Good Morning':hour<17?'Good Afternoon':'Good Evening';
     var ttToday=(S.timetable[tn]||[]);
-    var highTasks=S.tasks.filter(function(t){return !t.done&&(t.priority==='high'||t.priority==='medium');});
     var tr=S.revisions.filter(function(r){return !r.done&&r.dueDate<=td;});
     var totalDone=0,totalTopics=0;
-    Object.keys(S.syllabus).forEach(function(sub){var v=S.syllabus[sub];totalDone+=Object.values(v.progress||{}).filter(function(x){return x.status==='taught';}).length;(v.chapters||[]).forEach(function(c){(c.topics||[]).forEach(function(t){totalTopics+=1+(t.st||[]).length;});});});
+    Object.keys(S.syllabus).forEach(function(sub){
+      var v=S.syllabus[sub];
+      totalDone+=Object.values(v.progress||{}).filter(function(x){return x.status==='taught';}).length;
+      (v.chapters||[]).forEach(function(c){(c.topics||[]).forEach(function(t){totalTopics+=1+(t.st||[]).length;});});
+    });
     var op=totalTopics?Math.round(totalDone/totalTopics*100):0;
 
-    // Hero banner
-    var revAlert=tr.length>0?D({style:'margin-top:8px;background:rgba(255,255,255,.15);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;display:inline-block'},'&#128260; '+tr.length+' revision'+(tr.length>1?'s':'')+' due today!'):'';
-    var hero=D({style:'background:linear-gradient(135deg,#312e81,#4f46e5);color:white;border-radius:14px;padding:20px 24px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between'},
-      D({},D({style:'font-size:13px;opacity:.8'},gr+'!')+D({style:'font-family:Nunito,sans-serif;font-size:26px;font-weight:900;margin:4px 0'},'&#128102; Baibhav')+D({style:'font-size:13px;opacity:.85'},'Std 5A &middot; Buxi Jagabandhu School')+revAlert)+
-      D({style:'text-align:center;background:rgba(255,255,255,.15);border-radius:12px;padding:12px 20px'},D({style:'font-size:38px;font-weight:900;line-height:1'},op+'%')+D({style:'font-size:12px;opacity:.85'},'Overall Progress'))
-    );
+    // ── Header greeting ──────────────────────────────────────────────────────
+    var header=D({style:'display:flex;align-items:center;justify-content:space-between;margin-bottom:4px'},
+      D({class:'pt'},'&#128075; Welcome back, Baibhav!')+
+      S2({style:'background:#ede9fe;color:#4f46e5;padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:700'},'Std 5A')
+    )+D({class:'ps'},new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}));
 
-    // Today's Timetable with Log buttons
-    var periodLabels=['P1 10:30','P2 11:10','P3 11:50','P4 12:30','BREAK','P5 1:30','P6 2:10','P7 2:50','P8 3:30'];
-    var bgMap={English:'#ede9fe',Hindi:'#f3e8ff',Odia:'#fef9c3',Mathematics:'#dcfce7',Science:'#dcfce7'};
+    // ── Timetable periods ────────────────────────────────────────────────────
+    var periodTimes=['10:30 AM','11:10 AM','11:50 AM','12:30 PM','1:30 PM','2:10 PM','2:50 PM','3:30 PM','4:10 PM'];
     var ttRows='';
+    // Get today's already-logged topics for pre-filling
+    var todayTopics={};
+    S.topics.forEach(function(t){if(t.date===td)todayTopics[t.subject]=(todayTopics[t.subject]||[])+1;});
+
     ttToday.forEach(function(subj,i){
       var isBreak=subj==='BREAK';
-      var pLabel=periodLabels[i]||('P'+(i+1));
-      var bg=isBreak?'#FFF9C4':(bgMap[subj]||'#f8fafc');
-      var inputId='ttlog'+i;
-      var logBtn=isBreak
-        ? D({style:'font-size:12px;color:#9C5700;font-style:italic'},'Lunch Break &#127829;')
-        : I({class:'inp',id:inputId,placeholder:'What was taught?',style:'flex:1;padding:6px 10px;font-size:12px;border-radius:7px;border:1px solid #e2e8f0'})+
-          D({onclick:'studentLog('+i+')',style:'padding:5px 12px;border-radius:7px;background:#4f46e5;color:white;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap;display:inline-flex;align-items:center'},'&#9989; Log');
-      ttRows+=D({style:'display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;background:'+bg+';border:1px solid #e2e8f0;margin-bottom:6px'},
-        D({style:'font-size:11px;font-weight:700;color:#64748b;min-width:70px;flex-shrink:0'},pLabel)+
-        D({style:'font-size:13px;font-weight:600;color:#312e81;min-width:110px;flex-shrink:0'},subj)+
-        logBtn
-      );
+      var pTime=periodTimes[i]||'';
+      var pLabel=isBreak?'Break':'P'+(i<4?i+1:i);
+      var alreadyLogged=!isBreak&&todayTopics[subj]>0;
+      var inputId='ttinp'+i;
+      var subjectColor={English:'#4f46e5',Hindi:'#7c3aed',Odia:'#b45309',Mathematics:'#059669',Science:'#0891b2','Social Studies':'#dc2626','Computer Science':'#2563eb','Moral Science':'#9333ea','General Knowledge':'#64748b'};
+      var sc2=subjectColor[subj]||'#4f46e5';
+
+      if(isBreak){
+        ttRows+=D({style:'display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:#fef9c3;border:1px solid #fde68a;margin-bottom:8px'},
+          D({style:'text-align:center;min-width:80px'},D({style:'font-size:11px;font-weight:700;color:#92400e'},'Break')+D({style:'font-size:10px;color:#92400e'},pTime))+
+          D({style:'font-size:13px;color:#92400e;font-weight:600'},'&#127829; Lunch Break')
+        );
+      } else if(alreadyLogged){
+        // Already logged today - show green badge
+        var loggedTopic='';
+        S.topics.forEach(function(t){if(t.date===td&&t.subject===subj&&!loggedTopic)loggedTopic=t.topic;});
+        ttRows+=D({style:'display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:#f0fdf4;border:1px solid #bbf7d0;margin-bottom:8px'},
+          D({style:'text-align:center;min-width:80px'},D({style:'font-size:11px;font-weight:700;color:'+sc2},pLabel)+D({style:'font-size:10px;color:#64748b'},pTime))+
+          D({style:'flex:1'},D({style:'font-size:13px;font-weight:700;color:#166534'},subj)+D({style:'font-size:11px;color:#166534;margin-top:2px'},'&#10003; '+(loggedTopic||'Topic logged')))+
+          S2({style:'background:#C6EFCE;color:#276221;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:700'},'Logged')
+        );
+      } else {
+        // Not yet logged - show input
+        ttRows+=D({style:'display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:white;border:1px solid #e2e8f0;margin-bottom:8px'},
+          D({style:'text-align:center;min-width:80px'},D({style:'font-size:11px;font-weight:700;color:'+sc2},pLabel)+D({style:'font-size:10px;color:#64748b'},pTime))+
+          D({style:'font-size:13px;font-weight:700;color:#312e81;min-width:100px;flex-shrink:0'},subj)+
+          I({class:'inp',id:inputId,placeholder:'What topic was covered?',style:'flex:1;padding:7px 11px;font-size:12px;border-radius:8px;border:1px solid #e2e8f0;margin:0 8px'})+
+          D({onclick:'studentLog('+i+')',style:'padding:6px 14px;border-radius:8px;background:#4f46e5;color:white;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap'},'Save')
+        );
+      }
     });
-    // Store timetable subjects for the log function
     window._ttSubjects=ttToday;
-    var ttSection=D({class:'card',style:'margin-bottom:16px'},
-      D({class:'st'},'&#128197; Today at School &mdash; '+tn)+
+
+    var ttSection=D({class:'card',style:'flex:1;min-width:0'},
+      D({style:'display:flex;align-items:center;justify-content:space-between;margin-bottom:4px'},
+        D({class:'st',style:'margin-bottom:0'},'&#128197; Today's School Timetable')+
+        S2({style:'background:#ede9fe;color:#4f46e5;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:700'},tn.toUpperCase())
+      )+
+      D({style:'font-size:12px;color:#64748b;margin-bottom:12px'},'Update what was taught in class today so your tutors can plan your revisions.')+
       D({id:'student-log-ok',style:'display:none;background:#C6EFCE;color:#276221;padding:8px 12px;border-radius:8px;margin-bottom:10px;font-weight:600;font-size:13px'},'&#9989; Topic logged! Revision scheduled.')+
       (ttToday.length===0?D({class:'es',style:'padding:12px 0'},D({style:'font-size:32px'},'&#127968;')+tag('p',{},'No school today!')):ttRows)
     );
 
-    // Task Checklist
+    // ── Self Study Plan ──────────────────────────────────────────────────────
+    // Teacher-assigned tasks + student's own study plan items
+    var allTasks=S.tasks.filter(function(t){return !t.done;});
+    var doneTasks=S.tasks.filter(function(t){return t.done;}).slice(0,3);
+
     var taskRows='';
-    if(!highTasks.length){
-      taskRows=D({class:'es',style:'padding:12px 0'},D({style:'font-size:32px'},'&#127881;')+tag('p',{},'No pending tasks!'));
+    if(!allTasks.length&&!doneTasks.length){
+      taskRows=D({class:'es',style:'padding:12px 0'},D({style:'font-size:28px'},'&#127881;')+tag('p',{},'No study tasks yet!'));
     } else {
-      highTasks.forEach(function(t){
-        var pc={high:'#9C0006',medium:'#C55A11',low:'#276221'};
-        var pb={high:'#FFC7CE',medium:'#FCE4D6',low:'#C6EFCE'};
-        var tid=t.id;
-        taskRows+=D({style:'display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;background:'+(pb[t.priority]||'#FCE4D6')+';border:1px solid '+(pc[t.priority]||'#C55A11')+';margin-bottom:6px'},
-          D({onclick:'toggleTask("'+tid+'",false)',style:'width:18px;height:18px;border-radius:4px;border:2px solid '+(pc[t.priority]||'#C55A11')+';cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:white'},'&nbsp;')+
-          D({style:'flex:1'},D({style:'font-size:13px;font-weight:600;color:'+(pc[t.priority]||'#C55A11')},t.title)+(t.subject?D({style:'font-size:11px;color:#64748b'},t.subject+(t.dueDate?' &middot; Due: '+t.dueDate:'')):''))+
-          S2({style:'font-size:10px;padding:2px 8px;border-radius:9999px;background:'+(pc[t.priority]||'#C55A11')+';color:white;font-weight:600;text-transform:capitalize'},t.priority)
+      allTasks.forEach(function(t){
+        var pc={high:'#dc2626',medium:'#C55A11',low:'#276221'};
+        var dot=D({style:'width:10px;height:10px;border-radius:50%;background:'+(pc[t.priority]||'#C55A11')+';flex-shrink:0'},'');
+        taskRows+=D({style:'display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:6px'},
+          dot+
+          D({style:'flex:1'},
+            D({style:'font-size:13px;font-weight:600;color:#1e1b4b'},t.title)+
+            (t.subject?D({style:'font-size:11px;color:#64748b'},t.subject+(t.dueDate?' &middot; Due: '+t.dueDate:'')):'')
+          )+
+          D({onclick:'toggleTask("'+t.id+'",false)',style:'padding:4px 10px;border-radius:7px;border:1px solid #276221;background:#C6EFCE;color:#276221;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0'},'&#10003; Done')
+        );
+      });
+      doneTasks.forEach(function(t){
+        taskRows+=D({style:'display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;background:#f0fdf4;border:1px solid #bbf7d0;margin-bottom:6px;opacity:.75'},
+          D({style:'width:10px;height:10px;border-radius:50%;background:#276221;flex-shrink:0'},'')+
+          D({style:'flex:1'},D({style:'font-size:12px;font-weight:600;color:#166534;text-decoration:line-through'},t.title))+
+          S2({style:'font-size:10px;color:#276221;font-weight:600'},'&#10003; Done')
         );
       });
     }
-    var taskSection=D({class:'card',style:'margin-bottom:16px'},D({class:'st'},'&#9989; My Study Tasks')+taskRows);
 
-    // Subject progress mini cards
+    // Add own study plan item
+    var addPlanRow=D({style:'display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #e2e8f0'},
+      I({class:'inp',id:'own-plan-sub',placeholder:'Subject',style:'width:100px;flex-shrink:0;padding:7px 10px;font-size:12px;border-radius:8px'})+
+      I({class:'inp',id:'own-plan-txt',placeholder:'What will you study?',style:'flex:1;padding:7px 10px;font-size:12px;border-radius:8px'})+
+      D({onclick:'addOwnPlan()',style:'padding:7px 14px;border-radius:8px;background:#312e81;color:white;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap'},'+ Add')
+    );
+
+    var studyPlanSection=D({class:'card',style:'width:320px;flex-shrink:0'},
+      D({style:'display:flex;align-items:center;justify-content:space-between;margin-bottom:12px'},
+        D({class:'st',style:'margin-bottom:0'},'&#128218; Self Study Plan')+
+        S2({style:'background:#ede9fe;color:#4f46e5;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:600'},allTasks.length+' pending')
+      )+
+      taskRows+addPlanRow
+    );
+
+    // ── Subject Progress row ─────────────────────────────────────────────────
     var subjCards='';
     SUBS.forEach(function(sub){
       var d=S.syllabus[sub]||{},p=d.progress||{},ch=d.chapters||SYL[sub]||[];
       var total=0;ch.forEach(function(c){(c.topics||[]).forEach(function(t){total+=1+(t.st||[]).length;});});
       var done=Object.values(p).filter(function(x){return x.status==='taught';}).length;
       var pct=total?Math.round(done/total*100):0;
-      subjCards+=D({style:'padding:10px 12px;border-radius:10px;background:white;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)'},
-        D({style:'font-size:11px;font-weight:700;color:#312e81;margin-bottom:6px'},sub)+
-        D({class:'pb'},D({class:'pf',style:'width:'+pct+'%;background:'+(SC[sub]||'#4f46e5')},''))+
-        D({style:'font-size:10px;color:#64748b;margin-top:3px;text-align:right'},done+'/'+total+' &middot; '+pct+'%')
+      var subjectColor={English:'#4f46e5',Hindi:'#7c3aed',Odia:'#b45309',Mathematics:'#059669',Science:'#0891b2','Social Studies':'#dc2626','Computer Science':'#2563eb','Moral Science':'#9333ea','General Knowledge':'#64748b'};
+      var sc2=subjectColor[sub]||'#4f46e5';
+      subjCards+=D({style:'padding:10px 12px;border-radius:10px;background:white;border:1px solid #e2e8f0'},
+        D({style:'font-size:11px;font-weight:700;color:'+sc2+';margin-bottom:5px'},sub)+
+        D({class:'pb'},D({class:'pf',style:'width:'+pct+'%;background:'+sc2},''))+
+        D({style:'font-size:10px;color:#64748b;margin-top:3px;text-align:right'},pct+'%')
       );
     });
-    var subjSection=D({class:'card'},D({class:'st'},'&#128218; My Subject Progress')+D({class:'g3'},subjCards));
+    var subjSection=D({class:'card',style:'margin-top:16px'},
+      D({class:'st'},'&#128202; Subject Progress')+D({class:'g3'},subjCards)
+    );
 
-    return hero+D({class:'g2'},ttSection+taskSection)+subjSection;
+    // ── Revisions alert ──────────────────────────────────────────────────────
+    var revAlert='';
+    if(tr.length>0){
+      revAlert=D({style:'background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #f59e0b;border-radius:10px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px'},
+        D({style:'font-size:20px'},'&#128276;')+
+        D({style:'flex:1'},D({style:'font-size:13px;font-weight:700;color:#92400e'},tr.length+' topic'+(tr.length>1?'s':'')+' due for revision today!')+D({style:'font-size:11px;color:#92400e'},'Go to Revisions tab to complete them.'))+
+        D({onclick:"goPage('revision')",style:'padding:5px 12px;border-radius:7px;background:#f59e0b;color:white;font-size:11px;font-weight:600;cursor:pointer'},'View')
+      );
+    }
+
+    return header+revAlert+
+      D({style:'display:flex;gap:16px;align-items:flex-start'},ttSection+studyPlanSection)+
+      subjSection;
   }
 
   // ── TEACHER DASHBOARD ───────────────────────────────────────────────────────
@@ -240,12 +310,12 @@ function pgDashboard(isT){
   var revHtml='';if(!tr.length){revHtml=D({class:'es',style:'padding:9px 0'},D({style:'font-size:36px'},'&#9989;')+tag('p',{},'All clear!'));}else{tr.slice(0,4).forEach(function(r){revHtml+=D({style:'display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:7px;background:#FCE4D6;border:1px solid #C55A11;margin-bottom:4px'},D({style:'flex:1'},D({style:'font-size:12px;font-weight:600;color:#C55A11'},r.subject)+D({style:'font-size:11px;color:#475569'},r.topic))+S2({style:'background:#FFEB9C;color:#9C5700;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:600'},'Due'));});}
   return D({style:'display:flex;align-items:center;justify-content:space-between;margin-bottom:3px'},D({class:'pt'},'&#128075; Welcome, '+(S.profile?S.profile.name:'')+'!'))+D({class:'ps'},new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))+examHtml+stats+onlineHtml+D({class:'g2'},D({class:'card'},D({class:'st'},'&#128202; Subject Progress')+subjHtml)+D({style:'display:flex;flex-direction:column;gap:11px'},D({class:'card'},D({class:'st'},'&#128260; Revisions Due Today'+(tr.length?' ('+tr.length+')':''))+revHtml)+D({class:'card'},D({class:'st'},'&#128221; Recent Topics')+topHtml)));
 }
-// Student timetable log helper - uses window._ttSubjects set during render
+// Student timetable log
 function studentLog(periodIdx) {
   var subjects = window._ttSubjects || [];
   var subj = subjects[periodIdx] || '';
   if (!subj || subj === 'BREAK') return;
-  var inputEl = el('ttlog' + periodIdx);
+  var inputEl = el('ttinp' + periodIdx);
   var topicText = inputEl ? inputEl.value.trim() : '';
   if (!topicText) { toast('Please type what was taught in ' + subj); return; }
   var chs = (S.syllabus[subj] && S.syllabus[subj].chapters) || SYL[subj] || [];
@@ -254,7 +324,7 @@ function studentLog(periodIdx) {
   var rDue = rd.toISOString().split('T')[0];
   db.collection('topics').add({
     subject: subj, chapter: ch, topic: topicText, subtopic: '', date: today(),
-    status: 'selfstudy', notes: 'Logged by Baibhav from timetable',
+    status: 'selfstudy', notes: 'Logged by Baibhav',
     revisionDue: rDue, loggedBy: S.profile ? S.profile.name : 'Baibhav',
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   }).then(function() {
@@ -266,7 +336,23 @@ function studentLog(periodIdx) {
     if (inputEl) inputEl.value = '';
     var ok = el('student-log-ok');
     if (ok) { ok.style.display = 'block'; setTimeout(function(){ ok.style.display = 'none'; }, 3000); }
-    toast(subj + ' topic logged! Revision set for ' + rDue);
+    toast(subj + ' logged! Revision set for ' + rDue);
+  });
+}
+// Add own study plan item as a task
+function addOwnPlan() {
+  var sub = val('own-plan-sub');
+  var txt = val('own-plan-txt');
+  if (!txt.trim()) { toast('Please enter what you will study'); return; }
+  db.collection('tasks').add({
+    title: txt.trim(), subject: sub, dueDate: today(), priority: 'medium',
+    description: 'Self study plan by Baibhav', done: false,
+    createdBy: S.profile ? S.profile.name : 'Baibhav',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function() {
+    var si = el('own-plan-sub'); if (si) si.value = '';
+    var ti = el('own-plan-txt'); if (ti) ti.value = '';
+    toast('Added to study plan!');
   });
 }
 
