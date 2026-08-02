@@ -198,7 +198,7 @@ function pgDashboard(isT){
           D({style:'text-align:center;min-width:80px'},D({style:'font-size:11px;font-weight:700;color:'+sc2},pLabel)+D({style:'font-size:10px;color:#64748b'},pTime))+
           D({style:'font-size:13px;font-weight:700;color:#312e81;min-width:100px;flex-shrink:0'},subj)+
           I({class:'inp',id:inputId,placeholder:'What topic was covered?',style:'flex:1;padding:7px 11px;font-size:12px;border-radius:8px;border:1px solid #e2e8f0;margin:0 8px'})+
-          D({onclick:'studentLog('+i+')',style:'padding:6px 14px;border-radius:8px;background:#4f46e5;color:white;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap'},'Save')
+          D({onclick:"studentLog("+i+")",style:'padding:6px 14px;border-radius:8px;background:#4f46e5;color:white;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap'},'Save')
         );
       }
     });
@@ -232,7 +232,7 @@ function pgDashboard(isT){
             D({style:'font-size:13px;font-weight:600;color:#1e1b4b'},t.title)+
             (t.subject?D({style:'font-size:11px;color:#64748b'},t.subject+(t.dueDate?' &middot; Due: '+t.dueDate:'')):'')
           )+
-          D({onclick:'toggleTask("'+t.id+'",false)',style:'padding:4px 10px;border-radius:7px;border:1px solid #276221;background:#C6EFCE;color:#276221;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0'},'&#10003; Done')
+          D({onclick:"toggleTask('"+t.id+"',false)",style:'padding:4px 10px;border-radius:7px;border:1px solid #276221;background:#C6EFCE;color:#276221;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0'},'&#10003; Done')
         );
       });
       doneTasks.forEach(function(t){
@@ -248,7 +248,7 @@ function pgDashboard(isT){
     var addPlanRow=D({style:'display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #e2e8f0'},
       I({class:'inp',id:'own-plan-sub',placeholder:'Subject',style:'width:100px;flex-shrink:0;padding:7px 10px;font-size:12px;border-radius:8px'})+
       I({class:'inp',id:'own-plan-txt',placeholder:'What will you study?',style:'flex:1;padding:7px 10px;font-size:12px;border-radius:8px'})+
-      D({onclick:'addOwnPlan()',style:'padding:7px 14px;border-radius:8px;background:#312e81;color:white;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap'},'+ Add')
+      D({onclick:"addOwnPlan()",style:'padding:7px 14px;border-radius:8px;background:#312e81;color:white;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap'},'+ Add')
     );
 
     var studyPlanSection=D({class:'card',style:'width:320px;flex-shrink:0'},
