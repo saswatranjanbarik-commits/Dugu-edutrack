@@ -2,799 +2,403 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<meta name="theme-color" content="#1F4E79"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<title>Dugu EduTrack 🎓</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dugu EduTrack v1.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet"/>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,sans-serif;background:#f0f4f8;color:#1a202c;min-height:100vh}
-:root{--p:#1F4E79;--pl:#2E75B6;--a:#C55A11;--s:#276221;--sl:#C6EFCE;--w:#9C5700;--wl:#FFEB9C;--d:#9C0006;--dl:#FFC7CE;--pu:#4B2E83;--t:#1F6B5B;--g1:#f8fafc;--g2:#e2e8f0;--g3:#64748b;--g4:#334155;--r:12px;--rl:20px;--sh:0 2px 8px rgba(0,0,0,.08);--shm:0 4px 16px rgba(0,0,0,.12)}
-@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes sp{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-@keyframes pu{0%,100%{opacity:1}50%{opacity:.5}}
-.fi{animation:fi .3s ease}
-.spin{width:40px;height:40px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite}
-.card{background:#fff;border-radius:var(--rl);box-shadow:var(--sh);padding:20px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:var(--r);border:none;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
-.btn:active{transform:scale(.97)}
-.bp{background:var(--p);color:#fff}.bp:hover{background:var(--pl)}
-.ba{background:var(--a);color:#fff}
-.bs{background:#276221;color:#fff}
-.bo{background:transparent;border:2px solid var(--p);color:var(--p)}.bo:hover{background:var(--p);color:#fff}
-.bg{background:var(--g1);color:var(--g4)}.bg:hover{background:var(--g2)}
-.bsm{padding:6px 14px;font-size:12px}.blg{padding:14px 28px;font-size:16px}.bfw{width:100%}
-.inp{width:100%;padding:10px 14px;border:2px solid var(--g2);border-radius:var(--r);font-size:14px;font-family:inherit;outline:none;background:#fff;transition:border-color .2s}
-.inp:focus{border-color:var(--p)}
-.lbl{display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px}
-.bdg{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:600}
-.bds{background:var(--sl);color:var(--s)}.bdw{background:var(--wl);color:var(--w)}.bdd{background:var(--dl);color:var(--d)}.bdp{background:#DCE6F1;color:var(--p)}
-.pb{height:8px;background:var(--g2);border-radius:9999px;overflow:hidden}
-.pf{height:100%;border-radius:9999px;transition:width .5s ease}
-.nav{background:var(--p);color:#fff;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shm)}
-.sb{width:220px;background:#fff;height:calc(100vh - 60px);position:fixed;left:0;top:60px;border-right:1px solid var(--g2);padding:16px 0;overflow-y:auto;z-index:90}
-.si{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:14px;font-weight:500;color:var(--g4);cursor:pointer;transition:all .15s;border-left:3px solid transparent}
-.si:hover{background:var(--g1);color:var(--p)}
-.si.act{background:#DCE6F1;color:var(--p);border-left-color:var(--p);font-weight:600}
-.main{margin-left:220px;padding:24px;min-height:calc(100vh - 60px);padding-bottom:80px}
-.mn{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--g2);z-index:100;padding:8px 0 12px}
-.mi{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--g3);cursor:pointer;padding:4px}
-.mi.act{color:var(--p);font-weight:600}
-.g2c{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.g3c{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.g4c{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.st{font-size:17px;font-weight:700;color:#0f172a;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.pt{font-size:24px;font-weight:800;color:#0f172a;margin-bottom:4px}
-.ps{font-size:14px;color:var(--g3);margin-bottom:20px}
-.sc{background:#fff;border-radius:var(--rl);padding:20px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:8px}
-.sv{font-size:32px;font-weight:800}
-.sl2{font-size:13px;color:var(--g3);font-weight:500}
-.ti{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--r);background:var(--g1);border:1px solid var(--g2);margin-bottom:8px}
-.td{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.ri{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:var(--r);border-left:4px solid;margin-bottom:8px;background:#fff;box-shadow:var(--sh)}
-.tabs{display:flex;gap:4px;background:var(--g1);padding:4px;border-radius:var(--r);margin-bottom:18px}
-.tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;color:var(--g3);transition:all .15s}
-.tab.act{background:#fff;color:var(--p);box-shadow:var(--sh)}
-.es{text-align:center;padding:36px 20px;color:var(--g3)}
-.ei{font-size:44px;margin-bottom:10px}
-.dv{height:1px;background:var(--g2);margin:14px 0}
-::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--g1)}::-webkit-scrollbar-thumb{background:var(--g2);border-radius:3px}
-@media(max-width:768px){.main{margin-left:0;padding:16px}.sb{display:none}.mn{display:flex!important}.g3c,.g4c{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.g2c,.g3c,.g4c{grid-template-columns:1fr}}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,sans-serif;background:#f8fafc;color:#1a202c;min-height:100vh}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fi{animation:fi .25s ease}.spin{animation:spin .8s linear infinite}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.1);border:1px solid #e2e8f0;padding:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:8px 16px;border-radius:9px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}.btn:active{opacity:.8}
+.bp{background:#4f46e5;color:#fff}.ba{background:#C55A11;color:#fff}.bs{background:#276221;color:#fff}
+.bo{border:2px solid #4f46e5;background:transparent;color:#4f46e5}.bg{background:#f1f5f9;color:#334155}
+.bsm{padding:4px 11px;font-size:11px}.blg{padding:12px 24px;font-size:15px}.bfw{width:100%}
+.inp{width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:9px;font-size:13px;font-family:inherit;outline:none;background:#fff}.inp:focus{border-color:#4f46e5}
+.lbl{display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:4px}
+.pb{height:8px;background:#e2e8f0;border-radius:9999px;overflow:hidden}.pf{height:100%;border-radius:9999px;transition:width .4s}
+.nav{background:#312e81;color:#fff;padding:0 18px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.sb{width:210px;background:#fff;height:calc(100vh - 56px);position:fixed;left:0;top:56px;border-right:1px solid #e2e8f0;overflow-y:auto;z-index:90;padding:10px 0}
+.si{display:flex;align-items:center;gap:8px;padding:9px 16px;font-size:13px;font-weight:500;color:#334155;cursor:pointer;border-left:3px solid transparent}
+.si:hover{background:#f5f3ff;color:#4f46e5}.si.act{background:#ede9fe;color:#4f46e5;border-left-color:#4f46e5;font-weight:700}
+.main{margin-left:210px;padding:16px;min-height:calc(100vh - 56px);padding-bottom:80px}
+.mn{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;z-index:100;padding:5px 0 9px}
+.mi{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;color:#64748b;cursor:pointer;padding:3px}.mi.act{color:#4f46e5;font-weight:700}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+.pt{font-size:22px;font-weight:800;color:#0f172a;margin-bottom:3px}.ps{font-size:13px;color:#64748b;margin-bottom:16px}
+.st{font-size:15px;font-weight:700;color:#0f172a;margin-bottom:11px}.sc{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.1);border:1px solid #e2e8f0}
+.tabs{display:flex;gap:3px;background:#f1f5f9;padding:3px;border-radius:9px;margin-bottom:14px}
+.tab{flex:1;padding:7px;text-align:center;font-size:12px;font-weight:600;border-radius:7px;cursor:pointer;color:#64748b}.tab.act{background:#fff;color:#4f46e5;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.es{text-align:center;padding:28px 14px;color:#64748b}.dv{height:1px;background:#e2e8f0;margin:11px 0}
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:#1a202c;color:#fff;padding:8px 18px;border-radius:9999px;font-size:13px;font-weight:500;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,.2);white-space:nowrap;display:none}
+.od{width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:4px}
+.lp{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1F4E79,#2E75B6,#1F6B5B);padding:14px}
+.lc{background:#fff;padding:32px;border-radius:20px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.ri{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;border-radius:9px;border-left:4px solid;margin-bottom:6px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.syl-ch{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:9px;overflow:hidden}
+.syl-ch-h{display:flex;align-items:center;gap:7px;padding:8px 12px;background:#f1f5f9;border-bottom:1px solid #e2e8f0}
+.syl-tp{display:flex;align-items:center;gap:7px;padding:7px 12px;border-bottom:1px solid #f1f5f9}
+.syl-st{display:flex;align-items:center;gap:7px;padding:5px 12px 5px 30px;background:#fafafa;border-bottom:1px solid #f1f5f9}
+.ib{background:none;border:none;cursor:pointer;font-size:13px;padding:2px 5px;border-radius:5px}.ib:hover{background:#e2e8f0}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#e2e8f0;border-radius:3px}
+@media(max-width:768px){.main{margin-left:0;padding:13px}.sb{display:none}.mn{display:flex!important}.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.g2,.g3,.g4{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div id="root"></div>
+<div id="toast" class="toast"></div>
+<div id="app"><div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1F4E79,#2E75B6);color:white;flex-direction:column;gap:14px"><div style="font-size:52px">&#127891;</div><div style="font-family:Nunito,sans-serif;font-size:26px;font-weight:900">Dugu EduTrack</div><div style="opacity:.8">Loading...</div><div style="width:36px;height:36px;border:3px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%" class="spin"></div></div></div>
 <script>
-const FC={apiKey:"AIzaSyD4hjE7UhFfzpBh63XzPwRY9gOhCQfUn8w",authDomain:"dugu-edutrack.firebaseapp.com",projectId:"dugu-edutrack",storageBucket:"dugu-edutrack.firebasestorage.app",messagingSenderId:"336963361004",appId:"1:336963361004:web:4cde59e43fee0ad3282dc9"};
-firebase.initializeApp(FC);
-const auth=firebase.auth();
-const db=firebase.firestore();
+firebase.initializeApp({apiKey:"AIzaSyD4hjE7UhFfzpBh63XzPwRY9gOhCQfUn8w",authDomain:"dugu-edutrack.firebaseapp.com",projectId:"dugu-edutrack",storageBucket:"dugu-edutrack.firebasestorage.app",messagingSenderId:"336963361004",appId:"1:336963361004:web:4cde59e43fee0ad3282dc9"});
+var auth=firebase.auth(),db=firebase.firestore();
+var SUBS=["English","Hindi","Odia","Mathematics","Science","Social Studies","Computer Science","Moral Science","General Knowledge"];
+var SC={English:"#1F4E79",Hindi:"#4B2E83",Odia:"#7F6000",Mathematics:"#1F6B5B",Science:"#375623","Social Studies":"#C55A11","Computer Science":"#1F3864","Moral Science":"#4A1942","General Knowledge":"#404040"};
+var SL={English:"#DCE6F1",Hindi:"#E8E0F0",Odia:"#FFF2CC",Mathematics:"#DAEEE6",Science:"#E2EFDA","Social Studies":"#FCE4D6","Computer Science":"#D9E1F2","Moral Science":"#EAD1DC","General Knowledge":"#F2F2F2"};
+var SYL={English:[{ch:"Ch-1",topics:[{n:"The Fire",st:["Reading","Word Meanings","Q&A"]},{n:"Nouns Grammar",st:["Types","Exercises"]}]},{ch:"Ch-2",topics:[{n:"Afternoon on a Hill",st:["Poem Reading","Appreciation"]},{n:"Articles Grammar",st:["A/An/The","Exercises"]}]},{ch:"Ch-3",topics:[{n:"Adventure in the Andamans",st:["Reading","Vocabulary","Q&A"]},{n:"Pronouns Grammar",st:["Types","Exercises"]}]},{ch:"Ch-4",topics:[{n:"A Book",st:["Reading","Q&A"]},{n:"Adjectives Grammar",st:["Types","Exercises"]}]},{ch:"Ch-5",topics:[{n:"Jane of the Jungle",st:["Reading","Q&A"]},{n:"Verbs Grammar",st:["Types","Tenses"]}]},{ch:"Writing",topics:[{n:"Notice Writing",st:["Format","Practice"]},{n:"Email Writing",st:["Format","Practice"]}]}],Hindi:[{ch:"Ch-1",topics:[{n:"Pyare Bachcho",st:["Paath","Prashnottar"]},{n:"Shabd Vichar",st:["Paribhasha","Abhyas"]}]},{ch:"Ch-2",topics:[{n:"Do Gauraiyaan",st:["Paath","Prashnottar"]},{n:"Sangya",st:["Paribhasha","Bhed","Abhyas"]}]},{ch:"Ch-3",topics:[{n:"Khel Divas",st:["Paath","Prashnottar"]},{n:"Ling",st:["Paribhasha","Abhyas"]}]},{ch:"Vyakaran",topics:[{n:"Vachan",st:["Paribhasha","Abhyas"]},{n:"Sarvanam",st:["Paribhasha","Abhyas"]}]}],Odia:[{ch:"Paath-7",topics:[{n:"Jatiya Dhwaja Poetry",st:["Paath","Prashna Uttar"]}]},{ch:"Paath-8",topics:[{n:"Upayukta Besa Prose",st:["Paath","Prashna Uttar"]}]},{ch:"Paath-1",topics:[{n:"Prose Chapter 1",st:["Reading","Q&A"]}]},{ch:"Paath-2",topics:[{n:"Poetry Chapter 2",st:["Reading","Q&A"]}]}],Mathematics:[{ch:"Ch-1",topics:[{n:"Large Numbers",st:["Place Value","Comparison","Rounding"]},{n:"Operations on Large Numbers",st:["Addition","Subtraction","Multiplication","Division"]}]},{ch:"Ch-2",topics:[{n:"Factors and Multiples",st:["Factors","Multiples","HCF","LCM"]}]},{ch:"Ch-3",topics:[{n:"Fractions",st:["Types","Equivalent","Addition","Subtraction"]}]},{ch:"Ch-4",topics:[{n:"Decimals",st:["Introduction","Addition","Subtraction"]}]},{ch:"Ch-5",topics:[{n:"Basic Geometry",st:["Points Lines","Angles","Triangles"]}]},{ch:"Ch-6",topics:[{n:"Perimeter and Area",st:["Perimeter","Area of Rectangle","Area of Square"]}]},{ch:"Ch-7",topics:[{n:"Data Handling",st:["Tally Marks","Bar Graph","Pictograph"]}]}],Science:[{ch:"Ch-1",topics:[{n:"Our Body",st:["Body Systems","Digestive","Respiratory","Circulatory"]}]},{ch:"Ch-2",topics:[{n:"Deficiency Diseases",st:["Vitamins","Minerals","Prevention"]}]},{ch:"Ch-3",topics:[{n:"Eat Well Keep Well",st:["Nutrients","Balanced Diet"]}]},{ch:"Ch-4",topics:[{n:"Fuel for Vehicle",st:["Types of Fuel","Alternative Energy"]}]},{ch:"Ch-5",topics:[{n:"In Times of Emergency",st:["First Aid","Safety Rules"]}]}],"Social Studies":[{ch:"Ch-1",topics:[{n:"Why People Move",st:["Reasons","Types","Effects"]}]},{ch:"Ch-2",topics:[{n:"Being Different",st:["Diversity","Respect"]}]},{ch:"Ch-3",topics:[{n:"Different Jobs",st:["Occupations","Importance"]}]},{ch:"Ch-6",topics:[{n:"Food for All",st:["Food Security","Distribution"]}]},{ch:"Ch-9",topics:[{n:"Let Us Play",st:["Importance of Sports"]}]},{ch:"Ch-10",topics:[{n:"On an Adventure Trip",st:["Adventure Activities","Safety"]}]}],"Computer Science":[{ch:"Ch-1",topics:[{n:"History of Computers",st:["Generations","Types","Uses"]}]},{ch:"Ch-2",topics:[{n:"Tables in Word",st:["Insert Table","Format","Practical"]}]},{ch:"Ch-3",topics:[{n:"Mail Merge",st:["Introduction","Steps","Practical"]}]},{ch:"Ch-4",topics:[{n:"Exploring PowerPoint",st:["Interface","Slides","Practical"]}]},{ch:"Ch-5",topics:[{n:"AI Tools",st:["Introduction to AI","Uses","Examples"]}]}],"Moral Science":[{ch:"Ch-1",topics:[{n:"Grandmas Beans",st:["Story","Moral"]}]},{ch:"Ch-2",topics:[{n:"The Wise Judge",st:["Story","Moral"]}]},{ch:"Ch-3",topics:[{n:"The Power of Forgiveness",st:["Story","Moral"]}]},{ch:"Ch-4",topics:[{n:"The Real Winner",st:["Story","Moral"]}]},{ch:"Ch-5",topics:[{n:"Every Drop Counts",st:["Story","Moral"]}]}],"General Knowledge":[{ch:"Unit-1",topics:[{n:"Animals and Plants",st:["Facts","Quiz"]}]},{ch:"Unit-2",topics:[{n:"Language and Literature",st:["Authors","Books","Awards"]}]},{ch:"Unit-3",topics:[{n:"Our Environment",st:["Facts","Current Affairs"]}]},{ch:"Unit-4",topics:[{n:"Science and Technology",st:["Inventions","Scientists"]}]}]};
+var DEFAULT_TT={Monday:["English","Odia","Maths","SST","BREAK","Science","GK","Games","Yoga"],Tuesday:["English","Hindi","Maths","Science","BREAK","SST","Odia","Art","CSPD"],Wednesday:["English","Maths","Science","Hindi","BREAK","Odia","SST","Music","GK"],Thursday:["English","Science","SST","Maths","BREAK","Hindi","Maths Lab","Comp Lab","Dance"],Friday:["English","GK","Hindi","Odia","BREAK","Maths","Science","SST","Library"],Saturday:["English","SST","Odia","Science","BREAK","Maths","Hindi","Comp","Art"]};
+var PERIODS=["P1 10:30","P2 11:10","P3 11:50","P4 12:30","BREAK","P5 1:30","P6 2:10","P7 2:50","P8 3:30"];
+var DAYS_LIST=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+var TTC={English:"#DCE6F1",Hindi:"#E8E0F0",Odia:"#FFF2CC",Maths:"#DAEEE6",Science:"#E2EFDA",SST:"#FCE4D6",GK:"#F2F2F2",Games:"#E2EFDA",Yoga:"#E2EFDA",Art:"#FCE4D6",CSPD:"#EAD1DC",Music:"#EAD1DC",Dance:"#EAD1DC","Maths Lab":"#DAEEE6","Comp Lab":"#D9E1F2",Comp:"#D9E1F2",Library:"#F2F2F2",BREAK:"#FFE699"};
+var EXAMS=[{n:"PT-I",d:"2026-07-13",c:"#C55A11"},{n:"Term-I",d:"2026-09-14",c:"#1F4E79"},{n:"PT-II",d:"2026-11-16",c:"#C55A11"},{n:"Term-II",d:"2027-02-08",c:"#1F4E79"}];
+var TZ_OPTS=[{l:"IST +5:30 (India)",v:5.5},{l:"GMT +0 (London/UK)",v:0},{l:"WAT +1 (West Africa)",v:1},{l:"CET +1 (Central Europe)",v:1},{l:"EET +2 (Eastern Europe)",v:2},{l:"GST +4 (Gulf)",v:4},{l:"SGT +8 (Singapore)",v:8},{l:"EST -5 (New York)",v:-5},{l:"PST -8 (Los Angeles)",v:-8}];
+var DEF_TZ={Saswat:1,Swagat:0,Pragyan:0,Baibhav:5.5};
+var DEF_TZL={Saswat:"WAT +1",Swagat:"GMT +0",Pragyan:"GMT +0",Baibhav:"IST +5:30"};
+var S={user:null,profile:null,page:"dashboard",topics:[],revisions:[],notes:[],syllabus:{},calEvents:[],flashcards:[],quizzes:[],tasks:[],studyNotes:[],timetable:DEFAULT_TT,users:[],onlineUsers:[],quickUsers:[{n:"Saswat",e:"saswat@dugu-edutrack.com",p:"Saswat@123",c:"#1F4E79",tz:"WAT +1"},{n:"Swagat",e:"swagat@dugu-edutrack.com",p:"Swagat@123",c:"#4B2E83",tz:"GMT +0"},{n:"Pragyan",e:"pragyan@dugu-edutrack.com",p:"Pragyan@123",c:"#1F6B5B",tz:"GMT +0"},{n:"Baibhav",e:"baibhav@dugu-edutrack.com",p:"Baibhav@123",c:"#C55A11",tz:"IST +5:30"}],unsubs:[],sylSel:"English",revTab:"today",ctab:"flashcards",ltab:"flashcards",cflipped:{},lflipped:{},qMode:false,qIdx:0,qAns:{},qDone:false,lqMode:false,lqIdx:0,lqAns:{},lqDone:false,ttEdit:false,ttData:null,editUser:null};
+function el(id){return document.getElementById(id);}
+function val(id){var e=el(id);return e?e.value:"";}
+var _tt=null;
+function toast(msg){var t=el("toast");if(!t)return;t.textContent=msg;t.style.display="block";if(_tt)clearTimeout(_tt);_tt=setTimeout(function(){t.style.display="none";},3000);}
+function today(){return new Date().toISOString().split("T")[0];}
+function dayName(){return["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][new Date().getDay()];}
+function getTZOff(name){var u=S.users.find(function(x){return x.name===name;});return(u&&u.tzOffset!==undefined)?u.tzOffset:(DEF_TZ[name]||5.5);}
+function getTZLbl(name){var u=S.users.find(function(x){return x.name===name;});return(u&&u.tzLabel)?u.tzLabel:(DEF_TZL[name]||"IST +5:30");}
+var _sc=0;
+fetch("https://worldtimeapi.org/api/timezone/UTC").then(function(r){return r.json();}).then(function(d){_sc=new Date(d.utc_datetime).getTime()-new Date().getTime();setInterval(updateNavTime,60000);}).catch(function(){});
+function localTime(off){var now=new Date();var utc=now.getTime()+_sc+now.getTimezoneOffset()*60000;return new Date(utc+off*3600000).toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true});}
+function updateNavTime(){var e=el("nav-time");if(e&&S.profile)e.textContent=localTime(getTZOff(S.profile.name));var o=el("nav-online");if(o){o.textContent=S.onlineUsers.length+" online";o.style.display=S.onlineUsers.length?"":"none";}}
+function tag(t,a,c){var s="";for(var k in a){if(a[k]!==null&&a[k]!==undefined&&a[k]!==false)s+=" "+k+'="'+a[k]+'"';}return c===undefined?"<"+t+s+"/>":"<"+t+s+">"+c+"</"+t+">";}
+function D(a,c){return tag("div",a,c);}function S2(a,c){return tag("span",a,c);}
+function B(a,c){return tag("button",Object.assign({class:"btn"},a),c);}
+function I(a){return tag("input",a);}
+function SEL(a,c){return tag("select",Object.assign({class:"inp"},a),c);}
+function OPT(v,l,s){return tag("option",{value:v,selected:s?"selected":null},l);}
+function LBL(t){return tag("label",{class:"lbl"},t);}
+function TA(a){return tag("textarea",Object.assign({class:"inp"},a),"");}
+function PB(p,c){return D({class:"pb"},D({class:"pf",style:"width:"+p+"%;background:"+c},""));}
+function subOpts(sv){var o=OPT("","-- Select Subject --");SUBS.forEach(function(s){o+=OPT(s,s,s===sv);});return o;}
+function chOpts(sub,sv){var o=OPT("","-- Select Chapter --");var chs=(S.syllabus[sub]&&S.syllabus[sub].chapters)||SYL[sub]||[];chs.forEach(function(c){o+=OPT(c.ch,c.ch,c.ch===sv);});return o;}
+function tpOpts(sub,ch,sv){var o=OPT("","-- Select Topic --");var chs=(S.syllabus[sub]&&S.syllabus[sub].chapters)||SYL[sub]||[];var cd=chs.find(function(c){return c.ch===ch;});if(cd)(cd.topics||[]).forEach(function(t){o+=OPT(t.n,t.n,t.n===sv);});return o;}
+function stOpts(sub,ch,tp,sv){var o=OPT("","-- Select Sub-topic --");var chs=(S.syllabus[sub]&&S.syllabus[sub].chapters)||SYL[sub]||[];var cd=chs.find(function(c){return c.ch===ch;});if(cd){var td=(cd.topics||[]).find(function(t){return t.n===tp;});if(td)(td.st||[]).forEach(function(s){o+=OPT(s,s,s===sv);});}return o;}
 </script>
-<script type="text/babel">
-
-const {createElement:h,useState,useEffect,Fragment}=React;
-
-const SUBS=["English","Hindi","Odia","Mathematics","Science","Social Studies","Computer Science","Moral Science","General Knowledge"];
-const SC={English:"#1F4E79",Hindi:"#4B2E83",Odia:"#7F6000",Mathematics:"#1F6B5B",Science:"#375623","Social Studies":"#C55A11","Computer Science":"#1F3864","Moral Science":"#4A1942","General Knowledge":"#404040"};
-const SL={English:"#DCE6F1",Hindi:"#E8E0F0",Odia:"#FFF2CC",Mathematics:"#DAEEE6",Science:"#E2EFDA","Social Studies":"#FCE4D6","Computer Science":"#D9E1F2","Moral Science":"#EAD1DC","General Knowledge":"#F2F2F2"};
-const DS={English:{chapters:[{ch:"Ch-1",topics:[{name:"The Fire",subtopics:["Reading","Word Meanings","Q&A"]},{name:"Nouns Grammar",subtopics:["Types","Exercises"]}]},{ch:"Ch-2",topics:[{name:"Afternoon on a Hill",subtopics:["Poem Reading","Appreciation"]},{name:"Articles Grammar",subtopics:["A/An/The","Exercises"]}]},{ch:"Ch-3",topics:[{name:"Adventure in the Andamans",subtopics:["Reading","Vocabulary","Q&A"]},{name:"Pronouns Grammar",subtopics:["Types","Exercises"]}]},{ch:"Writing",topics:[{name:"Notice Writing",subtopics:["Format","Practice"]},{name:"Email Writing",subtopics:["Format","Practice"]}]}]},Hindi:{chapters:[{ch:"Ch-1",topics:[{name:"Pyare Bachcho",subtopics:["Paath","Prashnottar"]},{name:"Shabd Vichar",subtopics:["Paribhasha","Abhyas"]}]},{ch:"Ch-2",topics:[{name:"Do Gauraiyaan",subtopics:["Paath","Prashnottar"]},{name:"Sangya",subtopics:["Paribhasha","Bhed","Abhyas"]}]},{ch:"Ch-3",topics:[{name:"Khel Divas",subtopics:["Paath","Prashnottar"]},{name:"Ling",subtopics:["Paribhasha","Abhyas"]}]}]},Odia:{chapters:[{ch:"Paath-7",topics:[{name:"Jatiya Dhwaja Poetry",subtopics:["Paath","Prashna Uttar"]}]},{ch:"Paath-8",topics:[{name:"Upayukta Besa Prose",subtopics:["Paath","Prashna Uttar"]}]},{ch:"Paath-1",topics:[{name:"Prose Chapter 1",subtopics:["Reading","Q&A"]}]}]},Mathematics:{chapters:[{ch:"Ch-1",topics:[{name:"Large Numbers",subtopics:["Place Value","Comparison","Exercises"]},{name:"Operations on Large Numbers",subtopics:["Addition","Subtraction","Multiplication","Division"]}]},{ch:"Ch-2",topics:[{name:"Factors and Multiples",subtopics:["Factors","Multiples","HCF","LCM"]}]},{ch:"Ch-3",topics:[{name:"Fractions",subtopics:["Types","Equivalent","Addition","Subtraction"]}]},{ch:"Ch-4",topics:[{name:"Decimals",subtopics:["Introduction","Addition","Subtraction"]}]},{ch:"Ch-5",topics:[{name:"Basic Geometry",subtopics:["Points Lines","Angles","Triangles"]}]}]},Science:{chapters:[{ch:"Ch-1",topics:[{name:"Our Body",subtopics:["Body Systems","Digestive","Respiratory","Circulatory"]}]},{ch:"Ch-2",topics:[{name:"Deficiency Diseases",subtopics:["Vitamins","Minerals","Prevention"]}]},{ch:"Ch-3",topics:[{name:"Eat Well Keep Well",subtopics:["Nutrients","Balanced Diet"]}]},{ch:"Ch-4",topics:[{name:"Fuel for Vehicle",subtopics:["Types of Fuel","Alternative Energy"]}]},{ch:"Ch-5",topics:[{name:"In Times of Emergency",subtopics:["First Aid","Safety Rules"]}]}]},"Social Studies":{chapters:[{ch:"Ch-1",topics:[{name:"Why People Move",subtopics:["Reasons","Types","Effects"]}]},{ch:"Ch-2",topics:[{name:"Being Different",subtopics:["Diversity","Respect"]}]},{ch:"Ch-3",topics:[{name:"Different Jobs",subtopics:["Occupations","Importance"]}]},{ch:"Ch-6",topics:[{name:"Food for All",subtopics:["Food Security","Distribution"]}]},{ch:"Ch-9",topics:[{name:"Let Us Play",subtopics:["Importance of Sports"]}]}]},"Computer Science":{chapters:[{ch:"Ch-1",topics:[{name:"History of Computers",subtopics:["Generations","Types","Uses"]}]},{ch:"Ch-2",topics:[{name:"Tables in Word",subtopics:["Insert Table","Format","Practical"]}]},{ch:"Ch-3",topics:[{name:"Mail Merge",subtopics:["Introduction","Steps","Practical"]}]},{ch:"Ch-4",topics:[{name:"Exploring PowerPoint",subtopics:["Interface","Slides","Practical"]}]}]},"Moral Science":{chapters:[{ch:"Ch-1",topics:[{name:"Grandmas Beans",subtopics:["Story","Moral"]}]},{ch:"Ch-2",topics:[{name:"The Wise Judge",subtopics:["Story","Moral"]}]},{ch:"Ch-3",topics:[{name:"The Power of Forgiveness",subtopics:["Story","Moral"]}]}]},"General Knowledge":{chapters:[{ch:"Unit-1",topics:[{name:"Animals and Plants",subtopics:["Facts","Quiz"]}]},{ch:"Unit-2",topics:[{name:"Language and Literature",subtopics:["Authors","Books"]}]},{ch:"Unit-3",topics:[{name:"Our Environment",subtopics:["Facts","Current Affairs"]}]}]}};
-const DEFAULT_TT={Monday:[{sub:"English"},{sub:"Odia"},{sub:"Maths"},{sub:"SST"},{sub:"BREAK"},{sub:"Science"},{sub:"GK"},{sub:"Games"},{sub:"Yoga"}],Tuesday:[{sub:"English"},{sub:"Hindi"},{sub:"Maths"},{sub:"Science"},{sub:"BREAK"},{sub:"SST"},{sub:"Odia"},{sub:"Art"},{sub:"CSPD"}],Wednesday:[{sub:"English"},{sub:"Maths"},{sub:"Science"},{sub:"Hindi"},{sub:"BREAK"},{sub:"Odia"},{sub:"SST"},{sub:"Music"},{sub:"GK"}],Thursday:[{sub:"English"},{sub:"Science"},{sub:"SST"},{sub:"Maths"},{sub:"BREAK"},{sub:"Hindi"},{sub:"Maths Lab"},{sub:"Comp Lab"},{sub:"Dance"}],Friday:[{sub:"English"},{sub:"GK"},{sub:"Hindi"},{sub:"Odia"},{sub:"BREAK"},{sub:"Maths"},{sub:"Science"},{sub:"SST"},{sub:"Library"}],Saturday:[{sub:"English"},{sub:"SST"},{sub:"Odia"},{sub:"Science"},{sub:"BREAK"},{sub:"Maths"},{sub:"Hindi"},{sub:"Comp"},{sub:"Art"}]};
-const PERIODS=["P1 10:30","P2 11:10","P3 11:50","P4 12:30","BREAK","P5 1:30","P6 2:10","P7 2:50","P8 3:30"];
-const DAYS_LIST=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-const TTC={English:"#DCE6F1",Hindi:"#E8E0F0",Odia:"#FFF2CC",Maths:"#DAEEE6",Science:"#E2EFDA",SST:"#FCE4D6",GK:"#F2F2F2",Games:"#E2EFDA",Yoga:"#E2EFDA",Art:"#FCE4D6",CSPD:"#EAD1DC",Music:"#EAD1DC",Dance:"#EAD1DC","Maths Lab":"#DAEEE6","Comp Lab":"#D9E1F2",Comp:"#D9E1F2",Library:"#F2F2F2",BREAK:"#FFE699"};
-const STATUS_OPTS=[{v:"taught",l:"Taught",c:"#276221",bg:"#C6EFCE"},{v:"selfstudy",l:"Self Study",c:"#1F4E79",bg:"#DCE6F1"},{v:"missed",l:"Missed",c:"#9C0006",bg:"#FFC7CE"}];
-const EXAMS=[{n:"PT-I",d:"2026-07-13",c:"#C55A11"},{n:"Term-I",d:"2026-09-14",c:"#1F4E79"},{n:"PT-II",d:"2026-11-16",c:"#C55A11"},{n:"Term-II",d:"2027-02-08",c:"#1F4E79"}];
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-const e=(t,p,...c)=>h(t,p,...c.flat().filter(x=>x!==null&&x!==false&&x!==undefined));
-const div=(p,...c)=>e("div",p,...c);
-const span=(p,...c)=>e("span",p,...c);
-const p2=(p,...c)=>e("p",p,...c);
-const btn=(p,...c)=>e("button",p,...c);
-const inp=(p)=>e("input",p);
-const sel=(p,...c)=>e("select",p,...c);
-const opt=(p,...c)=>e("option",p,...c);
-const lbl=(p,...c)=>e("label",p,...c);
-const h1=(p,...c)=>e("h1",p,...c);
-const ta=(p)=>e("textarea",p);
-
-// ── App (Login) ───────────────────────────────────────────────────────────────
-function App(){
-  const[user,setUser]=useState(undefined);
-  const[email,setEmail]=useState("");const[pass,setPass]=useState("");const[err,setErr]=useState("");const[loading,setLoading]=useState(false);
-  const[quickUsers,setQuickUsers]=useState([{n:"Saswat",e:"saswat@dugu-edutrack.com",p:"Saswat@123",c:"#1F4E79"},{n:"Swagat",e:"swagat@dugu-edutrack.com",p:"Swagat@123",c:"#4B2E83"},{n:"Baibhav",e:"baibhav@dugu-edutrack.com",p:"Baibhav@123",c:"#1F6B5B"}]);
-  useEffect(()=>{
-    auth.onAuthStateChanged(u=>setUser(u));
-    db.collection("users").get().then(snap=>{
-      if(!snap.empty){
-        const rc={teacher:"#1F4E79",admin:"#9C0006",child:"#276221"};
-        const loaded=snap.docs.map(d=>d.data()).filter(u=>u.email&&u.password).map(u=>({n:u.name,e:u.email,p:u.password,c:rc[u.role]||"#1F4E79"}));
-        if(loaded.length>0)setQuickUsers(loaded);
-      }
-    }).catch(()=>{});
-  },[]);
-  const login=async(em,pw)=>{try{setErr("");setLoading(true);await auth.signInWithEmailAndPassword(em,pw);}catch{setErr("Invalid email or password.");}setLoading(false);};
-  const setup=async()=>{
-    const users=[{name:"Saswat",email:"saswat@dugu-edutrack.com",password:"Saswat@123",role:"teacher",avatar:"S"},{name:"Swagat",email:"swagat@dugu-edutrack.com",password:"Swagat@123",role:"teacher",avatar:"W"},{name:"Baibhav",email:"baibhav@dugu-edutrack.com",password:"Baibhav@123",role:"child",avatar:"B"}];
-    setLoading(true);
-    for(const u of users){try{const c=await auth.createUserWithEmailAndPassword(u.email,u.password);await db.collection("users").doc(c.user.uid).set({...u,online:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});await auth.signOut();}catch(ex){if(ex.code!=="auth/email-already-in-use")console.log(ex);}}
-    setLoading(false);alert("Setup complete! Please log in.");
-  };
-  if(user===undefined)return div({style:{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#1F4E79,#2E75B6)",color:"white",flexDirection:"column",gap:16}},div({style:{fontSize:56}},"🎓"),h1({style:{fontFamily:"Nunito,sans-serif",fontSize:28,fontWeight:900}},"Dugu EduTrack"),p2({style:{opacity:.8}},"Connecting to Firebase..."),div({style:{width:40,height:40,border:"3px solid rgba(255,255,255,.3)",borderTopColor:"white",borderRadius:"50%",animation:"sp .8s linear infinite"}}));
-  if(!user)return div({style:{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#1F4E79,#2E75B6)",padding:20}},
-    div({style:{background:"white",padding:40,borderRadius:24,width:"100%",maxWidth:440,boxShadow:"0 20px 60px rgba(0,0,0,.3)"}},
-      div({style:{textAlign:"center",marginBottom:28}},div({style:{fontSize:52,marginBottom:8}},"🎓"),h1({style:{fontFamily:"Nunito,sans-serif",fontSize:26,fontWeight:900,color:"#1F4E79"}},"Dugu EduTrack"),p2({style:{color:"#64748b",fontSize:13,marginTop:4}},"Baibhav Personal Learning Portal v3.4"),div({style:{display:"inline-flex",alignItems:"center",gap:6,marginTop:8,background:"#C6EFCE",color:"#276221",padding:"4px 12px",borderRadius:9999,fontSize:12,fontWeight:600}},span({style:{width:7,height:7,borderRadius:"50%",background:"#22c55e",display:"inline-block"}}),"Online Mode — Real-time Sync")),
-      div({style:{marginBottom:12}},lbl({className:"lbl"},"Email"),inp({className:"inp",type:"email",placeholder:"Enter your email",value:email,onChange:ev=>setEmail(ev.target.value)})),
-      div({style:{marginBottom:18}},lbl({className:"lbl"},"Password"),inp({className:"inp",type:"password",placeholder:"Enter your password",value:pass,onChange:ev=>setPass(ev.target.value)})),
-      err&&div({style:{background:"#FFC7CE",color:"#9C0006",padding:"10px 14px",borderRadius:8,fontSize:13,marginBottom:14,fontWeight:500}},"⚠️ "+err),
-      btn({className:"btn bp bfw blg",onClick:()=>login(email,pass),disabled:loading},loading?"Signing in...":"🔐 Sign In"),
-      div({className:"dv"}),
-      p2({style:{fontSize:12,color:"#64748b",textAlign:"center",marginBottom:10,fontWeight:600}},"QUICK LOGIN"),
-      div({style:{display:"flex",flexWrap:"wrap",gap:8,marginBottom:14}},
-        ...quickUsers.map(u=>btn({key:u.n,onClick:()=>login(u.e,u.p),disabled:loading,style:{flex:"1 1 calc(33% - 8px)",minWidth:80,padding:"10px 4px",borderRadius:10,border:`2px solid ${u.c}`,background:"white",color:u.c,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}},u.n))
-      ),
-      div({style:{textAlign:"center"}},btn({onClick:setup,disabled:loading,style:{background:"none",border:"none",color:"#94a3b8",fontSize:12,cursor:"pointer",textDecoration:"underline",fontFamily:"inherit"}},"First time? Set up accounts"))
-    )
-  );
-  return h(MainApp,{user});
+<script>
+function renderLogin(){
+  var qBtns="";S.quickUsers.forEach(function(u){qBtns+=tag("button",{onclick:"quickLogin('"+u.e+"','"+u.p+"')",style:"flex:1 1 calc(25% - 7px);min-width:75px;padding:8px 3px;border-radius:9px;border:2px solid "+u.c+";background:white;color:"+u.c+";font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;line-height:1.4"},u.n+"<br><span style='font-size:9px;opacity:.7'>"+u.tz+"</span>");});
+  el("app").innerHTML=D({class:"lp"},D({class:"lc"},D({style:"text-align:center;margin-bottom:22px"},D({style:"font-size:46px;margin-bottom:5px"},"&#127891;")+D({style:"font-family:Nunito,sans-serif;font-size:23px;font-weight:900;color:#1F4E79"},"Dugu EduTrack")+D({style:"color:#64748b;font-size:12px;margin-top:3px"},"Baibhav Personal Learning Portal v1.0")+D({style:"display:inline-flex;align-items:center;gap:5px;margin-top:6px;background:#C6EFCE;color:#276221;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:600"},S2({class:"od"},"")+"Online - Real-time Sync"))+D({style:"margin-bottom:10px"},LBL("Email")+I({class:"inp",id:"li-email",type:"email",placeholder:"Enter your email"}))+D({style:"margin-bottom:14px"},LBL("Password")+I({class:"inp",id:"li-pass",type:"password",placeholder:"Enter your password"}))+D({id:"li-err",style:"display:none;background:#FFC7CE;color:#9C0006;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:11px;font-weight:500"},"Invalid email or password.")+B({class:"btn bp bfw blg",id:"li-btn",onclick:"doLogin()"},"&#128274; Sign In")+D({class:"dv"},"&nbsp;")+D({style:"font-size:11px;color:#64748b;text-align:center;margin-bottom:8px;font-weight:600"},"QUICK LOGIN")+D({style:"display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px"},qBtns)+D({style:"text-align:center"},tag("button",{onclick:"setupAccounts()",style:"background:none;border:none;color:#94a3b8;font-size:11px;cursor:pointer;text-decoration:underline;font-family:inherit"},"First time? Set up accounts"))));
+  var ep=el("li-email"),pp=el("li-pass");
+  if(ep)ep.addEventListener("keydown",function(e){if(e.key==="Enter")doLogin();});
+  if(pp)pp.addEventListener("keydown",function(e){if(e.key==="Enter")doLogin();});
 }
-
-// ── Main App ──────────────────────────────────────────────────────────────────
-function MainApp({user}){
-  const[profile,setProfile]=useState(null);const[page,setPage]=useState("dashboard");
-  const[topics,setTopics]=useState([]);const[revisions,setRevisions]=useState([]);const[notes,setNotes]=useState([]);
-  const[syllabus,setSyllabus]=useState({});const[calEvents,setCalEvents]=useState([]);
-  const[flashcards,setFlashcards]=useState([]);const[quizzes,setQuizzes]=useState([]);
-  const[tasks,setTasks]=useState([]);const[studyNotes,setStudyNotes]=useState([]);
-  const[timetable,setTimetable]=useState(DEFAULT_TT);const[users,setUsers]=useState([]);
-  const[onlineUsers,setOnlineUsers]=useState([]);const[toast,setToast]=useState("");
-  const showToast=m=>{setToast(m);setTimeout(()=>setToast(""),3000);};
-  useEffect(()=>{
-    db.collection("users").doc(user.uid).get().then(d=>{if(d.exists)setProfile(d.data());});
-    db.collection("users").doc(user.uid).update({online:true}).catch(()=>{});
-    const uns=[];
-    uns.push(db.collection("topics").orderBy("createdAt","desc").limit(100).onSnapshot(s=>setTopics(s.docs.map(d=>({id:d.id,...d.data()})))));
-    uns.push(db.collection("revisions").orderBy("dueDate","asc").onSnapshot(s=>setRevisions(s.docs.map(d=>({id:d.id,...d.data()})))));
-    uns.push(db.collection("notes").orderBy("createdAt","desc").limit(30).onSnapshot(s=>setNotes(s.docs.map(d=>({id:d.id,...d.data()})))));
-    uns.push(db.collection("syllabus").doc("shared").onSnapshot(s=>{if(s.exists)setSyllabus(s.data().data||{});}));
-    uns.push(db.collection("timetable").doc("shared").onSnapshot(s=>{if(s.exists)setTimetable(s.data().data||DEFAULT_TT);}));
-    uns.push(db.collection("calEvents").orderBy("date","asc").onSnapshot(s=>setCalEvents(s.docs.map(d=>({id:d.id,...d.data()})))));
-    uns.push(db.collection("flashcards").orderBy("createdAt","desc").onSnapshot(s=>setFlashcards(s.docs.map(d=>({id:d.id,...d.data()})))));
-    uns.push(db.collection("quizzes").orderBy("createdAt","desc").onSnapshot(s=>setQuizzes(s.docs.map(d=>({id:d.id,...d.data()})))));
-    uns.push(db.collection("tasks").orderBy("createdAt","desc").onSnapshot(s=>setTasks(s.docs.map(d=>({id:d.id,...d.data()})))));
-    uns.push(db.collection("studyNotes").orderBy("createdAt","desc").onSnapshot(s=>setStudyNotes(s.docs.map(d=>({id:d.id,...d.data()})))));
-    uns.push(db.collection("users").onSnapshot(s=>setUsers(s.docs.map(d=>({id:d.id,...d.data()})))));
-    uns.push(db.collection("users").where("online","==",true).onSnapshot(s=>setOnlineUsers(s.docs.map(d=>d.data().name).filter(Boolean))));
-    return()=>{uns.forEach(u=>u());db.collection("users").doc(user.uid).update({online:false}).catch(()=>{});};
-  },[user.uid]);
-  const logout=async()=>{await db.collection("users").doc(user.uid).update({online:false}).catch(()=>{});await auth.signOut();};
-  const isT=profile?.role==="teacher"||profile?.role==="admin";
-
-  const logTopic=async entry=>{
-    const rd=new Date(entry.date);rd.setDate(rd.getDate()+7);const rDue=rd.toISOString().split("T")[0];
-    await db.collection("topics").add({...entry,revisionDue:rDue,loggedBy:profile?.name||"Teacher",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-    if(entry.status==="taught"||entry.status==="selfstudy"){await db.collection("revisions").add({subject:entry.subject,chapter:entry.chapter,topic:entry.topic,subtopic:entry.subtopic||"",taughtDate:entry.date,dueDate:rDue,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});}
-    const upd=JSON.parse(JSON.stringify(syllabus));
-    if(!upd[entry.subject])upd[entry.subject]={chapters:DS[entry.subject]?.chapters||[],progress:{}};
-    if(!upd[entry.subject].progress)upd[entry.subject].progress={};
-    const key=entry.subtopic?`${entry.subject}||${entry.chapter}||${entry.topic}||${entry.subtopic}`:`${entry.subject}||${entry.chapter}||${entry.topic}`;
-    upd[entry.subject].progress[key]={status:entry.status,date:entry.date,completedBy:entry.status==="taught"?profile?.name:null};
-    await db.collection("syllabus").doc("shared").set({data:upd},{merge:true});
-    showToast("Topic saved! Revision set for "+rDue);
-  };
-
-  const toggleTopicComplete=async(subj,key,currentStatus)=>{
-    const upd=JSON.parse(JSON.stringify(syllabus));
-    if(!upd[subj])upd[subj]={chapters:DS[subj]?.chapters||[],progress:{}};
-    if(!upd[subj].progress)upd[subj].progress={};
-    if(currentStatus==="taught"){delete upd[subj].progress[key];showToast("Topic marked as pending.");}
-    else{upd[subj].progress[key]={status:"taught",date:new Date().toISOString().split("T")[0],completedBy:profile?.name};showToast("Topic marked complete!");}
-    await db.collection("syllabus").doc("shared").set({data:upd},{merge:true});
-  };
-
-  const markRevised=async id=>{await db.collection("revisions").doc(id).update({done:true,doneDate:new Date().toISOString().split("T")[0]});showToast("Marked as revised!");};
-  const addNote=async text=>{await db.collection("notes").add({text,author:profile?.name||"Teacher",createdAt:firebase.firestore.FieldValue.serverTimestamp()});};
-  const addCalEvent=async ev=>{await db.collection("calEvents").add({...ev,createdBy:profile?.name,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("Event added!");};
-  const deleteCalEvent=async id=>{await db.collection("calEvents").doc(id).delete();};
-  const addFlashcard=async fc=>{await db.collection("flashcards").add({...fc,createdBy:profile?.name,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("Flashcard added!");};
-  const addQuiz=async qz=>{await db.collection("quizzes").add({...qz,createdBy:profile?.name,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("Quiz added!");};
-  const addTask=async tk=>{await db.collection("tasks").add({...tk,createdBy:profile?.name,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("Task assigned!");};
-  const toggleTask=async(id,done)=>{await db.collection("tasks").doc(id).update({done:!done,doneDate:!done?new Date().toISOString().split("T")[0]:null});};
-  const uploadSyllabus=async(subj,chapters)=>{const upd=JSON.parse(JSON.stringify(syllabus));if(!upd[subj])upd[subj]={};upd[subj].chapters=chapters;upd[subj].progress=upd[subj].progress||{};await db.collection("syllabus").doc("shared").set({data:upd},{merge:true});showToast("Syllabus updated!");};
-  const saveTimetable=async tt=>{await db.collection("timetable").doc("shared").set({data:tt},{merge:true});showToast("Timetable saved!");};
-  const addStudyNote=async note=>{await db.collection("studyNotes").add({...note,uploadedBy:profile?.name,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast("Study material added!");};
-  const deleteStudyNote=async id=>{await db.collection("studyNotes").doc(id).delete();showToast("Deleted.");};
-  const addUser=async(userData)=>{
-    try{const c=await auth.createUserWithEmailAndPassword(userData.email,userData.password);await db.collection("users").doc(c.user.uid).set({name:userData.name,email:userData.email,password:userData.password,role:userData.role,avatar:userData.name[0].toUpperCase(),online:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast(userData.name+" added! Quick Login updated.");return true;}
-    catch(ex){showToast("Error: "+ex.message);return false;}
-  };
-
-  const todayRevs=revisions.filter(r=>{const t=new Date().toISOString().split("T")[0];return!r.done&&r.dueDate<=t;});
-  const navT=[{id:"dashboard",l:"Dashboard",i:"📊"},{id:"log",l:"Log Topic",i:"✏️"},{id:"syllabus",l:"Syllabus",i:"📚"},{id:"studynotes",l:"Study Notes",i:"📎"},{id:"revision",l:"Revisions",i:"🔄"},{id:"notes",l:"Team Notes",i:"💬"},{id:"content",l:"Flashcards & Quiz",i:"🎯"},{id:"tasks",l:"Tasks",i:"✅"},{id:"calendar",l:"Calendar & Planner",i:"📅"},{id:"timetable",l:"Timetable",i:"🗓️"},{id:"users",l:"Manage Users",i:"👥"}];
-  const navC=[{id:"dashboard",l:"Dashboard",i:"🏠"},{id:"syllabus",l:"My Syllabus",i:"📚"},{id:"studynotes",l:"Study Notes",i:"📎"},{id:"revision",l:"Revisions",i:"🔄"},{id:"learn",l:"Learn",i:"🎯"},{id:"tasks",l:"My Tasks",i:"✅"},{id:"calendar",l:"Calendar",i:"📅"}];
-  const nav=isT?navT:navC;
-  const props={profile,topics,revisions,notes,syllabus,calEvents,flashcards,quizzes,tasks,studyNotes,timetable,users,onlineUsers,todayRevs,logTopic,toggleTopicComplete,markRevised,addNote,addCalEvent,deleteCalEvent,addFlashcard,addQuiz,addTask,toggleTask,uploadSyllabus,saveTimetable,addStudyNote,deleteStudyNote,addUser,showToast,isT,setPage};
-  const pages={dashboard:Dashboard,log:LogTopic,syllabus:SylPage,studynotes:StudyNotesPage,revision:RevPage,notes:TeamNotes,content:ContentPage,learn:LearnPage,tasks:TasksPage,calendar:CalPage,timetable:TTPage,users:UsersPage};
-  const PageComp=pages[page]||Dashboard;
-
-  return div({},
-    e("nav",{className:"nav"},
-      div({style:{display:"flex",alignItems:"center",gap:10}},span({style:{fontSize:22}},"🎓"),span({style:{fontFamily:"Nunito,sans-serif",fontSize:18,fontWeight:800}},"Dugu EduTrack"),span({style:{fontSize:10,background:"rgba(255,255,255,0.2)",padding:"2px 8px",borderRadius:9999,fontWeight:600}},"v3.4"),onlineUsers.length>0&&span({style:{fontSize:11,background:"rgba(34,197,94,0.2)",color:"#86efac",padding:"2px 8px",borderRadius:9999,fontWeight:600}},onlineUsers.length+" online")),
-      div({style:{display:"flex",alignItems:"center",gap:10}},div({style:{width:30,height:30,borderRadius:"50%",background:"rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13}},profile?.avatar||"?"),div({style:{display:"flex",flexDirection:"column",alignItems:"flex-end"}},span({style:{fontWeight:700,fontSize:13}},profile?.name||"..."),span({style:{fontSize:10,opacity:.75,textTransform:"capitalize"}},profile?.role)),btn({onClick:logout,style:{background:"rgba(255,255,255,0.15)",color:"white",border:"none",padding:"5px 12px",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:600,marginLeft:6,fontFamily:"inherit"}},"Exit"))
-    ),
-    div({className:"sb"},
-      div({style:{padding:"6px 16px 10px",borderBottom:"1px solid #e2e8f0",marginBottom:6,fontSize:11,fontWeight:700,color:"#64748b",letterSpacing:1}},isT?"TEACHER PORTAL":"STUDENT PORTAL"),
-      ...nav.map(item=>div({key:item.id,className:"si"+(page===item.id?" act":""),onClick:()=>setPage(item.id)},span({style:{fontSize:16}},item.i),span({},item.l))),
-      div({style:{padding:"12px 16px",position:"absolute",bottom:0,left:0,right:0,borderTop:"1px solid #e2e8f0",fontSize:10,color:"#64748b",textAlign:"center"}},span({style:{width:6,height:6,borderRadius:"50%",background:"#22c55e",display:"inline-block",marginRight:4}}),"Live Sync · Baibhav · Std 5A")
-    ),
-    div({className:"main"},h(PageComp,props)),
-    div({className:"mn",style:{display:"none"}},...nav.slice(0,5).map(item=>div({key:item.id,className:"mi"+(page===item.id?" act":""),onClick:()=>setPage(item.id)},span({style:{fontSize:18}},item.i),span({},item.l)))),
-    toast&&div({style:{position:"fixed",bottom:80,left:"50%",transform:"translateX(-50%)",background:"#1a202c",color:"#fff",padding:"10px 22px",borderRadius:9999,fontSize:13,fontWeight:500,zIndex:999,boxShadow:"0 8px 32px rgba(0,0,0,.16)",whiteSpace:"nowrap"}},toast)
-  );
+function renderShell(){
+  var isT=S.profile&&(S.profile.role==="teacher"||S.profile.role==="admin");
+  var navT=[["dashboard","&#128202;","Dashboard"],["log","&#9999;","Log Topic"],["syllabus","&#128218;","Syllabus"],["studynotes","&#128206;","Study Notes"],["revision","&#128260;","Revisions"],["notes","&#128172;","Team Notes"],["content","&#127919;","Flashcards & Quiz"],["tasks","&#9989;","Tasks"],["calendar","&#128197;","Calendar"],["timetable","&#128197;","Timetable"],["users","&#128101;","Manage Users"]];
+  var navC=[["dashboard","&#127968;","Dashboard"],["syllabus","&#128218;","My Syllabus"],["studynotes","&#128206;","Study Notes"],["revision","&#128260;","Revisions"],["learn","&#127919;","Learn"],["tasks","&#9989;","My Tasks"],["calendar","&#128197;","Calendar"]];
+  var nav=isT?navT:navC;
+  var myOff=getTZOff(S.profile?S.profile.name:"");
+  var myLbl=getTZLbl(S.profile?S.profile.name:"");
+  var si="",mi="";
+  nav.forEach(function(item){si+=D({class:"si"+(S.page===item[0]?" act":""),onclick:"goPage('"+item[0]+"')"},item[1]+" "+item[2]);});
+  nav.slice(0,5).forEach(function(item){mi+=D({class:"mi"+(S.page===item[0]?" act":""),onclick:"goPage('"+item[0]+"')"},tag("span",{style:"font-size:17px"},item[1])+tag("span",{},item[2]));});
+  el("app").innerHTML=tag("nav",{class:"nav"},D({style:"display:flex;align-items:center;gap:8px"},S2({style:"font-size:19px"},"&#127891;")+S2({style:"font-family:Nunito,sans-serif;font-size:17px;font-weight:800"},"Dugu EduTrack")+S2({style:"font-size:9px;background:rgba(255,255,255,.2);padding:2px 6px;border-radius:9999px;font-weight:600"},"v1.0")+S2({id:"nav-online",style:"font-size:10px;background:rgba(34,197,94,.2);color:#86efac;padding:2px 6px;border-radius:9999px;font-weight:600;display:none"},S2({class:"od"},"")+"0 online"))+D({style:"display:flex;align-items:center;gap:8px"},D({style:"text-align:right"},D({style:"font-weight:700;font-size:12px"},S.profile?S.profile.name:"...")+D({style:"font-size:10px;opacity:.75"},myLbl+" &middot; "+tag("span",{id:"nav-time"},localTime(myOff))))+D({style:"width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px"},S.profile?S.profile.name[0]:"?")+tag("button",{onclick:"doLogout()",style:"background:rgba(255,255,255,.15);color:white;border:none;padding:4px 10px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;font-family:inherit"},"Exit")))+D({class:"sb"},D({style:"padding:5px 14px 8px;border-bottom:1px solid #e2e8f0;margin-bottom:4px;font-size:10px;font-weight:700;color:#64748b;letter-spacing:1px"},isT?"TEACHER PORTAL":"STUDENT PORTAL")+si+D({style:"padding:9px 14px;position:absolute;bottom:0;left:0;right:0;border-top:1px solid #e2e8f0;font-size:9px;color:#64748b;text-align:center"},S2({class:"od"},"")+"Live Sync &middot; Baibhav &middot; Std 5A"))+D({id:"page-content",class:"main"},"")+D({class:"mn",style:"display:none"},mi);
 }
-
-// ── Dashboard ─────────────────────────────────────────────────────────────────
-function Dashboard({profile,topics,todayRevs,revisions,syllabus,tasks,onlineUsers,isT,setPage}){
-  const today=new Date().toISOString().split("T")[0];
-  const ne=EXAMS.find(e=>e.d>=today);
-  const dl=ne?Math.ceil((new Date(ne.d)-new Date())/86400000):null;
-  const totalDone=Object.values(syllabus).reduce((s,v)=>s+Object.values(v.progress||{}).filter(x=>x.status==="taught").length,0);
-  const totalTopics=Object.values(syllabus).reduce((s,v)=>{const ch=v.chapters||[];return s+ch.reduce((a,c)=>a+(c.topics||[]).reduce((b,t)=>b+1+(t.subtopics||[]).length,0),0);},0);
-  const overallPct=totalTopics?Math.round(totalDone/totalTopics*100):0;
-  const pendingTasks=tasks.filter(t=>!t.done).length;
-  const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-  const tn=days[new Date().getDay()];
-  const hour=new Date().getHours();
-  const gr=hour<12?"Good Morning":hour<17?"Good Afternoon":"Good Evening";
-  return div({className:"fi"},
-    div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}},
-      div({className:"pt"},isT?"👋 Welcome, "+(profile?.name||"")+"!":"🏠 "+gr+", Baibhav!"),
-      onlineUsers.length>0&&div({style:{display:"flex",alignItems:"center",gap:6,background:"#C6EFCE",color:"#276221",padding:"6px 12px",borderRadius:9999,fontSize:12,fontWeight:600}},span({style:{width:7,height:7,borderRadius:"50%",background:"#22c55e",display:"inline-block",marginRight:4}}),"Online: "+onlineUsers.join(", "))
-    ),
-    div({className:"ps"},new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})),
-    ne&&div({style:{background:`linear-gradient(135deg,${ne.c},${ne.c}cc)`,color:"white",borderRadius:16,padding:"14px 20px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between"}},
-      div({},div({style:{fontSize:12,opacity:.85}},"Next Exam"),div({style:{fontSize:18,fontWeight:800}},"📝 "+ne.n),div({style:{fontSize:12,opacity:.85}},ne.d)),
-      div({style:{textAlign:"center"}},div({style:{fontSize:40,fontWeight:900,lineHeight:1}},dl),div({style:{fontSize:12,opacity:.85}},"days left"))
-    ),
-    div({className:"g4c",style:{marginBottom:20}},
-      ...[{v:topics.length,l:"Topics Logged",c:"#1F4E79"},{v:todayRevs.length,l:"Revisions Due",c:"#C55A11"},{v:overallPct+"%",l:"Overall Progress",c:"#1F6B5B"},{v:pendingTasks,l:"Pending Tasks",c:"#4B2E83"}].map((s,i)=>div({key:i,className:"sc",style:{borderTop:`4px solid ${s.c}`}},div({className:"sv",style:{color:s.c}},s.v),div({className:"sl2"},s.l)))
-    ),
-    div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}},
-      div({className:"card"},
-        div({className:"st"},"📊 Subject Progress"),
-        ...SUBS.map(sub=>{
-          const d=syllabus[sub]||{};const p=d.progress||{};const ch=d.chapters||DS[sub]?.chapters||[];
-          const total=ch.reduce((a,c)=>a+(c.topics||[]).reduce((b,t)=>b+1+(t.subtopics||[]).length,0),0);
-          const done=Object.values(p).filter(x=>x.status==="taught").length;
-          const pct=total?Math.round(done/total*100):0;
-          return div({key:sub,style:{marginBottom:8}},
-            div({style:{display:"flex",justifyContent:"space-between",marginBottom:2}},span({style:{fontSize:12,fontWeight:600}},sub),span({style:{fontSize:11,color:"#64748b"}},done+"/"+total+" · "+pct+"%")),
-            div({className:"pb"},div({className:"pf",style:{width:pct+"%",background:SC[sub]||"#1F4E79"}}))
-          );
-        })
-      ),
-      div({style:{display:"flex",flexDirection:"column",gap:12}},
-        div({className:"card"},
-          div({className:"st"},"🔄 Revisions Due Today ",todayRevs.length>0&&span({className:"bdg bdd"},todayRevs.length)),
-          todayRevs.length===0?div({className:"es",style:{padding:"12px 0"}},div({className:"ei"},"✅"),p2({},"All clear!")):
-          div({},
-            ...todayRevs.slice(0,4).map(r=>div({key:r.id,style:{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:8,background:"#FCE4D6",border:"1px solid #C55A11",marginBottom:6}},
-              div({style:{flex:1}},div({style:{fontSize:12,fontWeight:600,color:"#C55A11"}},r.subject),div({style:{fontSize:11,color:"#475569"}},r.topic)),
-              span({className:"bdg bdw"},"Due")
-            ))
-          )
-        ),
-        div({className:"card"},
-          div({className:"st"},"📝 Recent Topics"),
-          topics.length===0?div({className:"es",style:{padding:"12px 0"}},div({className:"ei"},"📚"),p2({},"No topics yet")):
-          div({},
-            ...topics.slice(0,4).map(t=>div({key:t.id,style:{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:8,background:"#f8fafc",border:"1px solid #e2e8f0",marginBottom:6}},
-              div({style:{width:8,height:8,borderRadius:"50%",background:t.status==="taught"?"#276221":t.status==="selfstudy"?"#1F4E79":"#9C0006",flexShrink:0}}),
-              div({style:{flex:1}},div({style:{fontSize:12,fontWeight:600}},(t.subject||"")+" — "+(t.chapter||"")),div({style:{fontSize:11,color:"#64748b"}},t.topic)),
-              div({style:{fontSize:10,color:"#94a3b8"}},t.date)
-            ))
-          )
-        )
-      )
-    )
-  );
+function goPage(id){S.page=id;document.querySelectorAll(".si,.mi").forEach(function(e){var oc=e.getAttribute("onclick")||"";var m=oc.match(/goPage\('([^']+)'\)/);e.classList.toggle("act",!!(m&&m[1]===id));});renderPage();}
+function renderPage(){var pc=el("page-content");if(!pc)return;var isT=S.profile&&(S.profile.role==="teacher"||S.profile.role==="admin");var pages={dashboard:pgDashboard,log:pgLog,syllabus:pgSyllabus,studynotes:pgStudyNotes,revision:pgRevision,notes:pgNotes,content:pgContent,learn:pgLearn,tasks:pgTasks,calendar:pgCalendar,timetable:pgTimetable,users:pgUsers};try{var fn=pages[S.page]||pgDashboard;pc.innerHTML=D({class:"fi"},fn(isT));}catch(err){pc.innerHTML=D({style:"padding:20px;color:#9C0006;background:#FFC7CE;border-radius:10px;margin:20px"},"<strong>Error on page: "+S.page+"</strong><br>"+err.message);console.error(err);}}
+function doLogin(){var email=val("li-email"),pass=val("li-pass");if(!email||!pass)return;var b=el("li-btn"),e=el("li-err");if(b)b.textContent="Signing in...";if(e)e.style.display="none";auth.signInWithEmailAndPassword(email,pass).catch(function(){if(e)e.style.display="block";if(b)b.textContent="Sign In";});}
+function quickLogin(e,p){var b=el("li-btn");if(b)b.textContent="Signing in...";auth.signInWithEmailAndPassword(e,p).catch(function(){if(b)b.textContent="Sign In";});}
+function doLogout(){S.unsubs.forEach(function(u){u();});S.unsubs=[];db.collection("users").doc(S.user.uid).update({online:false}).catch(function(){});auth.signOut();}
+function setupAccounts(){var users=[{name:"Saswat",email:"saswat@dugu-edutrack.com",password:"Saswat@123",role:"teacher",tzOffset:1,tzLabel:"WAT +1"},{name:"Swagat",email:"swagat@dugu-edutrack.com",password:"Swagat@123",role:"teacher",tzOffset:0,tzLabel:"GMT +0"},{name:"Pragyan",email:"pragyan@dugu-edutrack.com",password:"Pragyan@123",role:"teacher",tzOffset:0,tzLabel:"GMT +0"},{name:"Baibhav",email:"baibhav@dugu-edutrack.com",password:"Baibhav@123",role:"child",tzOffset:5.5,tzLabel:"IST +5:30"}];var done=0;users.forEach(function(u){auth.createUserWithEmailAndPassword(u.email,u.password).then(function(c){db.collection("users").doc(c.user.uid).set(Object.assign({},u,{avatar:u.name[0],online:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()}));auth.signOut();done++;if(done===users.length)alert("Setup complete!");}).catch(function(ex){if(ex.code!=="auth/email-already-in-use")console.log(ex);done++;if(done===users.length)alert("Setup complete!");});});}
+function startListeners(){
+  var uid=S.user.uid;
+  db.collection("users").doc(uid).update({online:true}).catch(function(){});
+  var uns=S.unsubs;
+  function snap(col,ord,lim,key,pgs){var q=db.collection(col).orderBy(ord,"desc");if(lim)q=q.limit(lim);uns.push(q.onSnapshot(function(s){S[key]=s.docs.map(function(d){return Object.assign({id:d.id},d.data());});if(pgs.indexOf(S.page)>=0)renderPage();}));}
+  snap("topics","createdAt",100,"topics",["dashboard","log"]);
+  snap("notes","createdAt",30,"notes",["notes"]);
+  snap("flashcards","createdAt",0,"flashcards",["content","learn"]);
+  snap("quizzes","createdAt",0,"quizzes",["content","learn"]);
+  snap("tasks","createdAt",0,"tasks",["tasks"]);
+  snap("studyNotes","createdAt",0,"studyNotes",["studynotes"]);
+  snap("calEvents","date",0,"calEvents",["calendar"]);
+  uns.push(db.collection("revisions").orderBy("dueDate","asc").onSnapshot(function(s){S.revisions=s.docs.map(function(d){return Object.assign({id:d.id},d.data());});if(["revision","dashboard"].indexOf(S.page)>=0)renderPage();}));
+  uns.push(db.collection("syllabus").doc("shared").onSnapshot(function(s){if(s.exists)S.syllabus=s.data().data||{};if(["syllabus","dashboard","log"].indexOf(S.page)>=0)renderPage();}));
+  uns.push(db.collection("timetable").doc("shared").onSnapshot(function(s){if(s.exists)S.timetable=s.data().data||DEFAULT_TT;if(S.page==="timetable")renderPage();}));
+  uns.push(db.collection("users").onSnapshot(function(s){S.users=s.docs.map(function(d){return Object.assign({id:d.id},d.data());});var rc={teacher:"#1F4E79",admin:"#9C0006",child:"#C55A11"};var loaded=S.users.filter(function(u){return u.email&&u.password;}).map(function(u){return{n:u.name,e:u.email,p:u.password,c:rc[u.role]||"#1F4E79",tz:u.tzLabel||""};});if(loaded.length>0)S.quickUsers=loaded;if(S.page==="users")renderPage();else updateNavTime();}));
+  uns.push(db.collection("users").where("online","==",true).onSnapshot(function(s){S.onlineUsers=s.docs.map(function(d){return d.data().name;}).filter(Boolean);updateNavTime();}));
 }
+auth.onAuthStateChanged(function(u){S.user=u;if(u){db.collection("users").doc(u.uid).get().then(function(d){if(d.exists)S.profile=d.data();renderShell();renderPage();startListeners();});}else{S.profile=null;S.unsubs.forEach(function(f){f();});S.unsubs=[];renderLogin();}});
+</script>
 
-// ── Log Topic ─────────────────────────────────────────────────────────────────
-function LogTopic({logTopic,syllabus}){
-  const[form,setForm]=useState({date:new Date().toISOString().split("T")[0],subject:"",chapter:"",topic:"",subtopic:"",status:"taught",notes:""});
-  const[saving,setSaving]=useState(false);const[ok,setOk]=useState(false);
-  const subData=form.subject?(syllabus[form.subject]?.chapters||DS[form.subject]?.chapters||[]):[];
-  const chData=form.chapter?subData.find(c=>c.ch===form.chapter):null;
-  const topicData=form.topic&&chData?(chData.topics||[]).find(t=>t.name===form.topic):null;
-  const submit=async()=>{if(!form.subject||!form.topic)return;setSaving(true);await logTopic(form);setSaving(false);setOk(true);setForm({date:new Date().toISOString().split("T")[0],subject:"",chapter:"",topic:"",subtopic:"",status:"taught",notes:""});setTimeout(()=>setOk(false),3000);};
-  const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-  const tn=days[new Date().getDay()];
-  return div({className:"fi"},
-    div({className:"pt"},"✏️ Log Today Topics"),
-    div({className:"ps"},"Record what Baibhav studied — syncs instantly to all devices"),
-    ok&&div({style:{background:"#C6EFCE",color:"#276221",padding:"12px 18px",borderRadius:12,marginBottom:16,fontWeight:600,fontSize:14}},"✅ Topic saved! Revision scheduled automatically."),
-    div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}},
-      div({className:"card"},
-        div({className:"st"},"📝 Log Entry"),
-        div({style:{marginBottom:12}},lbl({className:"lbl"},"Date"),inp({className:"inp",type:"date",value:form.date,onChange:ev=>setForm(f=>({...f,date:ev.target.value}))})),
-        div({style:{marginBottom:12}},lbl({className:"lbl"},"Status"),
-          div({style:{display:"flex",gap:6,flexWrap:"wrap"}},
-            ...STATUS_OPTS.map(s=>btn({key:s.v,onClick:()=>setForm(f=>({...f,status:s.v})),style:{padding:"7px 12px",borderRadius:8,border:`2px solid ${s.c}`,background:form.status===s.v?s.bg:"white",color:s.c,fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}},s.l))
-          )
-        ),
-        div({style:{marginBottom:10}},lbl({className:"lbl"},"Subject"),
-          sel({className:"inp",value:form.subject,onChange:ev=>setForm(f=>({...f,subject:ev.target.value,chapter:"",topic:"",subtopic:""}))},
-            opt({value:""},"-- Select Subject --"),...SUBS.map(s=>opt({key:s,value:s},s))
-          )
-        ),
-        form.subject&&div({style:{marginBottom:10}},lbl({className:"lbl"},"Chapter"),
-          sel({className:"inp",value:form.chapter,onChange:ev=>setForm(f=>({...f,chapter:ev.target.value,topic:"",subtopic:""}))},
-            opt({value:""},"-- Select Chapter --"),...subData.map(c=>opt({key:c.ch,value:c.ch},c.ch))
-          )
-        ),
-        form.chapter&&chData&&div({style:{marginBottom:10}},lbl({className:"lbl"},"Topic"),
-          sel({className:"inp",value:form.topic,onChange:ev=>setForm(f=>({...f,topic:ev.target.value,subtopic:""}))},
-            opt({value:""},"-- Select Topic --"),...(chData.topics||[]).map(t=>opt({key:t.name,value:t.name},t.name))
-          )
-        ),
-        form.topic&&topicData&&(topicData.subtopics||[]).length>0&&div({style:{marginBottom:10}},lbl({className:"lbl"},"Sub-topic (optional)"),
-          sel({className:"inp",value:form.subtopic,onChange:ev=>setForm(f=>({...f,subtopic:ev.target.value}))},
-            opt({value:""},"-- Select Sub-topic --"),...(topicData.subtopics||[]).map(st=>opt({key:st,value:st},st))
-          )
-        ),
-        div({style:{marginBottom:12}},lbl({className:"lbl"},"Notes (optional)"),ta({className:"inp",rows:2,placeholder:"Any notes about this session...",value:form.notes,onChange:ev=>setForm(f=>({...f,notes:ev.target.value}))})),
-        btn({className:"btn bp bfw",onClick:submit,disabled:!form.subject||!form.topic||saving},saving?"Saving...":"✅ Save Topic")
-      ),
-      div({style:{display:"flex",flexDirection:"column",gap:12}},
-        div({className:"card",style:{background:"linear-gradient(135deg,#1F4E79,#2E75B6)",color:"white"}},
-          div({style:{fontSize:15,fontWeight:700,marginBottom:10}},"☁️ Cloud Sync Active"),
-          div({style:{fontSize:12,opacity:.9,lineHeight:1.9}},"✅ Syncs instantly to all 3 devices",e("br",{}),"✅ Saswat sees Swagat updates live",e("br",{}),"✅ Baibhav dashboard updates auto",e("br",{}),"✅ 7-day revision scheduled",e("br",{}),"✅ Firebase backup — no data loss")
-        ),
-        div({className:"card"},
-          div({className:"st"},"🗓️ Today — "+tn),
-          div({style:{display:"flex",flexWrap:"wrap",gap:6}},
-            ...(DEFAULT_TT[tn]||[]).filter(p=>p.sub!=="BREAK").map((p,i)=>span({key:i,style:{padding:"4px 10px",borderRadius:9999,fontSize:11,fontWeight:600,background:TTC[p.sub]||"#DCE6F1",color:"#334155"}},p.sub))
-          )
-        )
-      )
-    )
-  );
-}
+<script>
+function pgDashboard(isT){
+  // ── STUDENT DASHBOARD ──────────────────────────────────────────────────────
+  if(!isT){
+    var td=today(),tn=dayName(),hour=new Date().getHours();
+    var gr=hour<12?'Good Morning':hour<17?'Good Afternoon':'Good Evening';
+    var ttToday=(S.timetable[tn]||[]);
+    var highTasks=S.tasks.filter(function(t){return !t.done&&(t.priority==='high'||t.priority==='medium');});
+    var tr=S.revisions.filter(function(r){return !r.done&&r.dueDate<=td;});
+    var totalDone=0,totalTopics=0;
+    Object.keys(S.syllabus).forEach(function(sub){var v=S.syllabus[sub];totalDone+=Object.values(v.progress||{}).filter(function(x){return x.status==='taught';}).length;(v.chapters||[]).forEach(function(c){(c.topics||[]).forEach(function(t){totalTopics+=1+(t.st||[]).length;});});});
+    var op=totalTopics?Math.round(totalDone/totalTopics*100):0;
 
-// ── Syllabus ──────────────────────────────────────────────────────────────────
-function SylPage({syllabus,uploadSyllabus,toggleTopicComplete,isT}){
-  const[sel,setSel]=useState(SUBS[0]);const[editing,setEditing]=useState(false);
-  const[editData,setEditData]=useState(null);const[newCh,setNewCh]=useState("");const[newTp,setNewTp]=useState("");const[newSt,setNewSt]=useState("");const[selCh,setSelCh]=useState("");const[selTp,setSelTp]=useState("");
-  const subData=syllabus[sel]?.chapters||DS[sel]?.chapters||[];
-  const progress=syllabus[sel]?.progress||{};
-  const total=subData.reduce((a,c)=>a+(c.topics||[]).reduce((b,t)=>b+1+(t.subtopics||[]).length,0),0);
-  const done=Object.values(progress).filter(x=>x.status==="taught").length;
-  const pct=total?Math.round(done/total*100):0;
-  const getKey=(ch,tp,st)=>st?`${sel}||${ch}||${tp}||${st}`:`${sel}||${ch}||${tp}`;
-  const getStatus=(ch,tp,st)=>progress[getKey(ch,tp,st)]?.status||null;
-  const startEdit=()=>{setEditData(JSON.parse(JSON.stringify(subData)));setEditing(true);};
-  const addCh=()=>{if(!newCh.trim())return;setEditData(p=>[...p,{ch:newCh.trim(),topics:[]}]);setNewCh("");};
-  const addTp=()=>{if(!selCh||!newTp.trim())return;setEditData(p=>p.map(c=>c.ch===selCh?{...c,topics:[...(c.topics||[]),{name:newTp.trim(),subtopics:[]}]}:c));setNewTp("");};
-  const addSt=()=>{if(!selCh||!selTp||!newSt.trim())return;setEditData(p=>p.map(c=>c.ch===selCh?{...c,topics:(c.topics||[]).map(t=>t.name===selTp?{...t,subtopics:[...(t.subtopics||[]),newSt.trim()]}:t)}:c));setNewSt("");};
-  const saveEdit=async()=>{await uploadSyllabus(sel,editData);setEditing(false);};
-  return div({className:"fi"},
-    div({className:"pt"},"📚 Syllabus Tracker"),
-    div({className:"ps"},"Track Baibhav's learning — teachers can mark topics complete or pending"),
-    div({style:{display:"flex",flexWrap:"wrap",gap:8,marginBottom:16}},
-      ...SUBS.map(s=>btn({key:s,onClick:()=>{setSel(s);setEditing(false);},style:{padding:"7px 14px",borderRadius:9999,fontSize:12,fontWeight:600,border:`2px solid ${SC[s]||"#1F4E79"}`,cursor:"pointer",background:sel===s?(SC[s]||"#1F4E79"):"white",color:sel===s?"white":(SC[s]||"#1F4E79"),fontFamily:"inherit"}},s))
-    ),
-    div({className:"card"},
-      div({style:{display:"flex",alignItems:"center",gap:12,padding:"14px 18px",background:SL[sel]||"#DCE6F1",borderRadius:12,margin:"-20px -20px 16px"}},
-        div({style:{flex:1}},div({style:{fontSize:17,fontWeight:800,color:SC[sel]||"#1F4E79"}},sel),div({style:{fontSize:12,color:"#475569"}},done+"/"+total+" topics taught")),
-        div({style:{textAlign:"right"}},div({style:{fontSize:26,fontWeight:900,color:SC[sel]||"#1F4E79"}},pct+"%")),
-        isT&&btn({onClick:startEdit,style:{padding:"6px 14px",borderRadius:8,border:"2px solid "+(SC[sel]||"#1F4E79"),background:"white",color:SC[sel]||"#1F4E79",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}},"✏️ Edit Syllabus")
-      ),
-      div({className:"pb",style:{marginBottom:16,height:10}},div({className:"pf",style:{width:pct+"%",background:SC[sel]||"#1F4E79"}})),
-      editing&&isT?div({style:{background:"#f8fafc",borderRadius:12,padding:16,marginBottom:16}},
-        div({style:{fontSize:14,fontWeight:700,marginBottom:12}},"✏️ Edit Syllabus — "+sel),
-        div({style:{display:"flex",gap:8,marginBottom:8}},inp({className:"inp",placeholder:"New chapter (e.g. Ch-4)",value:newCh,onChange:ev=>setNewCh(ev.target.value),style:{flex:1}}),btn({className:"btn bp bsm",onClick:addCh},"+ Chapter")),
-        div({style:{display:"flex",gap:8,marginBottom:8}},
-          sel({className:"inp",value:selCh,onChange:ev=>setSelCh(ev.target.value),style:{flex:1}},opt({value:""},"Select Chapter"),...(editData||[]).map(c=>opt({key:c.ch,value:c.ch},c.ch))),
-          inp({className:"inp",placeholder:"New topic",value:newTp,onChange:ev=>setNewTp(ev.target.value),style:{flex:1}}),
-          btn({className:"btn bp bsm",onClick:addTp},"+ Topic")
-        ),
-        div({style:{display:"flex",gap:8,marginBottom:12}},
-          sel({className:"inp",value:selTp,onChange:ev=>setSelTp(ev.target.value),style:{flex:1}},opt({value:""},"Select Topic"),...((editData||[]).find(c=>c.ch===selCh)?.topics||[]).map(t=>opt({key:t.name,value:t.name},t.name))),
-          inp({className:"inp",placeholder:"New sub-topic",value:newSt,onChange:ev=>setNewSt(ev.target.value),style:{flex:1}}),
-          btn({className:"btn bp bsm",onClick:addSt},"+ Sub-topic")
-        ),
-        div({style:{display:"flex",gap:8}},btn({className:"btn bs",onClick:saveEdit},"💾 Save Changes"),btn({className:"btn bg",onClick:()=>setEditing(false)},"Cancel"))
-      ):null,
-      ...subData.map(ch=>div({key:ch.ch,style:{marginBottom:12}},
-        div({style:{fontSize:13,fontWeight:700,color:SC[sel]||"#1F4E79",marginBottom:6,padding:"6px 10px",background:SL[sel]||"#DCE6F1",borderRadius:8}},ch.ch),
-        ...(ch.topics||[]).map(tp=>{
-          const tpStatus=getStatus(ch.ch,tp.name,null);
-          const tpKey=getKey(ch.ch,tp.name,null);
-          return div({key:tp.name,style:{marginBottom:4}},
-            div({style:{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderRadius:8,background:tpStatus==="taught"?(SL[sel]||"#DCE6F1"):"#f8fafc",border:`1px solid ${tpStatus==="taught"?(SC[sel]||"#1F4E79")+"44":"#e2e8f0"}`}},
-              div({style:{width:20,height:20,borderRadius:"50%",background:tpStatus==="taught"?(SC[sel]||"#1F4E79"):"#e2e8f0",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:tpStatus==="taught"?"white":"#64748b",flexShrink:0}},tpStatus==="taught"?"✓":"○"),
-              div({style:{flex:1}},div({style:{fontSize:12,fontWeight:600,color:tpStatus==="taught"?(SC[sel]||"#1F4E79"):"#334155"}},tp.name),tpStatus==="taught"&&progress[tpKey]?.completedBy&&div({style:{fontSize:10,color:"#64748b"}},"✓ by "+progress[tpKey].completedBy)),
-              isT&&btn({onClick:()=>toggleTopicComplete(sel,tpKey,tpStatus),style:{padding:"3px 10px",borderRadius:6,border:`1px solid ${tpStatus==="taught"?"#C55A11":"#276221"}`,background:tpStatus==="taught"?"#FFF0E6":"#C6EFCE",color:tpStatus==="taught"?"#C55A11":"#276221",fontSize:10,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}},tpStatus==="taught"?"↩ Unmark":"✓ Mark Done")
-            ),
-            ...(tp.subtopics||[]).map(st=>{
-              const stStatus=getStatus(ch.ch,tp.name,st);
-              const stKey=getKey(ch.ch,tp.name,st);
-              return div({key:st,style:{display:"flex",alignItems:"center",gap:8,padding:"5px 12px 5px 32px",borderRadius:8,background:stStatus==="taught"?(SL[sel]||"#DCE6F1")+"88":"transparent",marginTop:2}},
-                div({style:{width:14,height:14,borderRadius:"50%",background:stStatus==="taught"?(SC[sel]||"#1F4E79"):"#e2e8f0",display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:700,color:stStatus==="taught"?"white":"#94a3b8",flexShrink:0}},stStatus==="taught"?"✓":"·"),
-                div({style:{flex:1,fontSize:11,color:stStatus==="taught"?(SC[sel]||"#1F4E79"):"#64748b"}},st),
-                isT&&btn({onClick:()=>toggleTopicComplete(sel,stKey,stStatus),style:{padding:"2px 8px",borderRadius:6,border:`1px solid ${stStatus==="taught"?"#C55A11":"#276221"}`,background:stStatus==="taught"?"#FFF0E6":"#C6EFCE",color:stStatus==="taught"?"#C55A11":"#276221",fontSize:9,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}},stStatus==="taught"?"↩":"✓")
-              );
-            })
-          );
-        })
-      ))
-    )
-  );
-}
-
-// ── Study Notes ───────────────────────────────────────────────────────────────
-function StudyNotesPage({studyNotes,addStudyNote,deleteStudyNote,isT}){
-  const[form,setForm]=useState({subject:"",chapter:"",topic:"",title:"",url:"",type:"pdf"});
-  const[saving,setSaving]=useState(false);
-  const submit=async()=>{if(!form.subject||!form.title||!form.url)return;setSaving(true);await addStudyNote(form);setForm({subject:"",chapter:"",topic:"",title:"",url:"",type:"pdf"});setSaving(false);};
-  const grouped={};studyNotes.forEach(n=>{if(!grouped[n.subject])grouped[n.subject]=[];grouped[n.subject].push(n);});
-  return div({className:"fi"},
-    div({className:"pt"},"📎 Study Notes & Materials"),
-    div({className:"ps"},"PDFs, PPTs, Google Drive links — organized by subject"),
-    isT&&div({className:"card",style:{marginBottom:16}},
-      div({className:"st"},"➕ Add Study Material"),
-      div({style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:10}},
-        div({},lbl({className:"lbl"},"Subject"),sel({className:"inp",value:form.subject,onChange:ev=>setForm(f=>({...f,subject:ev.target.value}))},opt({value:""},"-- Subject --"),...SUBS.map(s=>opt({key:s,value:s},s)))),
-        div({},lbl({className:"lbl"},"Chapter"),inp({className:"inp",placeholder:"e.g. Ch-3",value:form.chapter,onChange:ev=>setForm(f=>({...f,chapter:ev.target.value}))})),
-        div({},lbl({className:"lbl"},"Topic"),inp({className:"inp",placeholder:"e.g. Fractions",value:form.topic,onChange:ev=>setForm(f=>({...f,topic:ev.target.value}))}))
-      ),
-      div({style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:10}},
-        div({},lbl({className:"lbl"},"Title"),inp({className:"inp",placeholder:"e.g. Fractions Notes PDF",value:form.title,onChange:ev=>setForm(f=>({...f,title:ev.target.value}))})),
-        div({},lbl({className:"lbl"},"Google Drive / URL"),inp({className:"inp",placeholder:"https://drive.google.com/...",value:form.url,onChange:ev=>setForm(f=>({...f,url:ev.target.value}))})),
-        div({},lbl({className:"lbl"},"Type"),sel({className:"inp",value:form.type,onChange:ev=>setForm(f=>({...f,type:ev.target.value}))},opt({value:"pdf"},"📄 PDF"),opt({value:"ppt"},"📊 PPT"),opt({value:"doc"},"📝 Doc"),opt({value:"video"},"🎥 Video"),opt({value:"link"},"🔗 Link")))
-      ),
-      btn({className:"btn bp",onClick:submit,disabled:!form.subject||!form.title||!form.url||saving},saving?"Saving...":"📤 Add Material")
-    ),
-    Object.keys(grouped).length===0?div({className:"es"},div({className:"ei"},"📎"),p2({},"No study materials yet. Add Google Drive links above.")):
-    div({},
-      ...Object.entries(grouped).map(([sub,notes])=>div({key:sub,className:"card",style:{marginBottom:12}},
-        div({style:{fontSize:14,fontWeight:700,color:SC[sub]||"#1F4E79",marginBottom:10,padding:"8px 12px",background:SL[sub]||"#DCE6F1",borderRadius:8}},sub),
-        ...notes.map(n=>div({key:n.id,style:{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:8,background:"#f8fafc",border:"1px solid #e2e8f0",marginBottom:6}},
-          div({style:{fontSize:20}},n.type==="pdf"?"📄":n.type==="ppt"?"📊":n.type==="video"?"🎥":"🔗"),
-          div({style:{flex:1}},e("a",{href:n.url,target:"_blank",style:{fontSize:13,fontWeight:600,color:"#1F4E79",textDecoration:"none"}},n.title),div({style:{fontSize:11,color:"#64748b"}},(n.chapter||"")+(n.topic?" · "+n.topic:"")+" · by "+(n.uploadedBy||""))),
-          isT&&btn({onClick:()=>deleteStudyNote(n.id),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:16,fontFamily:"inherit"}},"🗑️")
-        ))
-      ))
-    )
-  );
-}
-
-// ── Revision ──────────────────────────────────────────────────────────────────
-function RevPage({revisions,markRevised}){
-  const[tab,setTab]=useState("today");
-  const today=new Date().toISOString().split("T")[0];
-  const tr=revisions.filter(r=>!r.done&&r.dueDate<=today);
-  const or=revisions.filter(r=>!r.done&&r.dueDate<today);
-  const n7=new Date();n7.setDate(n7.getDate()+7);const n7s=n7.toISOString().split("T")[0];
-  const ur=revisions.filter(r=>!r.done&&r.dueDate>today&&r.dueDate<=n7s);
-  const dr=revisions.filter(r=>r.done);
-  const cl=tab==="today"?tr:tab==="overdue"?or:tab==="upcoming"?ur:dr;
-  return div({className:"fi"},
-    div({className:"pt"},"🔄 Revision Planner"),
-    div({className:"ps"},"7-day revision cycle — auto-scheduled when topics are logged"),
-    div({className:"g4c",style:{marginBottom:16}},
-      ...[{l:"Overdue",v:or.length,c:"#9C0006",bg:"#FFC7CE"},{l:"Due Today",v:tr.length,c:"#C55A11",bg:"#FCE4D6"},{l:"This Week",v:ur.length,c:"#1F4E79",bg:"#DCE6F1"},{l:"Completed",v:dr.length,c:"#276221",bg:"#C6EFCE"}].map(s=>div({key:s.l,style:{background:s.bg,borderRadius:14,padding:"14px 18px"}},div({style:{fontSize:26,fontWeight:800,color:s.c}},s.v),div({style:{fontSize:12,color:s.c,fontWeight:600}},s.l)))
-    ),
-    div({className:"tabs"},...[{id:"today",l:"Today ("+tr.length+")"},{id:"overdue",l:"Overdue ("+or.length+")"},{id:"upcoming",l:"Upcoming ("+ur.length+")"},{id:"done",l:"Done ("+dr.length+")"}].map(t=>div({key:t.id,className:"tab"+(tab===t.id?" act":""),onClick:()=>setTab(t.id)},t.l))),
-    div({className:"card"},
-      cl.length===0?div({className:"es"},div({className:"ei"},tab==="today"?"🎉":"📚"),p2({},tab==="today"?"No revisions due today!":"No items here")):
-      div({style:{maxHeight:500,overflowY:"auto"}},
-        ...cl.map(r=>div({key:r.id,className:"ri",style:{borderLeftColor:SC[r.subject]||"#1F4E79"}},
-          div({style:{flex:1}},
-            div({style:{display:"flex",alignItems:"center",gap:8,marginBottom:3}},span({style:{fontSize:12,fontWeight:700,color:SC[r.subject]||"#1F4E79"}},r.subject),span({style:{fontSize:11,color:"#64748b"}},r.chapter||"")),
-            div({style:{fontSize:12,color:"#334155",marginBottom:3}},r.topic+(r.subtopic?" → "+r.subtopic:"")),
-            div({style:{fontSize:10,color:"#94a3b8"}},"Taught: "+r.taughtDate+" · Due: "+r.dueDate+(r.doneDate?" · Done: "+r.doneDate:""))
-          ),
-          !r.done&&btn({className:"btn bs bsm",onClick:()=>markRevised(r.id)},"✅ Done"),
-          r.done&&span({className:"bdg bds"},"✅ Revised")
-        ))
-      )
-    )
-  );
-}
-
-// ── Team Notes ────────────────────────────────────────────────────────────────
-function TeamNotes({notes,addNote,profile}){
-  const[text,setText]=useState("");const[saving,setSaving]=useState(false);
-  const qn=["📚 Covered today topics as per timetable","⚠️ Baibhav needs extra help with Maths fractions","✅ Revision done for English Ch-1 and Ch-2","📝 Maths test announced for next week","🏆 Baibhav did great in SST Olympiad today!","🔄 Please revise Science Ch-1 tomorrow","⚡ Focus needed on Hindi grammar this week"];
-  const add=async()=>{if(!text.trim())return;setSaving(true);await addNote(text.trim());setText("");setSaving(false);};
-  return div({className:"fi"},
-    div({className:"pt"},"💬 Team Coordination Notes"),
-    div({className:"ps"},"Saswat and Swagat — real-time shared notes from any location"),
-    div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}},
-      div({},
-        div({className:"card",style:{marginBottom:12}},
-          div({className:"st"},"✍️ Add a Note"),
-          div({style:{display:"flex",alignItems:"center",gap:8,marginBottom:10,padding:"8px 12px",background:"#f8fafc",borderRadius:8}},div({style:{width:28,height:28,borderRadius:"50%",background:"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:12}},(profile?.name||"?")[0]),div({},div({style:{fontSize:12,fontWeight:700}},profile?.name||"Teacher"),div({style:{fontSize:10,color:"#64748b"}},"Online"))),
-          ta({className:"inp",rows:3,placeholder:"Write a coordination note — visible to all teachers instantly...",value:text,onChange:ev=>setText(ev.target.value)}),
-          btn({className:"btn bp bfw",style:{marginTop:8},onClick:add,disabled:!text.trim()||saving},saving?"Saving...":"📤 Post Note")
-        ),
-        div({className:"card"},div({className:"st"},"⚡ Quick Notes"),...qn.map((n,i)=>btn({key:i,onClick:()=>setText(n),style:{display:"block",width:"100%",padding:"7px 10px",borderRadius:8,border:"1px solid #e2e8f0",background:"#f8fafc",fontSize:11,cursor:"pointer",textAlign:"left",marginBottom:5,color:"#334155",fontFamily:"inherit"}},n)))
-      ),
-      div({className:"card"},
-        div({className:"st"},"📋 Live Notes Feed"),
-        notes.length===0?div({className:"es"},div({className:"ei"},"💬"),p2({},"No notes yet.")):
-        div({style:{maxHeight:520,overflowY:"auto"}},
-          ...notes.map(n=>div({key:n.id,style:{padding:"12px 14px",borderRadius:10,background:"#f8fafc",border:"1px solid #e2e8f0",marginBottom:8,borderLeft:"3px solid "+(n.author==="Saswat"?"#1F4E79":n.author==="Swagat"?"#4B2E83":"#1F6B5B")}},
-            div({style:{display:"flex",alignItems:"center",gap:8,marginBottom:6}},div({style:{width:24,height:24,borderRadius:"50%",background:"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:10}},(n.author||"?")[0]),span({style:{fontSize:12,fontWeight:700}},n.author||"Teacher"),span({style:{fontSize:10,color:"#64748b",marginLeft:"auto"}},n.createdAt?.toDate?new Date(n.createdAt.toDate()).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"Just now")),
-            p2({style:{fontSize:12,color:"#334155",lineHeight:1.6}},n.text)
-          ))
-        )
-      )
-    )
-  );
-}
-
-// ── Flashcards & Quiz ─────────────────────────────────────────────────────────
-function ContentPage({flashcards,quizzes,addFlashcard,addQuiz,isT,showToast}){
-  const[tab,setTab]=useState("flashcards");
-  const[fc,setFc]=useState({subject:"",chapter:"",topic:"",front:"",back:""});
-  const[qz,setQz]=useState({subject:"",chapter:"",topic:"",question:"",optA:"",optB:"",optC:"",optD:"",answer:"A"});
-  const[bulk,setBulk]=useState("");const[flipped,setFlipped]=useState({});
-  const[qIdx,setQIdx]=useState(0);const[qAns,setQAns]=useState({});const[qDone,setQDone]=useState(false);const[quizMode,setQuizMode]=useState(false);
-  const saveFC=async()=>{if(!fc.front||!fc.back)return;await addFlashcard(fc);setFc({subject:"",chapter:"",topic:"",front:"",back:""});};
-  const saveQZ=async()=>{if(!qz.question||!qz.optA)return;await addQuiz(qz);setQz({subject:"",chapter:"",topic:"",question:"",optA:"",optB:"",optC:"",optD:"",answer:"A"});};
-  const saveBulk=async()=>{const lines=bulk.trim().split("\n").filter(l=>l.trim());for(const line of lines){const parts=line.split("|");if(parts.length>=2)await addFlashcard({subject:fc.subject,chapter:fc.chapter,topic:fc.topic,front:parts[0].trim(),back:parts[1].trim()});}setBulk("");showToast("Bulk flashcards added!");};
-  const startQuiz=()=>{setQIdx(0);setQAns({});setQDone(false);setQuizMode(true);};
-  if(quizMode&&!qDone&&quizzes.length>0){
-    const q=quizzes[qIdx];
-    return div({className:"fi",style:{maxWidth:700,margin:"0 auto"}},
-      div({style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}},div({className:"pt"},"🎯 Quiz Mode"),btn({className:"btn bg bsm",onClick:()=>setQuizMode(false)},"✕ Exit")),
-      div({style:{marginBottom:12}},div({style:{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:4}},span({style:{fontWeight:600}},"Q "+(qIdx+1)+" of "+quizzes.length)),div({className:"pb",style:{height:8}},div({className:"pf",style:{width:((qIdx+1)/quizzes.length*100)+"%",background:"#C55A11"}}))),
-      div({className:"card",style:{marginBottom:12}},div({style:{fontSize:15,fontWeight:700,lineHeight:1.5,marginBottom:16}},q.question),div({style:{display:"flex",flexDirection:"column",gap:8}},...["A","B","C","D"].filter(k=>q["opt"+k]).map(k=>btn({key:k,onClick:()=>setQAns(p=>({...p,[qIdx]:k})),style:{padding:"10px 14px",borderRadius:10,border:`2px solid ${qAns[qIdx]===k?"#C55A11":"#e2e8f0"}`,background:qAns[qIdx]===k?"#FCE4D6":"white",color:qAns[qIdx]===k?"#C55A11":"#334155",fontSize:13,fontWeight:qAns[qIdx]===k?600:400,cursor:"pointer",textAlign:"left",fontFamily:"inherit"},span({style:{fontWeight:700,marginRight:8}},k+"."),q["opt"+k])))),
-      div({style:{display:"flex",gap:8,justifyContent:"space-between"}},btn({className:"btn bg",onClick:()=>setQIdx(i=>Math.max(0,i-1)),disabled:qIdx===0},"← Prev"),qIdx<quizzes.length-1?btn({className:"btn bp",onClick:()=>setQIdx(i=>i+1)},"Next →"):btn({className:"btn ba",onClick:()=>setQDone(true)},"Submit ✅"))
+    // Hero banner
+    var revAlert=tr.length>0?D({style:'margin-top:8px;background:rgba(255,255,255,.15);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;display:inline-block'},'&#128260; '+tr.length+' revision'+(tr.length>1?'s':'')+' due today!'):'';
+    var hero=D({style:'background:linear-gradient(135deg,#312e81,#4f46e5);color:white;border-radius:14px;padding:20px 24px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between'},
+      D({},D({style:'font-size:13px;opacity:.8'},gr+'!')+D({style:'font-family:Nunito,sans-serif;font-size:26px;font-weight:900;margin:4px 0'},'&#128102; Baibhav')+D({style:'font-size:13px;opacity:.85'},'Std 5A &middot; Buxi Jagabandhu School')+revAlert)+
+      D({style:'text-align:center;background:rgba(255,255,255,.15);border-radius:12px;padding:12px 20px'},D({style:'font-size:38px;font-weight:900;line-height:1'},op+'%')+D({style:'font-size:12px;opacity:.85'},'Overall Progress'))
     );
+
+    // Today's Timetable with Log buttons
+    var periodLabels=['P1 10:30','P2 11:10','P3 11:50','P4 12:30','BREAK','P5 1:30','P6 2:10','P7 2:50','P8 3:30'];
+    var bgMap={English:'#ede9fe',Hindi:'#f3e8ff',Odia:'#fef9c3',Mathematics:'#dcfce7',Science:'#dcfce7'};
+    var ttRows='';
+    ttToday.forEach(function(subj,i){
+      var isBreak=subj==='BREAK';
+      var pLabel=periodLabels[i]||('P'+(i+1));
+      var bg=isBreak?'#FFF9C4':(bgMap[subj]||'#f8fafc');
+      var inputId='ttlog'+i;
+      var logBtn=isBreak
+        ? D({style:'font-size:12px;color:#9C5700;font-style:italic'},'Lunch Break &#127829;')
+        : I({class:'inp',id:inputId,placeholder:'What was taught?',style:'flex:1;padding:6px 10px;font-size:12px;border-radius:7px;border:1px solid #e2e8f0'})+
+          D({onclick:'studentLog('+i+')',style:'padding:5px 12px;border-radius:7px;background:#4f46e5;color:white;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap;display:inline-flex;align-items:center'},'&#9989; Log');
+      ttRows+=D({style:'display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;background:'+bg+';border:1px solid #e2e8f0;margin-bottom:6px'},
+        D({style:'font-size:11px;font-weight:700;color:#64748b;min-width:70px;flex-shrink:0'},pLabel)+
+        D({style:'font-size:13px;font-weight:600;color:#312e81;min-width:110px;flex-shrink:0'},subj)+
+        logBtn
+      );
+    });
+    // Store timetable subjects for the log function
+    window._ttSubjects=ttToday;
+    var ttSection=D({class:'card',style:'margin-bottom:16px'},
+      D({class:'st'},'&#128197; Today at School &mdash; '+tn)+
+      D({id:'student-log-ok',style:'display:none;background:#C6EFCE;color:#276221;padding:8px 12px;border-radius:8px;margin-bottom:10px;font-weight:600;font-size:13px'},'&#9989; Topic logged! Revision scheduled.')+
+      (ttToday.length===0?D({class:'es',style:'padding:12px 0'},D({style:'font-size:32px'},'&#127968;')+tag('p',{},'No school today!')):ttRows)
+    );
+
+    // Task Checklist
+    var taskRows='';
+    if(!highTasks.length){
+      taskRows=D({class:'es',style:'padding:12px 0'},D({style:'font-size:32px'},'&#127881;')+tag('p',{},'No pending tasks!'));
+    } else {
+      highTasks.forEach(function(t){
+        var pc={high:'#9C0006',medium:'#C55A11',low:'#276221'};
+        var pb={high:'#FFC7CE',medium:'#FCE4D6',low:'#C6EFCE'};
+        var tid=t.id;
+        taskRows+=D({style:'display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;background:'+(pb[t.priority]||'#FCE4D6')+';border:1px solid '+(pc[t.priority]||'#C55A11')+';margin-bottom:6px'},
+          D({onclick:'toggleTask("'+tid+'",false)',style:'width:18px;height:18px;border-radius:4px;border:2px solid '+(pc[t.priority]||'#C55A11')+';cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:white'},'&nbsp;')+
+          D({style:'flex:1'},D({style:'font-size:13px;font-weight:600;color:'+(pc[t.priority]||'#C55A11')},t.title)+(t.subject?D({style:'font-size:11px;color:#64748b'},t.subject+(t.dueDate?' &middot; Due: '+t.dueDate:'')):''))+
+          S2({style:'font-size:10px;padding:2px 8px;border-radius:9999px;background:'+(pc[t.priority]||'#C55A11')+';color:white;font-weight:600;text-transform:capitalize'},t.priority)
+        );
+      });
+    }
+    var taskSection=D({class:'card',style:'margin-bottom:16px'},D({class:'st'},'&#9989; My Study Tasks')+taskRows);
+
+    // Subject progress mini cards
+    var subjCards='';
+    SUBS.forEach(function(sub){
+      var d=S.syllabus[sub]||{},p=d.progress||{},ch=d.chapters||SYL[sub]||[];
+      var total=0;ch.forEach(function(c){(c.topics||[]).forEach(function(t){total+=1+(t.st||[]).length;});});
+      var done=Object.values(p).filter(function(x){return x.status==='taught';}).length;
+      var pct=total?Math.round(done/total*100):0;
+      subjCards+=D({style:'padding:10px 12px;border-radius:10px;background:white;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)'},
+        D({style:'font-size:11px;font-weight:700;color:#312e81;margin-bottom:6px'},sub)+
+        D({class:'pb'},D({class:'pf',style:'width:'+pct+'%;background:'+(SC[sub]||'#4f46e5')},''))+
+        D({style:'font-size:10px;color:#64748b;margin-top:3px;text-align:right'},done+'/'+total+' &middot; '+pct+'%')
+      );
+    });
+    var subjSection=D({class:'card'},D({class:'st'},'&#128218; My Subject Progress')+D({class:'g3'},subjCards));
+
+    return hero+D({class:'g2'},ttSection+taskSection)+subjSection;
   }
-  if(quizMode&&qDone){
-    let score=0;quizzes.forEach((q,i)=>{if(qAns[i]===q.answer)score++;});const pct=Math.round(score/quizzes.length*100);
-    return div({className:"fi",style:{maxWidth:600,margin:"0 auto",textAlign:"center"}},div({style:{fontSize:56,marginBottom:12}},pct>=80?"🏆":pct>=60?"⭐":"💪"),div({style:{fontSize:24,fontWeight:800,marginBottom:8}},pct>=80?"Excellent!":pct>=60?"Good Job!":"Keep Practising!"),div({style:{fontSize:40,fontWeight:900,color:"#C55A11",marginBottom:4}},score+"/"+quizzes.length),div({style:{fontSize:14,color:"#64748b",marginBottom:20}},pct+"% correct"),div({style:{display:"flex",gap:10,justifyContent:"center"}},btn({className:"btn bo",onClick:startQuiz},"🔄 Try Again"),btn({className:"btn bp",onClick:()=>setQuizMode(false)},"🏠 Back")));
+
+  // ── TEACHER DASHBOARD ───────────────────────────────────────────────────────
+  var td=today(),ne=null;for(var i=0;i<EXAMS.length;i++){if(EXAMS[i].d>=td){ne=EXAMS[i];break;}}
+  var dl=ne?Math.ceil((new Date(ne.d)-new Date())/86400000):null;
+  var totalDone=0,totalTopics=0;
+  Object.keys(S.syllabus).forEach(function(sub){var v=S.syllabus[sub];totalDone+=Object.values(v.progress||{}).filter(function(x){return x.status==='taught';}).length;(v.chapters||[]).forEach(function(c){(c.topics||[]).forEach(function(t){totalTopics+=1+(t.st||[]).length;});});});
+  var op=totalTopics?Math.round(totalDone/totalTopics*100):0;
+  var tr=S.revisions.filter(function(r){return !r.done&&r.dueDate<=td;});
+  var pt=S.tasks.filter(function(t){return !t.done;}).length;
+  var tn=dayName(),hour=new Date().getHours();
+  var examHtml='';if(ne)examHtml=D({style:'background:linear-gradient(135deg,'+ne.c+','+ne.c+'cc);color:white;border-radius:13px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between'},D({},D({style:'font-size:11px;opacity:.85'},'Next Exam')+D({style:'font-size:16px;font-weight:800'},'&#128221; '+ne.n)+D({style:'font-size:11px;opacity:.85'},ne.d))+D({style:'text-align:center'},D({style:'font-size:36px;font-weight:900;line-height:1'},dl)+D({style:'font-size:11px;opacity:.85'},'days left')));
+  var stats=D({class:'g4',style:'margin-bottom:16px'},D({class:'sc',style:'border-top:4px solid #4f46e5'},D({style:'font-size:28px;font-weight:800;color:#4f46e5'},S.topics.length)+D({style:'font-size:12px;color:#64748b'},'Topics Logged'))+D({class:'sc',style:'border-top:4px solid #C55A11'},D({style:'font-size:28px;font-weight:800;color:#C55A11'},tr.length)+D({style:'font-size:12px;color:#64748b'},'Revisions Due'))+D({class:'sc',style:'border-top:4px solid #1F6B5B'},D({style:'font-size:28px;font-weight:800;color:#1F6B5B'},op+'%')+D({style:'font-size:12px;color:#64748b'},'Overall Progress'))+D({class:'sc',style:'border-top:4px solid #7c3aed'},D({style:'font-size:28px;font-weight:800;color:#7c3aed'},pt)+D({style:'font-size:12px;color:#64748b'},'Pending Tasks')));
+  var onlineHtml='';if(S.onlineUsers.length>0){var rows='';S.onlineUsers.forEach(function(n){var off=getTZOff(n),lbl=getTZLbl(n),lt=localTime(off);rows+=D({style:'display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:5px'},S2({class:'od'},'')+D({style:'flex:1'},D({style:'font-size:12px;font-weight:700'},n)+D({style:'font-size:10px;color:#64748b'},lbl))+D({style:'font-size:13px;font-weight:700;color:#4f46e5'},lt));});onlineHtml=D({class:'card',style:'margin-bottom:14px'},D({class:'st'},'&#127757; Team Online Now')+rows);}
+  var subjHtml='';SUBS.forEach(function(sub){var d=S.syllabus[sub]||{},p=d.progress||{},ch=d.chapters||SYL[sub]||[];var total=0;ch.forEach(function(c){(c.topics||[]).forEach(function(t){total+=1+(t.st||[]).length;});});var done=Object.values(p).filter(function(x){return x.status==='taught';}).length;var pct=total?Math.round(done/total*100):0;subjHtml+=D({style:'margin-bottom:7px'},D({style:'display:flex;justify-content:space-between;margin-bottom:2px'},S2({style:'font-size:12px;font-weight:600'},sub)+S2({style:'font-size:11px;color:#64748b'},done+'/'+total+' &middot; '+pct+'%'))+PB(pct,SC[sub]||'#4f46e5'));});
+  var topHtml='';if(!S.topics.length){topHtml=D({class:'es',style:'padding:9px 0'},D({style:'font-size:36px'},'&#128218;')+tag('p',{},'No topics yet'));}else{S.topics.slice(0,4).forEach(function(t){var c=t.status==='taught'?'#276221':t.status==='selfstudy'?'#4f46e5':'#9C0006';topHtml+=D({style:'display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:7px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:4px'},D({style:'width:7px;height:7px;border-radius:50%;background:'+c+';flex-shrink:0'},'')+D({style:'flex:1'},D({style:'font-size:12px;font-weight:600'},(t.subject||'')+' - '+(t.chapter||''))+D({style:'font-size:11px;color:#64748b'},t.topic||''))+D({style:'font-size:10px;color:#94a3b8'},t.date||''));});}
+  var revHtml='';if(!tr.length){revHtml=D({class:'es',style:'padding:9px 0'},D({style:'font-size:36px'},'&#9989;')+tag('p',{},'All clear!'));}else{tr.slice(0,4).forEach(function(r){revHtml+=D({style:'display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:7px;background:#FCE4D6;border:1px solid #C55A11;margin-bottom:4px'},D({style:'flex:1'},D({style:'font-size:12px;font-weight:600;color:#C55A11'},r.subject)+D({style:'font-size:11px;color:#475569'},r.topic))+S2({style:'background:#FFEB9C;color:#9C5700;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:600'},'Due'));});}
+  return D({style:'display:flex;align-items:center;justify-content:space-between;margin-bottom:3px'},D({class:'pt'},'&#128075; Welcome, '+(S.profile?S.profile.name:'')+'!'))+D({class:'ps'},new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))+examHtml+stats+onlineHtml+D({class:'g2'},D({class:'card'},D({class:'st'},'&#128202; Subject Progress')+subjHtml)+D({style:'display:flex;flex-direction:column;gap:11px'},D({class:'card'},D({class:'st'},'&#128260; Revisions Due Today'+(tr.length?' ('+tr.length+')':''))+revHtml)+D({class:'card'},D({class:'st'},'&#128221; Recent Topics')+topHtml)));
+}
+// Student timetable log helper - uses window._ttSubjects set during render
+function studentLog(periodIdx) {
+  var subjects = window._ttSubjects || [];
+  var subj = subjects[periodIdx] || '';
+  if (!subj || subj === 'BREAK') return;
+  var inputEl = el('ttlog' + periodIdx);
+  var topicText = inputEl ? inputEl.value.trim() : '';
+  if (!topicText) { toast('Please type what was taught in ' + subj); return; }
+  var chs = (S.syllabus[subj] && S.syllabus[subj].chapters) || SYL[subj] || [];
+  var ch = chs.length > 0 ? chs[0].ch : '';
+  var rd = new Date(today()); rd.setDate(rd.getDate() + 7);
+  var rDue = rd.toISOString().split('T')[0];
+  db.collection('topics').add({
+    subject: subj, chapter: ch, topic: topicText, subtopic: '', date: today(),
+    status: 'selfstudy', notes: 'Logged by Baibhav from timetable',
+    revisionDue: rDue, loggedBy: S.profile ? S.profile.name : 'Baibhav',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function() {
+    db.collection('revisions').add({
+      subject: subj, chapter: ch, topic: topicText, subtopic: '',
+      taughtDate: today(), dueDate: rDue, done: false,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    if (inputEl) inputEl.value = '';
+    var ok = el('student-log-ok');
+    if (ok) { ok.style.display = 'block'; setTimeout(function(){ ok.style.display = 'none'; }, 3000); }
+    toast(subj + ' topic logged! Revision set for ' + rDue);
+  });
+}
+
+function pgLog(isT){
+  var tn=dayName();var ttChips="";(S.timetable[tn]||[]).filter(function(s){return s!=="BREAK";}).forEach(function(s){ttChips+=S2({style:"padding:3px 8px;border-radius:9999px;font-size:11px;font-weight:600;background:"+(TTC[s]||"#DCE6F1")+";color:#334155"},s);});
+  return D({class:"pt"},"&#9999; Log Today Topics")+D({class:"ps"},"Record what Baibhav studied - syncs instantly to all devices")+D({id:"log-ok",style:"display:none;background:#C6EFCE;color:#276221;padding:10px 14px;border-radius:9px;margin-bottom:12px;font-weight:600;font-size:13px"},"&#9989; Topic saved! Revision scheduled automatically.")+D({class:"g2"},D({class:"card"},D({class:"st"},"&#128221; Log Entry")+D({style:"margin-bottom:10px"},LBL("Date")+I({class:"inp",id:"log-date",type:"date",value:today()}))+D({style:"margin-bottom:10px"},LBL("Status")+D({style:"display:flex;gap:5px;flex-wrap:wrap"},tag("button",{id:"st-taught",onclick:"setStatus('taught')",style:"padding:6px 11px;border-radius:7px;border:2px solid #276221;background:#C6EFCE;color:#276221;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit"},"&#9989; Taught")+tag("button",{id:"st-selfstudy",onclick:"setStatus('selfstudy')",style:"padding:6px 11px;border-radius:7px;border:2px solid #4f46e5;background:white;color:#4f46e5;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit"},"&#128218; Self Study")+tag("button",{id:"st-missed",onclick:"setStatus('missed')",style:"padding:6px 11px;border-radius:7px;border:2px solid #9C0006;background:white;color:#9C0006;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit"},"&#9888; Missed"))+I({type:"hidden",id:"log-status",value:"taught"}))+D({style:"margin-bottom:9px"},LBL("Subject")+SEL({id:"log-sub",onchange:"logSubChange()"},subOpts("")))+D({style:"margin-bottom:9px;display:none",id:"log-ch-wrap"},LBL("Chapter")+SEL({id:"log-ch",onchange:"logChChange()"},OPT("","-- Select Chapter --")))+D({style:"margin-bottom:9px;display:none",id:"log-tp-wrap"},LBL("Topic")+SEL({id:"log-tp",onchange:"logTpChange()"},OPT("","-- Select Topic --")))+D({style:"margin-bottom:9px;display:none",id:"log-st-wrap"},LBL("Sub-topic (optional)")+SEL({id:"log-st"},OPT("","-- Select Sub-topic --")))+D({style:"margin-bottom:11px"},LBL("Notes (optional)")+TA({id:"log-notes",rows:"2",placeholder:"Any notes about this session..."}))+B({class:"btn bp bfw",onclick:"saveLogTopic()"},"&#9989; Save Topic"))+D({style:"display:flex;flex-direction:column;gap:11px"},D({class:"card",style:"background:linear-gradient(135deg,#1F4E79,#2E75B6);color:white"},D({style:"font-size:13px;font-weight:700;margin-bottom:8px"},"&#9729; Cloud Sync Active")+D({style:"font-size:11px;opacity:.9;line-height:1.9"},"&#9989; Syncs instantly to all devices<br>&#9989; Saswat (WAT+1) sees updates live<br>&#9989; Swagat &amp; Pragyan (GMT+0) see updates<br>&#9989; Baibhav (IST+5:30) auto-updates<br>&#9989; 7-day revision scheduled"))+D({class:"card"},D({class:"st"},"&#128197; Today - "+tn)+D({style:"display:flex;flex-wrap:wrap;gap:5px"},ttChips))));
+}
+function setStatus(v){el("log-status").value=v;var cfg={taught:{bg:"#C6EFCE",c:"#276221"},selfstudy:{bg:"#DCE6F1",c:"#1F4E79"},missed:{bg:"#FFC7CE",c:"#9C0006"}};["taught","selfstudy","missed"].forEach(function(s){var b=el("st-"+s);if(!b)return;b.style.background=s===v?cfg[s].bg:"white";b.style.color=cfg[s].c;b.style.borderColor=cfg[s].c;});}
+function logSubChange(){var sub=val("log-sub");var chW=el("log-ch-wrap"),chS=el("log-ch"),tpW=el("log-tp-wrap"),stW=el("log-st-wrap");if(!sub){[chW,tpW,stW].forEach(function(e){if(e)e.style.display="none";});return;}if(chS)chS.innerHTML=chOpts(sub,"");if(chW)chW.style.display="block";if(tpW)tpW.style.display="none";if(stW)stW.style.display="none";}
+function logChChange(){var sub=val("log-sub"),ch=val("log-ch");var tpW=el("log-tp-wrap"),tpS=el("log-tp"),stW=el("log-st-wrap");if(!ch){if(tpW)tpW.style.display="none";if(stW)stW.style.display="none";return;}if(tpS)tpS.innerHTML=tpOpts(sub,ch,"");if(tpW)tpW.style.display="block";if(stW)stW.style.display="none";}
+function logTpChange(){var sub=val("log-sub"),ch=val("log-ch"),tp=val("log-tp");var stW=el("log-st-wrap"),stS=el("log-st");if(!tp){if(stW)stW.style.display="none";return;}var chs=(S.syllabus[sub]&&S.syllabus[sub].chapters)||SYL[sub]||[];var cd=chs.find(function(c){return c.ch===ch;});var td2=cd?(cd.topics||[]).find(function(t){return t.n===tp;}):null;if(td2&&(td2.st||[]).length>0){if(stS)stS.innerHTML=stOpts(sub,ch,tp,"");if(stW)stW.style.display="block";}else{if(stW)stW.style.display="none";}}
+function saveLogTopic(){var sub=val("log-sub"),ch=val("log-ch"),tp=val("log-tp"),st=val("log-st");var date=val("log-date")||today(),status=val("log-status")||"taught",notes=val("log-notes")||"";if(!sub||!tp){toast("Please select Subject and Topic");return;}var rd=new Date(date);rd.setDate(rd.getDate()+7);var rDue=rd.toISOString().split("T")[0];db.collection("topics").add({subject:sub,chapter:ch,topic:tp,subtopic:st,date:date,status:status,notes:notes,revisionDue:rDue,loggedBy:S.profile?S.profile.name:"Teacher",createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){if(status==="taught"||status==="selfstudy"){db.collection("revisions").add({subject:sub,chapter:ch,topic:tp,subtopic:st,taughtDate:date,dueDate:rDue,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});}var upd=JSON.parse(JSON.stringify(S.syllabus));if(!upd[sub])upd[sub]={chapters:SYL[sub]||[],progress:{}};if(!upd[sub].progress)upd[sub].progress={};var key=st?sub+"||"+ch+"||"+tp+"||"+st:sub+"||"+ch+"||"+tp;upd[sub].progress[key]={status:status,date:date,completedBy:status==="taught"?(S.profile?S.profile.name:null):null};db.collection("syllabus").doc("shared").set({data:upd},{merge:true});var ok=el("log-ok");if(ok)ok.style.display="block";setTimeout(function(){var o=el("log-ok");if(o)o.style.display="none";},3000);toast("Topic saved! Revision set for "+rDue);["log-sub","log-ch","log-tp","log-st","log-notes"].forEach(function(id){var e=el(id);if(e)e.value="";});["log-ch-wrap","log-tp-wrap","log-st-wrap"].forEach(function(id){var e=el(id);if(e)e.style.display="none";});setStatus("taught");});}
+function pgSyllabus(isT){
+  var sub=S.sylSel;
+  var subData=(S.syllabus[sub]&&S.syllabus[sub].chapters)||SYL[sub]||[];
+  var progress=(S.syllabus[sub]&&S.syllabus[sub].progress)||{};
+  var total=0;subData.forEach(function(c){if(!c||!c.ch)return;(c.topics||[]).forEach(function(t){if(!t||!t.n)return;total+=1+(t.st||[]).length;});});
+  var done=Object.values(progress).filter(function(x){return x.status==="taught";}).length;
+  var pct=total?Math.round(done/total*100):0;
+  var subBtns="";SUBS.forEach(function(s){subBtns+=tag("button",{onclick:"sylSel('"+s+"')",style:"padding:5px 12px;border-radius:9999px;font-size:12px;font-weight:600;border:2px solid "+(SC[s]||"#1F4E79")+";cursor:pointer;background:"+(s===sub?(SC[s]||"#1F4E79"):"white")+";color:"+(s===sub?"white":(SC[s]||"#1F4E79"))+";font-family:inherit;margin-bottom:3px"},s);});
+  function mk(ch,tp,st){return st?sub+"||"+ch+"||"+tp+"||"+st:sub+"||"+ch+"||"+tp;}
+  function gs(ch,tp,st){var k=mk(ch,tp,st);return progress[k]?progress[k].status:"";}
+  function gc(ch,tp,st){var k=mk(ch,tp,st);return progress[k]?progress[k].completedBy:"";}
+  var chapHtml="";
+  subData.forEach(function(ch,ci){
+    if(!ch||!ch.ch)return;
+    var safeChName=(ch.ch||"").replace(/'/g,"\'");
+    var tpRows="";
+    (ch.topics||[]).forEach(function(tp,ti){
+      if(!tp||!tp.n)return;
+      var tpSt=gs(ch.ch,tp.n,null),tpBy=gc(ch.ch,tp.n,null),tpKey=mk(ch.ch,tp.n,null);
+      var safeTpName=(tp.n||"").replace(/'/g,"\'");
+      var stRows="";
+      (tp.st||[]).forEach(function(st,si){
+        if(!st)return;
+        var stSt=gs(ch.ch,tp.n,st),stKey=mk(ch.ch,tp.n,st);
+        var safeStName=(st||"").replace(/'/g,"\'");
+        stRows+=D({class:"syl-st"},D({style:"width:12px;height:12px;border-radius:50%;background:"+(stSt==="taught"?(SC[sub]||"#1F4E79"):"#e2e8f0")+";display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:"+(stSt==="taught"?"white":"#94a3b8")+";flex-shrink:0"},stSt==="taught"?"&#10003;":"&middot;")+D({style:"flex:1;font-size:11px;color:"+(stSt==="taught"?(SC[sub]||"#1F4E79"):"#64748b")},st)+(isT?tag("button",{class:"ib",onclick:"sylRename("+ci+","+ti+","+si+",'"+safeStName+"')"},"&#9999;"):"")+(isT?tag("button",{class:"ib",style:"padding:2px 8px;border-radius:5px;border:1px solid "+(stSt==="taught"?"#C55A11":"#276221")+";background:"+(stSt==="taught"?"#FFF0E6":"#C6EFCE")+";color:"+(stSt==="taught"?"#C55A11":"#276221")+";font-size:9px;font-weight:600;cursor:pointer",onclick:"sylToggle('"+sub+"','"+stKey+"','"+stSt+"')"},stSt==="taught"?"&#8617;":"&#10003;"):""));
+      });
+      tpRows+=D({class:"syl-tp"},D({style:"width:17px;height:17px;border-radius:50%;background:"+(tpSt==="taught"?(SC[sub]||"#1F4E79"):"#e2e8f0")+";display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:"+(tpSt==="taught"?"white":"#64748b")+";flex-shrink:0"},tpSt==="taught"?"&#10003;":"&#9675;")+D({style:"flex:1"},D({style:"font-size:12px;font-weight:600;color:"+(tpSt==="taught"?(SC[sub]||"#1F4E79"):"#334155")},tp.n)+(tpSt==="taught"&&tpBy?D({style:"font-size:10px;color:#64748b"},"&#10003; by "+tpBy):""))+(isT?tag("button",{class:"ib",onclick:"sylRename("+ci+","+ti+",-1,'"+safeTpName+"')"},"&#9999;"):"")+(isT?tag("button",{class:"ib",onclick:"sylAddSt("+ci+","+ti+")"},"&#10133;"):"")+(isT?tag("button",{class:"ib",style:"color:#9C0006",onclick:"sylDelTp("+ci+","+ti+")"},"&#128465;"):"")+(isT?tag("button",{class:"ib",style:"padding:2px 8px;border-radius:5px;border:1px solid "+(tpSt==="taught"?"#C55A11":"#276221")+";background:"+(tpSt==="taught"?"#FFF0E6":"#C6EFCE")+";color:"+(tpSt==="taught"?"#C55A11":"#276221")+";font-size:10px;font-weight:600;cursor:pointer",onclick:"sylToggle('"+sub+"','"+tpKey+"','"+tpSt+"')"},tpSt==="taught"?"&#8617; Unmark":"&#10003; Done"):""))+stRows;
+    });
+    chapHtml+=D({class:"syl-ch"},D({class:"syl-ch-h"},S2({style:"font-size:12px;font-weight:700;color:"+(SC[sub]||"#1F4E79")+";flex:1"},ch.ch)+(isT?tag("button",{class:"ib",onclick:"sylRenCh("+ci+",'"+safeChName+"')"},"&#9999;"):"")+(isT?tag("button",{class:"ib",onclick:"sylAddTp("+ci+")"},"&#10133;"):"")+(isT?tag("button",{class:"ib",style:"color:#9C0006",onclick:"sylDelCh("+ci+")"},"&#128465;"):""))+tpRows);
+  });
+  return D({class:"pt"},"&#128218; Syllabus Tracker")+D({class:"ps"},"&#9999; rename &nbsp;&#10133; add &nbsp;&#128465; delete &nbsp;&#10003; mark done / &#8617; unmark")+D({style:"display:flex;flex-wrap:wrap;gap:5px;margin-bottom:13px"},subBtns)+D({class:"card"},D({style:"display:flex;align-items:center;gap:10px;padding:12px 15px;background:"+(SL[sub]||"#DCE6F1")+";border-radius:10px;margin:-20px -20px 13px"},D({style:"flex:1"},D({style:"font-size:15px;font-weight:800;color:"+(SC[sub]||"#1F4E79")},sub)+D({style:"font-size:12px;color:#475569"},done+"/"+total+" topics taught"))+D({style:"font-size:22px;font-weight:900;color:"+(SC[sub]||"#1F4E79")},pct+"%")+(isT?B({class:"btn bp bsm",onclick:"sylAddCh()"},"&#10133; Add Chapter"):""))+D({class:"pb",style:"margin-bottom:13px;height:8px"},D({class:"pf",style:"width:"+pct+"%;background:"+(SC[sub]||"#1F4E79")},""))+chapHtml);
+}
+function sylSel(s){S.sylSel=s;renderPage();}
+function getSylData(){return JSON.parse(JSON.stringify((S.syllabus[S.sylSel]&&S.syllabus[S.sylSel].chapters)||SYL[S.sylSel]||[]));}
+function saveSylData(data){var upd=JSON.parse(JSON.stringify(S.syllabus));if(!upd[S.sylSel])upd[S.sylSel]={};upd[S.sylSel].chapters=data;upd[S.sylSel].progress=upd[S.sylSel].progress||{};db.collection("syllabus").doc("shared").set({data:upd},{merge:true}).then(function(){toast("Syllabus saved!");});}
+function sylAddCh(){var n=prompt("New chapter name:");if(!n||!n.trim())return;var d=getSylData();d.push({ch:n.trim(),topics:[]});saveSylData(d);}
+function sylRenCh(ci,old){var n=prompt("Rename chapter:",old||"");if(!n||!n.trim())return;var d=getSylData();if(d[ci])d[ci].ch=n.trim();saveSylData(d);}
+function sylDelCh(ci){if(!confirm("Delete this chapter?"))return;var d=getSylData();d.splice(ci,1);saveSylData(d);}
+function sylAddTp(ci){var n=prompt("New topic name:");if(!n||!n.trim())return;var d=getSylData();if(!d[ci])return;if(!d[ci].topics)d[ci].topics=[];d[ci].topics.push({n:n.trim(),st:[]});saveSylData(d);}
+function sylRename(ci,ti,si,old){var n=prompt("Rename:",old||"");if(!n||!n.trim())return;var d=getSylData();if(!d[ci]||!d[ci].topics)return;if(si===-1){if(d[ci].topics[ti])d[ci].topics[ti].n=n.trim();}else{if(d[ci].topics[ti]&&d[ci].topics[ti].st)d[ci].topics[ti].st[si]=n.trim();}saveSylData(d);}
+function sylDelTp(ci,ti){if(!confirm("Delete this topic?"))return;var d=getSylData();if(d[ci]&&d[ci].topics)d[ci].topics.splice(ti,1);saveSylData(d);}
+function sylAddSt(ci,ti){var n=prompt("New sub-topic name:");if(!n||!n.trim())return;var d=getSylData();if(!d[ci]||!d[ci].topics||!d[ci].topics[ti])return;if(!d[ci].topics[ti].st)d[ci].topics[ti].st=[];d[ci].topics[ti].st.push(n.trim());saveSylData(d);}
+function sylToggle(sub,key,currentStatus){var upd=JSON.parse(JSON.stringify(S.syllabus));if(!upd[sub])upd[sub]={chapters:SYL[sub]||[],progress:{}};if(!upd[sub].progress)upd[sub].progress={};if(currentStatus==="taught"){delete upd[sub].progress[key];toast("Marked as pending.");}else{upd[sub].progress[key]={status:"taught",date:today(),completedBy:S.profile?S.profile.name:null};toast("Marked complete!");}db.collection("syllabus").doc("shared").set({data:upd},{merge:true});}
+function pgStudyNotes(isT){var icons={pdf:"&#128196;",ppt:"&#128202;",doc:"&#128221;",video:"&#127909;",link:"&#128279;"};var addForm=isT?D({class:"card",style:"margin-bottom:13px"},D({class:"st"},"&#10133; Add Study Material")+D({class:"g3",style:"margin-bottom:8px"},D({},LBL("Subject")+SEL({id:"sn-sub"},subOpts("")))+D({},LBL("Chapter")+I({class:"inp",id:"sn-ch",placeholder:"e.g. Ch-3"}))+D({},LBL("Topic")+I({class:"inp",id:"sn-tp",placeholder:"e.g. Fractions"})))+D({class:"g3",style:"margin-bottom:8px"},D({},LBL("Title")+I({class:"inp",id:"sn-title",placeholder:"e.g. Fractions Notes PDF"}))+D({},LBL("Google Drive / URL")+I({class:"inp",id:"sn-url",placeholder:"https://drive.google.com/..."}))+D({},LBL("Type")+SEL({id:"sn-type"},OPT("pdf","&#128196; PDF",true)+OPT("ppt","&#128202; PPT")+OPT("doc","&#128221; Doc")+OPT("video","&#127909; Video")+OPT("link","&#128279; Link"))))+B({class:"btn bp",onclick:"saveStudyNote()"},"&#128228; Add Material")):"";var grouped={};S.studyNotes.forEach(function(n){if(!grouped[n.subject])grouped[n.subject]=[];grouped[n.subject].push(n);});var listHtml="";if(!Object.keys(grouped).length){listHtml=D({class:"es"},D({style:"font-size:36px"},"&#128206;")+tag("p",{},"No study materials yet."));}else{Object.keys(grouped).forEach(function(sub){var rows="";grouped[sub].forEach(function(n){rows+=D({style:"display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:4px"},D({style:"font-size:17px"},icons[n.type]||"&#128279;")+D({style:"flex:1"},tag("a",{href:n.url,target:"_blank",style:"font-size:12px;font-weight:600;color:#4f46e5;text-decoration:none"},n.title)+D({style:"font-size:10px;color:#64748b"},(n.chapter||"")+(n.topic?" &middot; "+n.topic:"")+" &middot; by "+(n.uploadedBy||"")))+( isT?tag("button",{onclick:"delStudyNote('"+n.id+"')",style:"background:none;border:none;cursor:pointer;color:#9C0006;font-size:13px"},"&#128465;"):""));});listHtml+=D({class:"card",style:"margin-bottom:10px"},D({style:"font-size:13px;font-weight:700;color:"+(SC[sub]||"#1F4E79")+";margin-bottom:8px;padding:6px 10px;background:"+(SL[sub]||"#DCE6F1")+";border-radius:7px"},sub)+rows);});}return D({class:"pt"},"&#128206; Study Notes & Materials")+D({class:"ps"},"PDFs, PPTs, Google Drive links - organized by subject")+addForm+listHtml;}
+function saveStudyNote(){var sub=val("sn-sub"),title=val("sn-title"),url=val("sn-url");if(!sub||!title||!url){toast("Please fill Subject, Title and URL");return;}db.collection("studyNotes").add({subject:sub,chapter:val("sn-ch"),topic:val("sn-tp"),title:title,url:url,type:val("sn-type")||"pdf",uploadedBy:S.profile?S.profile.name:"",createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){toast("Study material added!");});}
+function delStudyNote(id){db.collection("studyNotes").doc(id).delete().then(function(){toast("Deleted.");});}
+function pgRevision(isT){var td=today();var n7=new Date();n7.setDate(n7.getDate()+7);var n7s=n7.toISOString().split("T")[0];var tr=S.revisions.filter(function(r){return !r.done&&r.dueDate<=td;});var or=S.revisions.filter(function(r){return !r.done&&r.dueDate<td;});var ur=S.revisions.filter(function(r){return !r.done&&r.dueDate>td&&r.dueDate<=n7s;});var dr=S.revisions.filter(function(r){return r.done;});var cl=S.revTab==="today"?tr:S.revTab==="overdue"?or:S.revTab==="upcoming"?ur:dr;var stats=D({class:"g4",style:"margin-bottom:13px"},D({style:"background:#FFC7CE;border-radius:12px;padding:12px 15px"},D({style:"font-size:22px;font-weight:800;color:#9C0006"},or.length)+D({style:"font-size:11px;color:#9C0006;font-weight:600"},"Overdue"))+D({style:"background:#FCE4D6;border-radius:12px;padding:12px 15px"},D({style:"font-size:22px;font-weight:800;color:#C55A11"},tr.length)+D({style:"font-size:11px;color:#C55A11;font-weight:600"},"Due Today"))+D({style:"background:#ede9fe;border-radius:12px;padding:12px 15px"},D({style:"font-size:22px;font-weight:800;color:#1F4E79"},ur.length)+D({style:"font-size:11px;color:#4f46e5;font-weight:600"},"This Week"))+D({style:"background:#C6EFCE;border-radius:12px;padding:12px 15px"},D({style:"font-size:22px;font-weight:800;color:#276221"},dr.length)+D({style:"font-size:11px;color:#276221;font-weight:600"},"Completed")));var tabs=D({class:"tabs"},D({class:"tab"+(S.revTab==="today"?" act":""),onclick:"setRevTab('today')"},"Today ("+tr.length+")")+D({class:"tab"+(S.revTab==="overdue"?" act":""),onclick:"setRevTab('overdue')"},"Overdue ("+or.length+")")+D({class:"tab"+(S.revTab==="upcoming"?" act":""),onclick:"setRevTab('upcoming')"},"Upcoming ("+ur.length+")")+D({class:"tab"+(S.revTab==="done"?" act":""),onclick:"setRevTab('done')"},"Done ("+dr.length+")"));var listHtml="";if(!cl.length){listHtml=D({class:"es"},D({style:"font-size:36px"},S.revTab==="today"?"&#127881;":"&#128218;")+tag("p",{},S.revTab==="today"?"No revisions due today!":"No items here"));}else{cl.forEach(function(r){var c=SC[r.subject]||"#1F4E79";listHtml+=D({class:"ri",style:"border-left-color:"+c},D({style:"flex:1"},D({style:"display:flex;align-items:center;gap:7px;margin-bottom:2px"},S2({style:"font-size:12px;font-weight:700;color:"+c},r.subject)+S2({style:"font-size:11px;color:#64748b"},r.chapter||""))+D({style:"font-size:12px;color:#334155;margin-bottom:2px"},r.topic+(r.subtopic?" &rarr; "+r.subtopic:""))+D({style:"font-size:10px;color:#94a3b8"},"Taught: "+r.taughtDate+" &middot; Due: "+r.dueDate+(r.doneDate?" &middot; Done: "+r.doneDate:"")))+(!r.done?B({class:"btn bs bsm",onclick:"markRevised('"+r.id+"')"},"Done"):S2({style:"background:#C6EFCE;color:#276221;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:600"},"Revised")));});}return D({class:"pt"},"&#128260; Revision Planner")+D({class:"ps"},"7-day revision cycle - auto-scheduled when topics are logged")+stats+tabs+D({class:"card"},D({style:"max-height:460px;overflow-y:auto"},listHtml));}
+function setRevTab(t){S.revTab=t;renderPage();}
+function markRevised(id){db.collection("revisions").doc(id).update({done:true,doneDate:today()}).then(function(){toast("Marked as revised!");});}
+function pgNotes(isT){var qn=["Covered today topics as per timetable","Baibhav needs extra help with Maths fractions","Revision done for English Ch-1 and Ch-2","Maths test announced for next week","Baibhav did great in SST Olympiad today!","Please revise Science Ch-1 tomorrow","Focus needed on Hindi grammar this week"];var qBtns="";qn.forEach(function(n,i){qBtns+=tag("button",{onclick:"setNoteText("+i+")",style:"display:block;width:100%;padding:5px 8px;border-radius:6px;border:1px solid #e2e8f0;background:#f8fafc;font-size:11px;cursor:pointer;text-align:left;margin-bottom:3px;color:#334155;font-family:inherit"},n);});var notesList="";if(!S.notes.length){notesList=D({class:"es"},D({style:"font-size:36px"},"&#128172;")+tag("p",{},"No notes yet."));}else{S.notes.forEach(function(n){var ac=n.author==="Saswat"?"#1F4E79":n.author==="Swagat"?"#4B2E83":n.author==="Pragyan"?"#1F6B5B":"#C55A11";var ts=n.createdAt&&n.createdAt.toDate?new Date(n.createdAt.toDate()).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"Just now";notesList+=D({style:"padding:10px 12px;border-radius:8px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:6px;border-left:3px solid "+ac},D({style:"display:flex;align-items:center;gap:6px;margin-bottom:4px"},D({style:"width:20px;height:20px;border-radius:50%;background:#4f46e5;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:9px"},n.author?n.author[0]:"?")+S2({style:"font-size:12px;font-weight:700"},n.author||"Teacher")+S2({style:"font-size:10px;color:#64748b"},getTZLbl(n.author||""))+S2({style:"font-size:10px;color:#64748b;margin-left:auto"},ts))+tag("p",{style:"font-size:12px;color:#334155;line-height:1.6"},n.text));});}var myName=S.profile?S.profile.name:"Teacher";return D({class:"pt"},"&#128172; Team Coordination Notes")+D({class:"ps"},"Saswat (WAT+1) &middot; Swagat (GMT+0) &middot; Pragyan (GMT+0) - real-time shared notes")+D({class:"g2"},D({},D({class:"card",style:"margin-bottom:10px"},D({class:"st"},"&#9997; Add a Note")+D({style:"display:flex;align-items:center;gap:7px;margin-bottom:8px;padding:6px 10px;background:#f8fafc;border-radius:7px"},D({style:"width:24px;height:24px;border-radius:50%;background:#4f46e5;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px"},myName[0])+D({},D({style:"font-size:12px;font-weight:700"},myName)+D({style:"font-size:10px;color:#64748b"},getTZLbl(myName)+" &middot; "+localTime(getTZOff(myName))))+S2({class:"od",style:"margin-left:auto"},""))+TA({id:"note-text",rows:"3",placeholder:"Write a coordination note..."})+B({class:"btn bp bfw",style:"margin-top:6px",onclick:"saveNote()"},"&#128228; Post Note"))+D({class:"card"},D({class:"st"},"&#9889; Quick Notes")+qBtns))+D({class:"card"},D({class:"st"},"&#128203; Live Notes Feed")+D({style:"max-height:480px;overflow-y:auto"},notesList)));}
+var _qn=["Covered today topics as per timetable","Baibhav needs extra help with Maths fractions","Revision done for English Ch-1 and Ch-2","Maths test announced for next week","Baibhav did great in SST Olympiad today!","Please revise Science Ch-1 tomorrow","Focus needed on Hindi grammar this week"];
+function setNoteText(i){var e=el("note-text");if(e)e.value=_qn[i];}
+function saveNote(){var text=el("note-text")?el("note-text").value.trim():"";if(!text)return;db.collection("notes").add({text:text,author:S.profile?S.profile.name:"Teacher",createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){el("note-text").value="";toast("Note posted!");});}
+</script>
+
+<script>
+function pgContent(isT){
+  var tabs=D({class:"tabs"},D({class:"tab"+(S.ctab==="flashcards"?" act":""),onclick:"setCTab('flashcards')"},"&#127183; Flashcards ("+S.flashcards.length+")")+D({class:"tab"+(S.ctab==="quiz"?" act":""),onclick:"setCTab('quiz')"},"&#10067; Quiz ("+S.quizzes.length+")"));
+  if(S.ctab==="flashcards"){
+    var addForm=isT?D({class:"card",style:"margin-bottom:10px"},D({class:"st"},"&#10133; Add Flashcard")+D({style:"display:flex;gap:6px;margin-bottom:6px"},SEL({id:"fc-sub",style:"flex:1"},subOpts(""))+I({class:"inp",id:"fc-ch",placeholder:"Chapter",style:"flex:1"})+I({class:"inp",id:"fc-tp",placeholder:"Topic",style:"flex:1"}))+D({style:"display:flex;gap:6px;margin-bottom:6px"},I({class:"inp",id:"fc-front",placeholder:"Front (Question)",style:"flex:1"})+I({class:"inp",id:"fc-back",placeholder:"Back (Answer)",style:"flex:1"}))+D({style:"margin-bottom:6px"},D({class:"lbl"},"Bulk Upload (Front | Back per line)")+TA({id:"fc-bulk",rows:"3",placeholder:"What is photosynthesis? | Process by which plants make food"}))+D({style:"display:flex;gap:6px"},B({class:"btn bp bsm",onclick:"saveFC()"},"+ Add Single")+B({class:"btn bs bsm",onclick:"saveFCBulk()"},"&#128228; Bulk Upload"))):"";
+    var cards="";if(!S.flashcards.length){cards=D({class:"es"},D({style:"font-size:36px"},"&#127183;")+tag("p",{},"No flashcards yet."));}else{var ci="";S.flashcards.forEach(function(f){var fl=S.cflipped[f.id];ci+=D({onclick:"flipCard('"+f.id+"')",style:"background:"+(fl?"#1F4E79":"white")+";color:"+(fl?"white":"#334155")+";border-radius:12px;padding:13px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);border:2px solid "+(fl?"#1F4E79":"#e2e8f0")+";min-height:85px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center"},D({style:"font-size:9px;opacity:.7;margin-bottom:4px"},fl?"ANSWER":"QUESTION")+D({style:"font-size:12px;font-weight:600"},fl?f.back:f.front)+D({style:"font-size:9px;opacity:.6;margin-top:4px"},(f.subject||"")+(f.topic?" &middot; "+f.topic:"")));});cards=D({class:"g3"},ci);}
+    return D({class:"pt"},"&#127919; Flashcards & Quiz")+D({class:"ps"},"Interactive learning tools for Baibhav")+tabs+addForm+cards;
   }
-  return div({className:"fi"},
-    div({className:"pt"},"🎯 Flashcards & Quiz"),
-    div({className:"ps"},"Interactive learning tools for Baibhav"),
-    div({className:"tabs"},div({className:"tab"+(tab==="flashcards"?" act":""),onClick:()=>setTab("flashcards")},"🃏 Flashcards ("+flashcards.length+")"),div({className:"tab"+(tab==="quiz"?" act":""),onClick:()=>setTab("quiz")},"❓ Quiz ("+quizzes.length+")")),
-    tab==="flashcards"?div({},
-      isT&&div({className:"card",style:{marginBottom:12}},
-        div({className:"st"},"➕ Add Flashcard"),
-        div({style:{display:"flex",gap:8,marginBottom:8}},sel({className:"inp",value:fc.subject,onChange:ev=>setFc(f=>({...f,subject:ev.target.value})),style:{flex:1}},opt({value:""},"Subject"),...SUBS.map(s=>opt({key:s,value:s},s))),inp({className:"inp",placeholder:"Chapter",value:fc.chapter,onChange:ev=>setFc(f=>({...f,chapter:ev.target.value})),style:{flex:1}}),inp({className:"inp",placeholder:"Topic",value:fc.topic,onChange:ev=>setFc(f=>({...f,topic:ev.target.value})),style:{flex:1}})),
-        div({style:{display:"flex",gap:8,marginBottom:8}},inp({className:"inp",placeholder:"Front (Question)",value:fc.front,onChange:ev=>setFc(f=>({...f,front:ev.target.value})),style:{flex:1}}),inp({className:"inp",placeholder:"Back (Answer)",value:fc.back,onChange:ev=>setFc(f=>({...f,back:ev.target.value})),style:{flex:1}})),
-        div({style:{marginBottom:8}},lbl({className:"lbl"},"Bulk Upload (one per line: Front | Back)"),ta({className:"inp",rows:3,placeholder:"What is photosynthesis? | Process by which plants make food\nCapital of India | New Delhi",value:bulk,onChange:ev=>setBulk(ev.target.value)})),
-        div({style:{display:"flex",gap:8}},btn({className:"btn bp",onClick:saveFC,disabled:!fc.front||!fc.back},"+ Add Single"),bulk.trim()&&btn({className:"btn bs",onClick:saveBulk},"📤 Bulk Upload"))
-      ),
-      flashcards.length===0?div({className:"es"},div({className:"ei"},"🃏"),p2({},"No flashcards yet.")):
-      div({className:"g3c"},...flashcards.map(f=>div({key:f.id,style:{background:flipped[f.id]?"#1F4E79":"white",color:flipped[f.id]?"white":"#334155",borderRadius:14,padding:16,cursor:"pointer",boxShadow:"0 2px 8px rgba(0,0,0,.08)",border:"2px solid "+(flipped[f.id]?"#1F4E79":"#e2e8f0"),minHeight:100,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center"},onClick:()=>setFlipped(p=>({...p,[f.id]:!p[f.id]}))},div({style:{fontSize:10,opacity:.7,marginBottom:6}},flipped[f.id]?"ANSWER":"QUESTION"),div({style:{fontSize:13,fontWeight:600}},flipped[f.id]?f.back:f.front),div({style:{fontSize:10,opacity:.6,marginTop:6}},f.subject+(f.topic?" · "+f.topic:"")))))
-    ):div({},
-      isT&&div({className:"card",style:{marginBottom:12}},
-        div({className:"st"},"➕ Add Quiz Question"),
-        div({style:{display:"flex",gap:8,marginBottom:8}},sel({className:"inp",value:qz.subject,onChange:ev=>setQz(f=>({...f,subject:ev.target.value})),style:{flex:1}},opt({value:""},"Subject"),...SUBS.map(s=>opt({key:s,value:s},s))),inp({className:"inp",placeholder:"Chapter",value:qz.chapter,onChange:ev=>setQz(f=>({...f,chapter:ev.target.value})),style:{flex:1}}),inp({className:"inp",placeholder:"Topic",value:qz.topic,onChange:ev=>setQz(f=>({...f,topic:ev.target.value})),style:{flex:1}})),
-        div({style:{marginBottom:8}},inp({className:"inp",placeholder:"Question",value:qz.question,onChange:ev=>setQz(f=>({...f,question:ev.target.value}))})),
-        div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}},inp({className:"inp",placeholder:"Option A",value:qz.optA,onChange:ev=>setQz(f=>({...f,optA:ev.target.value}))}),inp({className:"inp",placeholder:"Option B",value:qz.optB,onChange:ev=>setQz(f=>({...f,optB:ev.target.value}))}),inp({className:"inp",placeholder:"Option C",value:qz.optC,onChange:ev=>setQz(f=>({...f,optC:ev.target.value}))}),inp({className:"inp",placeholder:"Option D",value:qz.optD,onChange:ev=>setQz(f=>({...f,optD:ev.target.value}))})),
-        div({style:{display:"flex",gap:8,alignItems:"center"}},lbl({className:"lbl",style:{marginBottom:0}},"Correct:"),sel({className:"inp",value:qz.answer,onChange:ev=>setQz(f=>({...f,answer:ev.target.value})),style:{width:80}},opt({value:"A"},"A"),opt({value:"B"},"B"),opt({value:"C"},"C"),opt({value:"D"},"D")),btn({className:"btn bp",onClick:saveQZ,disabled:!qz.question||!qz.optA},"+ Add"))
-      ),
-      quizzes.length>0&&btn({className:"btn ba",style:{marginBottom:12},onClick:startQuiz},"🚀 Start Quiz ("+quizzes.length+" questions)"),
-      quizzes.length===0?div({className:"es"},div({className:"ei"},"❓"),p2({},"No quiz questions yet.")):
-      div({},
-        ...quizzes.map((q,i)=>div({key:q.id,style:{padding:"10px 14px",borderRadius:10,background:"#f8fafc",border:"1px solid #e2e8f0",marginBottom:8}},
-          div({style:{fontSize:12,fontWeight:700,marginBottom:4}},"Q"+(i+1)+": "+q.question),
-          div({style:{display:"flex",gap:8,flexWrap:"wrap"}},["A","B","C","D"].filter(k=>q["opt"+k]).map(k=>span({key:k,style:{fontSize:11,padding:"2px 8px",borderRadius:6,background:q.answer===k?"#C6EFCE":"#f1f5f9",color:q.answer===k?"#276221":"#64748b",fontWeight:q.answer===k?700:400}},k+": "+q["opt"+k])))
-        ))
-      )
-    )
-  );
+  if(S.qMode&&!S.qDone&&S.quizzes.length>0){var q=S.quizzes[S.qIdx];var opts="";["A","B","C","D"].forEach(function(k){if(!q["opt"+k])return;var sel2=S.qAns[S.qIdx]===k;opts+=tag("button",{onclick:"setQAns("+S.qIdx+",'"+k+"')",style:"padding:9px 12px;border-radius:8px;border:2px solid "+(sel2?"#C55A11":"#e2e8f0")+";background:"+(sel2?"#FCE4D6":"white")+";color:"+(sel2?"#C55A11":"#334155")+";font-size:13px;font-weight:"+(sel2?"600":"400")+";cursor:pointer;text-align:left;font-family:inherit;display:block;width:100%;margin-bottom:6px"},S2({style:"font-weight:700;margin-right:6px"},k+".")+q["opt"+k]);});return D({class:"pt"},"&#127919; Quiz Mode")+D({style:"margin-bottom:11px"},D({style:"font-size:12px;font-weight:600;margin-bottom:3px"},"Q "+(S.qIdx+1)+" of "+S.quizzes.length)+PB((S.qIdx+1)/S.quizzes.length*100,"#C55A11"))+D({class:"card",style:"margin-bottom:10px"},D({style:"font-size:14px;font-weight:700;margin-bottom:13px"},(S.qIdx+1)+". "+q.question)+opts)+D({style:"display:flex;gap:7px;justify-content:space-between"},tag("button",{class:"btn bg",onclick:"prevQ()",disabled:S.qIdx===0?"disabled":null},"&#8592; Prev")+(S.qIdx<S.quizzes.length-1?B({class:"btn bp",onclick:"nextQ()"},"Next &#8594;"):B({class:"btn ba",onclick:"submitQuiz()"},"Submit &#9989;")))+D({style:"margin-top:10px"},B({class:"btn bg bsm",onclick:"exitQuiz()"},"&#10005; Exit Quiz"));}
+  if(S.qMode&&S.qDone){var sc=0;S.quizzes.forEach(function(q,i){if(S.qAns[i]===q.answer)sc++;});var pct=Math.round(sc/S.quizzes.length*100);return D({style:"text-align:center;padding:20px"},D({style:"font-size:50px;margin-bottom:10px"},pct>=80?"&#127942;":pct>=60?"&#11088;":"&#128170;")+D({style:"font-size:21px;font-weight:800;margin-bottom:6px"},pct>=80?"Excellent!":pct>=60?"Good Job!":"Keep Practising!")+D({style:"font-size:36px;font-weight:900;color:#C55A11;margin-bottom:14px"},sc+"/"+S.quizzes.length)+D({style:"display:flex;gap:8px;justify-content:center"},B({class:"btn bo",onclick:"startQuiz()"},"&#128260; Try Again")+B({class:"btn bp",onclick:"exitQuiz()"},"&#127968; Back")));}
+  var addQForm=isT?D({class:"card",style:"margin-bottom:10px"},D({class:"st"},"&#10133; Add Quiz Question")+D({style:"display:flex;gap:6px;margin-bottom:6px"},SEL({id:"qz-sub",style:"flex:1"},subOpts(""))+I({class:"inp",id:"qz-ch",placeholder:"Chapter",style:"flex:1"})+I({class:"inp",id:"qz-tp",placeholder:"Topic",style:"flex:1"}))+D({style:"margin-bottom:6px"},I({class:"inp",id:"qz-q",placeholder:"Question"}))+D({class:"g2",style:"margin-bottom:6px"},I({class:"inp",id:"qz-a",placeholder:"Option A"})+I({class:"inp",id:"qz-b",placeholder:"Option B"})+I({class:"inp",id:"qz-c",placeholder:"Option C"})+I({class:"inp",id:"qz-d",placeholder:"Option D"}))+D({style:"display:flex;gap:6px;align-items:center"},D({class:"lbl",style:"margin-bottom:0"},"Correct:")+SEL({id:"qz-ans",style:"width:75px"},OPT("A","A",true)+OPT("B","B")+OPT("C","C")+OPT("D","D"))+B({class:"btn bp bsm",onclick:"saveQZ()"},"+ Add"))):"";
+  var qList="";if(!S.quizzes.length){qList=D({class:"es"},D({style:"font-size:36px"},"&#10067;")+tag("p",{},"No quiz questions yet."));}else{qList=B({class:"btn ba",style:"margin-bottom:10px",onclick:"startQuiz()"},"&#128640; Start Quiz ("+S.quizzes.length+" questions)");S.quizzes.forEach(function(q,i){var chips="";["A","B","C","D"].forEach(function(k){if(q["opt"+k])chips+=S2({style:"font-size:11px;padding:2px 6px;border-radius:5px;background:"+(q.answer===k?"#C6EFCE":"#f1f5f9")+";color:"+(q.answer===k?"#276221":"#64748b")+";font-weight:"+(q.answer===k?"700":"400")+";margin-right:4px"},k+": "+q["opt"+k]);});qList+=D({style:"padding:8px 12px;border-radius:8px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:6px"},D({style:"font-size:12px;font-weight:700;margin-bottom:3px"},"Q"+(i+1)+": "+q.question)+D({},chips));});}
+  return D({class:"pt"},"&#127919; Flashcards & Quiz")+D({class:"ps"},"Interactive learning tools for Baibhav")+tabs+addQForm+qList;
 }
-
-// ── Learn (Student) ───────────────────────────────────────────────────────────
-function LearnPage({flashcards,quizzes}){
-  const[tab,setTab]=useState("flashcards");const[flipped,setFlipped]=useState({});const[qIdx,setQIdx]=useState(0);const[qAns,setQAns]=useState({});const[qDone,setQDone]=useState(false);
-  const startQuiz=()=>{setQIdx(0);setQAns({});setQDone(false);};
-  return div({className:"fi"},
-    div({className:"pt"},"🎯 Learn — Flashcards & Quiz"),
-    div({className:"ps"},"Study materials prepared by your teachers"),
-    div({className:"tabs"},div({className:"tab"+(tab==="flashcards"?" act":""),onClick:()=>setTab("flashcards")},"🃏 Flashcards"),div({className:"tab"+(tab==="quiz"?" act":""),onClick:()=>setTab("quiz")},"❓ Quiz")),
-    tab==="flashcards"?flashcards.length===0?div({className:"es"},div({className:"ei"},"🃏"),p2({},"No flashcards yet.")):div({className:"g3c"},...flashcards.map(f=>div({key:f.id,style:{background:flipped[f.id]?"#1F4E79":"white",color:flipped[f.id]?"white":"#334155",borderRadius:14,padding:16,cursor:"pointer",boxShadow:"0 2px 8px rgba(0,0,0,.08)",border:"2px solid "+(flipped[f.id]?"#1F4E79":"#e2e8f0"),minHeight:100,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center"},onClick:()=>setFlipped(p=>({...p,[f.id]:!p[f.id]}))},div({style:{fontSize:10,opacity:.7,marginBottom:6}},flipped[f.id]?"ANSWER":"QUESTION"),div({style:{fontSize:13,fontWeight:600}},flipped[f.id]?f.back:f.front)))):
-    quizzes.length===0?div({className:"es"},div({className:"ei"},"❓"),p2({},"No quiz questions yet.")):
-    !qDone?div({style:{maxWidth:600,margin:"0 auto"}},
-      div({style:{marginBottom:12}},div({style:{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:4}},span({style:{fontWeight:600}},"Q "+(qIdx+1)+" of "+quizzes.length)),div({className:"pb",style:{height:8}},div({className:"pf",style:{width:((qIdx+1)/quizzes.length*100)+"%",background:"#C55A11"}}))),
-      div({className:"card",style:{marginBottom:12}},div({style:{fontSize:14,fontWeight:700,marginBottom:14}},quizzes[qIdx].question),div({style:{display:"flex",flexDirection:"column",gap:8}},...["A","B","C","D"].filter(k=>quizzes[qIdx]["opt"+k]).map(k=>btn({key:k,onClick:()=>setQAns(p=>({...p,[qIdx]:k})),style:{padding:"10px 14px",borderRadius:10,border:`2px solid ${qAns[qIdx]===k?"#C55A11":"#e2e8f0"}`,background:qAns[qIdx]===k?"#FCE4D6":"white",color:qAns[qIdx]===k?"#C55A11":"#334155",fontSize:13,cursor:"pointer",textAlign:"left",fontFamily:"inherit"},span({style:{fontWeight:700,marginRight:8}},k+"."),quizzes[qIdx]["opt"+k])))),
-      div({style:{display:"flex",gap:8,justifyContent:"space-between"}},btn({className:"btn bg",onClick:()=>setQIdx(i=>Math.max(0,i-1)),disabled:qIdx===0},"← Prev"),qIdx<quizzes.length-1?btn({className:"btn bp",onClick:()=>setQIdx(i=>i+1)},"Next →"):btn({className:"btn ba",onClick:()=>setQDone(true)},"Submit ✅"))
-    ):div({style:{textAlign:"center",padding:40}},div({style:{fontSize:48,marginBottom:12}},"🏆"),div({style:{fontSize:22,fontWeight:800,marginBottom:8}},"Quiz Complete!"),div({style:{fontSize:36,fontWeight:900,color:"#C55A11",marginBottom:16}},(()=>{let s=0;quizzes.forEach((q,i)=>{if(qAns[i]===q.answer)s++;});return s+"/"+quizzes.length;})()),btn({className:"btn bp",onClick:startQuiz},"🔄 Try Again"))
-  );
+function setCTab(t){S.ctab=t;renderPage();}
+function flipCard(id){S.cflipped[id]=!S.cflipped[id];renderPage();}
+function saveFC(){var f=val("fc-front"),b=val("fc-back");if(!f||!b){toast("Enter front and back");return;}db.collection("flashcards").add({subject:val("fc-sub"),chapter:val("fc-ch"),topic:val("fc-tp"),front:f,back:b,createdBy:S.profile?S.profile.name:"",createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){toast("Flashcard added!");});}
+function saveFCBulk(){var bulk=val("fc-bulk");if(!bulk.trim())return;var lines=bulk.trim().split("\n");var p=[];lines.forEach(function(line){var parts=line.split("|");if(parts.length>=2)p.push(db.collection("flashcards").add({subject:val("fc-sub"),chapter:val("fc-ch"),topic:val("fc-tp"),front:parts[0].trim(),back:parts[1].trim(),createdBy:S.profile?S.profile.name:"",createdAt:firebase.firestore.FieldValue.serverTimestamp()}));});Promise.all(p).then(function(){el("fc-bulk").value="";toast("Bulk flashcards added!");});}
+function saveQZ(){var q=val("qz-q"),a=val("qz-a");if(!q||!a){toast("Enter question and options");return;}db.collection("quizzes").add({subject:val("qz-sub"),chapter:val("qz-ch"),topic:val("qz-tp"),question:q,optA:a,optB:val("qz-b"),optC:val("qz-c"),optD:val("qz-d"),answer:val("qz-ans")||"A",createdBy:S.profile?S.profile.name:"",createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){toast("Quiz question added!");});}
+function startQuiz(){S.qIdx=0;S.qAns={};S.qDone=false;S.qMode=true;renderPage();}
+function setQAns(idx,k){S.qAns[idx]=k;renderPage();}
+function prevQ(){if(S.qIdx>0){S.qIdx--;renderPage();}}
+function nextQ(){if(S.qIdx<S.quizzes.length-1){S.qIdx++;renderPage();}}
+function submitQuiz(){S.qDone=true;renderPage();}
+function exitQuiz(){S.qMode=false;S.qDone=false;renderPage();}
+function pgLearn(isT){
+  var tabs=D({class:"tabs"},D({class:"tab"+(S.ltab==="flashcards"?" act":""),onclick:"setLTab('flashcards')"},"&#127183; Flashcards")+D({class:"tab"+(S.ltab==="quiz"?" act":""),onclick:"setLTab('quiz')"},"&#10067; Quiz"));
+  if(S.ltab==="flashcards"){var cards="";if(!S.flashcards.length){cards=D({class:"es"},D({style:"font-size:36px"},"&#127183;")+tag("p",{},"No flashcards yet."));}else{var ci="";S.flashcards.forEach(function(f){var fl=S.lflipped[f.id];ci+=D({onclick:"flipLCard('"+f.id+"')",style:"background:"+(fl?"#1F4E79":"white")+";color:"+(fl?"white":"#334155")+";border-radius:12px;padding:13px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);border:2px solid "+(fl?"#1F4E79":"#e2e8f0")+";min-height:85px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center"},D({style:"font-size:9px;opacity:.7;margin-bottom:4px"},fl?"ANSWER":"QUESTION")+D({style:"font-size:12px;font-weight:600"},fl?f.back:f.front));});cards=D({class:"g3"},ci);}return D({class:"pt"},"&#127919; Learn")+D({class:"ps"},"Study materials prepared by your teachers")+tabs+cards;}
+  if(S.lqMode&&!S.lqDone&&S.quizzes.length>0){var q=S.quizzes[S.lqIdx];var opts="";["A","B","C","D"].forEach(function(k){if(!q["opt"+k])return;var sl=S.lqAns[S.lqIdx]===k;opts+=tag("button",{onclick:"setLQAns("+S.lqIdx+",'"+k+"')",style:"padding:9px 12px;border-radius:8px;border:2px solid "+(sl?"#C55A11":"#e2e8f0")+";background:"+(sl?"#FCE4D6":"white")+";color:"+(sl?"#C55A11":"#334155")+";font-size:13px;cursor:pointer;text-align:left;font-family:inherit;display:block;width:100%;margin-bottom:6px"},S2({style:"font-weight:700;margin-right:6px"},k+".")+q["opt"+k]);});return D({class:"pt"},"&#127919; Learn")+tabs+D({style:"margin-bottom:11px"},D({style:"font-size:12px;font-weight:600;margin-bottom:3px"},"Q "+(S.lqIdx+1)+" of "+S.quizzes.length)+PB((S.lqIdx+1)/S.quizzes.length*100,"#C55A11"))+D({class:"card",style:"margin-bottom:10px"},D({style:"font-size:14px;font-weight:700;margin-bottom:13px"},(S.lqIdx+1)+". "+q.question)+opts)+D({style:"display:flex;gap:7px;justify-content:space-between"},tag("button",{class:"btn bg",onclick:"prevLQ()",disabled:S.lqIdx===0?"disabled":null},"&#8592; Prev")+(S.lqIdx<S.quizzes.length-1?B({class:"btn bp",onclick:"nextLQ()"},"Next &#8594;"):B({class:"btn ba",onclick:"submitLQ()"},"Submit &#9989;")));}
+  if(S.lqMode&&S.lqDone){var sc=0;S.quizzes.forEach(function(q,i){if(S.lqAns[i]===q.answer)sc++;});var pct=Math.round(sc/S.quizzes.length*100);return D({class:"pt"},"&#127919; Learn")+tabs+D({style:"text-align:center;padding:20px"},D({style:"font-size:50px;margin-bottom:10px"},pct>=80?"&#127942;":pct>=60?"&#11088;":"&#128170;")+D({style:"font-size:21px;font-weight:800;margin-bottom:6px"},pct>=80?"Excellent!":pct>=60?"Good Job!":"Keep Practising!")+D({style:"font-size:36px;font-weight:900;color:#C55A11;margin-bottom:14px"},sc+"/"+S.quizzes.length)+B({class:"btn bp",onclick:"exitLQ()"},"&#127968; Back"));}
+  var qItems=!S.quizzes.length?D({class:"es"},D({style:"font-size:36px"},"&#10067;")+tag("p",{},"No quiz questions yet.")):B({class:"btn ba",style:"margin-bottom:10px",onclick:"startLQ()"},"&#128640; Start Quiz ("+S.quizzes.length+" questions)");
+  return D({class:"pt"},"&#127919; Learn")+D({class:"ps"},"Study materials prepared by your teachers")+tabs+qItems;
 }
-
-// ── Tasks ─────────────────────────────────────────────────────────────────────
-function TasksPage({tasks,addTask,toggleTask,isT}){
-  const[form,setForm]=useState({title:"",description:"",subject:"",dueDate:"",priority:"medium"});
-  const[saving,setSaving]=useState(false);
-  const save=async()=>{if(!form.title)return;setSaving(true);await addTask(form);setForm({title:"",description:"",subject:"",dueDate:"",priority:"medium"});setSaving(false);};
-  const pending=tasks.filter(t=>!t.done);const done=tasks.filter(t=>t.done);
-  const pc={high:"#9C0006",medium:"#C55A11",low:"#276221"};const pb={high:"#FFC7CE",medium:"#FCE4D6",low:"#C6EFCE"};
-  return div({className:"fi"},
-    div({className:"pt"},"✅ Tasks"),
-    div({className:"ps"},isT?"Assign tasks to Baibhav":"Your assigned tasks"),
-    isT&&div({className:"card",style:{marginBottom:16}},
-      div({className:"st"},"➕ Assign Task"),
-      div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}},
-        div({},lbl({className:"lbl"},"Task Title"),inp({className:"inp",placeholder:"e.g. Complete Maths exercises Ch-3",value:form.title,onChange:ev=>setForm(f=>({...f,title:ev.target.value}))})),
-        div({},lbl({className:"lbl"},"Subject"),sel({className:"inp",value:form.subject,onChange:ev=>setForm(f=>({...f,subject:ev.target.value}))},opt({value:""},"-- Subject --"),...SUBS.map(s=>opt({key:s,value:s},s))))
-      ),
-      div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}},
-        div({},lbl({className:"lbl"},"Due Date"),inp({className:"inp",type:"date",value:form.dueDate,onChange:ev=>setForm(f=>({...f,dueDate:ev.target.value}))})),
-        div({},lbl({className:"lbl"},"Priority"),sel({className:"inp",value:form.priority,onChange:ev=>setForm(f=>({...f,priority:ev.target.value}))},opt({value:"high"},"🔴 High"),opt({value:"medium"},"🟡 Medium"),opt({value:"low"},"🟢 Low")))
-      ),
-      div({style:{marginBottom:10}},lbl({className:"lbl"},"Description"),ta({className:"inp",rows:2,placeholder:"Details about the task...",value:form.description,onChange:ev=>setForm(f=>({...f,description:ev.target.value}))})),
-      btn({className:"btn bp",onClick:save,disabled:!form.title||saving},saving?"Saving...":"📋 Assign Task")
-    ),
-    div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}},
-      div({},
-        div({style:{fontSize:14,fontWeight:700,marginBottom:10,color:"#C55A11"}},"⏳ Pending ("+pending.length+")"),
-        pending.length===0?div({className:"es",style:{padding:"20px 0"}},div({className:"ei"},"🎉"),p2({},"All tasks done!")):
-        div({},
-          ...pending.map(t=>div({key:t.id,style:{padding:"12px 14px",borderRadius:10,background:pb[t.priority]||"#FCE4D6",border:`1px solid ${pc[t.priority]||"#C55A11"}`,marginBottom:8}},
-            div({style:{display:"flex",alignItems:"center",gap:8,marginBottom:4}},div({style:{flex:1}},div({style:{fontSize:13,fontWeight:700,color:pc[t.priority]||"#C55A11"}},t.title),t.subject&&div({style:{fontSize:11,color:"#64748b"}},t.subject+(t.dueDate?" · Due: "+t.dueDate:""))),btn({onClick:()=>toggleTask(t.id,t.done),style:{padding:"4px 10px",borderRadius:6,border:"1px solid #276221",background:"#C6EFCE",color:"#276221",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}},"✅ Done")),
-            t.description&&p2({style:{fontSize:11,color:"#475569"}},t.description)
-          ))
-        )
-      ),
-      div({},
-        div({style:{fontSize:14,fontWeight:700,marginBottom:10,color:"#276221"}},"✅ Completed ("+done.length+")"),
-        done.length===0?div({className:"es",style:{padding:"20px 0"}},div({className:"ei"},"📋"),p2({},"No completed tasks yet")):
-        div({},
-          ...done.map(t=>div({key:t.id,style:{padding:"10px 14px",borderRadius:10,background:"#C6EFCE",border:"1px solid #276221",marginBottom:8,opacity:.8}},
-            div({style:{display:"flex",alignItems:"center",gap:8}},div({style:{flex:1}},div({style:{fontSize:12,fontWeight:600,color:"#276221",textDecoration:"line-through"}},t.title),t.doneDate&&div({style:{fontSize:10,color:"#64748b"}},"Done: "+t.doneDate)),btn({onClick:()=>toggleTask(t.id,t.done),style:{padding:"3px 8px",borderRadius:6,border:"1px solid #C55A11",background:"#FCE4D6",color:"#C55A11",fontSize:10,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}},"↩ Undo"))
-          ))
-        )
-      )
-    )
-  );
+function setLTab(t){S.ltab=t;renderPage();}
+function flipLCard(id){S.lflipped[id]=!S.lflipped[id];renderPage();}
+function startLQ(){S.lqIdx=0;S.lqAns={};S.lqDone=false;S.lqMode=true;renderPage();}
+function setLQAns(idx,k){S.lqAns[idx]=k;renderPage();}
+function prevLQ(){if(S.lqIdx>0){S.lqIdx--;renderPage();}}
+function nextLQ(){if(S.lqIdx<S.quizzes.length-1){S.lqIdx++;renderPage();}}
+function submitLQ(){S.lqDone=true;renderPage();}
+function exitLQ(){S.lqMode=false;S.lqDone=false;renderPage();}
+function pgTasks(isT){var pending=S.tasks.filter(function(t){return !t.done;});var done=S.tasks.filter(function(t){return t.done;});var pc={high:"#9C0006",medium:"#C55A11",low:"#276221"};var pb={high:"#FFC7CE",medium:"#FCE4D6",low:"#C6EFCE"};var addForm=isT?D({class:"card",style:"margin-bottom:13px"},D({class:"st"},"&#10133; Assign Task")+D({class:"g2",style:"margin-bottom:8px"},D({},D({class:"lbl"},"Task Title")+I({class:"inp",id:"tk-title",placeholder:"e.g. Complete Maths exercises Ch-3"}))+D({},D({class:"lbl"},"Subject")+SEL({id:"tk-sub"},subOpts(""))))+D({class:"g2",style:"margin-bottom:8px"},D({},D({class:"lbl"},"Due Date")+I({class:"inp",id:"tk-due",type:"date"}))+D({},D({class:"lbl"},"Priority")+SEL({id:"tk-pri"},OPT("high","&#128308; High")+OPT("medium","&#128993; Medium",true)+OPT("low","&#128994; Low"))))+D({style:"margin-bottom:8px"},D({class:"lbl"},"Description")+TA({id:"tk-desc",rows:"2",placeholder:"Details about the task..."}))+B({class:"btn bp",onclick:"saveTask()"},"&#128203; Assign Task")):"";var pendingHtml="";if(!pending.length){pendingHtml=D({class:"es",style:"padding:16px 0"},D({style:"font-size:36px"},"&#127881;")+tag("p",{},"All tasks done!"));}else{pending.forEach(function(t){pendingHtml+=D({style:"padding:10px 12px;border-radius:8px;background:"+(pb[t.priority]||"#FCE4D6")+";border:1px solid "+(pc[t.priority]||"#C55A11")+";margin-bottom:6px"},D({style:"display:flex;align-items:center;gap:7px;margin-bottom:2px"},D({style:"flex:1"},D({style:"font-size:12px;font-weight:700;color:"+(pc[t.priority]||"#C55A11")},t.title)+(t.subject?D({style:"font-size:11px;color:#64748b"},t.subject+(t.dueDate?" &middot; Due: "+t.dueDate:"")):""))+tag("button",{onclick:"toggleTask('"+t.id+"',false)",style:"padding:3px 8px;border-radius:5px;border:1px solid #276221;background:#C6EFCE;color:#276221;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit"},"&#9989; Done"))+(t.description?tag("p",{style:"font-size:11px;color:#475569"},t.description):""));});}var doneHtml="";if(!done.length){doneHtml=D({class:"es",style:"padding:16px 0"},D({style:"font-size:36px"},"&#128203;")+tag("p",{},"No completed tasks yet"));}else{done.forEach(function(t){doneHtml+=D({style:"padding:8px 12px;border-radius:8px;background:#C6EFCE;border:1px solid #276221;margin-bottom:6px;opacity:.8"},D({style:"display:flex;align-items:center;gap:7px"},D({style:"flex:1"},D({style:"font-size:12px;font-weight:600;color:#276221;text-decoration:line-through"},t.title)+(t.doneDate?D({style:"font-size:10px;color:#64748b"},"Done: "+t.doneDate):""))+tag("button",{onclick:"toggleTask('"+t.id+"',true)",style:"padding:2px 7px;border-radius:5px;border:1px solid #C55A11;background:#FCE4D6;color:#C55A11;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit"},"&#8617; Undo")));});}return D({class:"pt"},"&#9989; Tasks")+D({class:"ps"},isT?"Assign tasks to Baibhav":"Your assigned tasks")+addForm+D({class:"g2"},D({},D({style:"font-size:13px;font-weight:700;margin-bottom:8px;color:#C55A11"},"&#8987; Pending ("+pending.length+")")+pendingHtml)+D({},D({style:"font-size:13px;font-weight:700;margin-bottom:8px;color:#276221"},"&#9989; Completed ("+done.length+")")+doneHtml));}
+function saveTask(){var title=val("tk-title");if(!title){toast("Enter task title");return;}db.collection("tasks").add({title:title,subject:val("tk-sub"),dueDate:val("tk-due"),priority:val("tk-pri")||"medium",description:val("tk-desc"),done:false,createdBy:S.profile?S.profile.name:"",createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){toast("Task assigned!");});}
+function toggleTask(id,isDone){db.collection("tasks").doc(id).update({done:!isDone,doneDate:!isDone?today():null});}
+function pgCalendar(isT){var td=today();var upcoming=S.calEvents.filter(function(e){return e.date>=td;}).slice(0,20);var past=S.calEvents.filter(function(e){return e.date<td;}).slice(0,8);var tc={study:"#1F4E79",revision:"#C55A11",exam:"#9C0006",meeting:"#4B2E83",activity:"#1F6B5B"};var tb={study:"#DCE6F1",revision:"#FCE4D6",exam:"#FFC7CE",meeting:"#E8E0F0",activity:"#DAEEE6"};var addForm=isT?D({class:"card",style:"margin-bottom:13px"},D({class:"st"},"&#10133; Add Event / Meeting")+D({class:"g3",style:"margin-bottom:8px"},D({},D({class:"lbl"},"Title")+I({class:"inp",id:"cal-title",placeholder:"e.g. English tutoring session"}))+D({},D({class:"lbl"},"Date")+I({class:"inp",id:"cal-date",type:"date"}))+D({},D({class:"lbl"},"Time")+I({class:"inp",id:"cal-time",type:"time"})))+D({class:"g3",style:"margin-bottom:8px"},D({},D({class:"lbl"},"Type")+SEL({id:"cal-type"},OPT("study","&#128218; Study",true)+OPT("revision","&#128260; Revision")+OPT("exam","&#128221; Exam")+OPT("meeting","&#127909; Meeting / Tutoring")+OPT("activity","&#127952; Activity")))+D({},D({class:"lbl"},"Subject")+SEL({id:"cal-sub"},subOpts("")))+D({},D({class:"lbl"},"Meeting Link")+I({class:"inp",id:"cal-link",placeholder:"https://meet.google.com/..."})))+D({style:"margin-bottom:8px"},D({class:"lbl"},"Notes")+I({class:"inp",id:"cal-notes",placeholder:"Additional notes..."}))+B({class:"btn bp",onclick:"saveCalEvent()"},"&#128197; Add Event")):"";var upHtml="";if(!upcoming.length){upHtml=D({class:"es"},D({style:"font-size:36px"},"&#128197;")+tag("p",{},"No upcoming events."));}else{upcoming.forEach(function(ev){upHtml+=D({style:"display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:8px;background:"+(tb[ev.type]||"#DCE6F1")+";border:1px solid "+(tc[ev.type]||"#1F4E79")+";margin-bottom:6px"},D({style:"text-align:center;min-width:40px;padding:3px 6px;background:"+(tc[ev.type]||"#1F4E79")+";color:white;border-radius:6px"},D({style:"font-size:11px;font-weight:700"},ev.date.split("-").slice(1).join("/"))+(ev.time?D({style:"font-size:9px"},ev.time):""))+D({style:"flex:1"},D({style:"font-size:12px;font-weight:700;color:"+(tc[ev.type]||"#1F4E79")},ev.title)+D({style:"font-size:11px;color:#64748b"},(ev.subject||"")+(ev.notes?" &middot; "+ev.notes:""))+(ev.meetLink?tag("a",{href:ev.meetLink,target:"_blank",style:"font-size:11px;color:#4f46e5;font-weight:600;text-decoration:none"},"&#127909; Join Meeting &rarr;"):""))+(isT?tag("button",{onclick:"delCalEvent('"+ev.id+"')",style:"background:none;border:none;cursor:pointer;color:#9C0006;font-size:13px"},"&#128465;"):""));});}var pastHtml="";if(!past.length){pastHtml=tag("p",{style:"font-size:12px;color:#64748b;padding:8px 0"},"No past events");}else{past.forEach(function(ev){pastHtml+=D({style:"padding:6px 10px;border-radius:7px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:4px;opacity:.7"},D({style:"font-size:11px;font-weight:600;color:#64748b"},ev.date+(ev.time?" "+ev.time:""))+D({style:"font-size:12px;color:#334155"},ev.title));});}return D({class:"pt"},"&#128197; Calendar & Teaching Planner")+D({class:"ps"},"Schedule study sessions, meetings, and events with online meeting links")+addForm+D({class:"g2"},D({},D({style:"font-size:13px;font-weight:700;margin-bottom:8px;color:#1F4E79"},"&#128197; Upcoming Events")+upHtml)+D({},D({style:"font-size:13px;font-weight:700;margin-bottom:8px;color:#64748b"},"&#128220; Past Events")+pastHtml));}
+function saveCalEvent(){var title=val("cal-title"),date=val("cal-date");if(!title||!date){toast("Enter title and date");return;}db.collection("calEvents").add({title:title,date:date,time:val("cal-time"),type:val("cal-type")||"study",subject:val("cal-sub"),meetLink:val("cal-link"),notes:val("cal-notes"),createdBy:S.profile?S.profile.name:"",createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){toast("Event added!");});}
+function delCalEvent(id){db.collection("calEvents").doc(id).delete();}
+function pgTimetable(isT){var tn=dayName();var tt=S.ttEdit?S.ttData:S.timetable;var rows="";DAYS_LIST.forEach(function(day){var cells="";(tt[day]||[]).forEach(function(s,i){cells+=tag("td",{style:"padding:5px 3px;text-align:center;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0"},S.ttEdit&&s!=="BREAK"?I({value:s,onchange:"updateTTCell('"+day+"',"+i+",this.value)",style:"width:66px;padding:2px 4px;border:1px solid #e2e8f0;border-radius:5px;font-size:10px;text-align:center;font-family:inherit"}):S2({style:"display:inline-block;padding:3px 6px;border-radius:6px;background:"+(TTC[s]||"#F2F2F2")+";color:#334155;font-size:10px;font-weight:600;white-space:nowrap"},s));});rows+=tag("tr",{style:"background:"+(day===tn?"#FFFDE7":"white")},tag("td",{style:"padding:7px 12px;font-weight:700;font-size:12px;border-right:2px solid #e2e8f0;border-bottom:1px solid #e2e8f0;white-space:nowrap"},(day===tn?S2({style:"font-size:9px;background:#C55A11;color:white;padding:1px 5px;border-radius:9999px;margin-right:4px;font-weight:700"},"TODAY"):"")+day)+cells);});var hdrs="";PERIODS.forEach(function(p){hdrs+=tag("th",{style:"padding:6px 4px;background:#4f46e5;color:white;font-size:10px;font-weight:600;text-align:center;min-width:76px"},p);});return D({class:"pt"},"&#128197; School Timetable")+D({class:"ps"},"Buxi Jagabandhu English Medium School-II &middot; Std 5A &middot; Mrs. Tarulata Mohanty")+D({style:"display:flex;gap:6px;margin-bottom:10px"},(isT&&!S.ttEdit?B({class:"btn bp bsm",onclick:"startTTEdit()"},"&#9999; Edit Timetable"):"")+( S.ttEdit?B({class:"btn bs bsm",onclick:"saveTT()"},"&#128190; Save")+B({class:"btn bg bsm",onclick:"cancelTTEdit()"},"Cancel"):""))+D({style:"background:white;border-radius:13px;box-shadow:0 2px 8px rgba(0,0,0,.08);overflow:auto"},tag("table",{style:"width:100%;border-collapse:collapse;min-width:700px"},tag("thead",{},tag("tr",{},tag("th",{style:"padding:8px 12px;background:#4f46e5;color:white;font-size:12px;font-weight:700;text-align:left;min-width:88px"},"Day")+hdrs))+tag("tbody",{},rows)));}
+function startTTEdit(){S.ttData=JSON.parse(JSON.stringify(S.timetable));S.ttEdit=true;renderPage();}
+function cancelTTEdit(){S.ttEdit=false;S.ttData=null;renderPage();}
+function updateTTCell(day,idx,v){if(S.ttData&&S.ttData[day])S.ttData[day][idx]=v;}
+function saveTT(){db.collection("timetable").doc("shared").set({data:S.ttData},{merge:true}).then(function(){S.ttEdit=false;S.ttData=null;toast("Timetable saved!");});}
+function pgUsers(isT){
+  var rc={teacher:"#1F4E79",admin:"#9C0006",child:"#C55A11"};var rb={teacher:"#DCE6F1",admin:"#FFC7CE",child:"#FCE4D6"};
+  var eu=S.editUser;var tzOptsHtml="";TZ_OPTS.forEach(function(t){tzOptsHtml+=OPT(t.v,t.l,eu&&eu.tzOffset===t.v);});
+  var addForm=isT?D({class:"card",style:"margin-bottom:13px"},D({class:"st"},eu?"&#9999; Edit User: "+eu.name:"&#10133; Add New User")+D({class:"g2",style:"margin-bottom:8px"},D({},D({class:"lbl"},"Full Name")+I({class:"inp",id:"usr-name",placeholder:"e.g. Ravi Kumar",value:eu?eu.name:""}))+D({},D({class:"lbl"},"Email")+I({class:"inp",id:"usr-email",type:"email",placeholder:"ravi@dugu-edutrack.com",value:eu?eu.email:"",readonly:eu?"readonly":null,style:eu?"background:#f8fafc":""})))+D({class:"g2",style:"margin-bottom:8px"},D({},D({class:"lbl"},eu?"New Password (blank = keep)":"Password")+I({class:"inp",id:"usr-pass",type:"password",placeholder:eu?"Leave blank to keep":"Min 6 characters"}))+D({},D({class:"lbl"},"Role")+SEL({id:"usr-role"},OPT("teacher","&#128104; Teacher",!eu||eu.role==="teacher")+OPT("admin","&#128273; Admin",eu&&eu.role==="admin")+OPT("child","&#128102; Student",eu&&eu.role==="child"))))+D({style:"margin-bottom:8px"},D({class:"lbl"},"Timezone")+SEL({id:"usr-tz"},tzOptsHtml))+D({style:"background:#FFFBEB;border:1px solid #FFD700;border-radius:7px;padding:6px 10px;margin-bottom:8px;font-size:11px;color:#7F6000"},"&#128161; New users appear in Quick Login automatically.")+D({style:"display:flex;gap:6px"},B({class:"btn bp",onclick:eu?"updateUser()":"saveUser()"},eu?"&#128190; Save Changes":"&#128100; Add User")+(eu?B({class:"btn bg",onclick:"cancelEditUser()"},"Cancel"):""))):"";
+  var userCards="";S.users.forEach(function(u){var off=u.tzOffset!==undefined?u.tzOffset:(DEF_TZ[u.name]||5.5);var lbl=u.tzLabel||(DEF_TZL[u.name]||"IST +5:30");var lt=localTime(off);userCards+=D({style:"padding:13px;border-radius:11px;background:"+(rb[u.role]||"#DCE6F1")+";border:1px solid "+(rc[u.role]||"#1F4E79")},D({style:"display:flex;align-items:center;gap:8px;margin-bottom:8px"},D({style:"width:36px;height:36px;border-radius:50%;background:"+(rc[u.role]||"#1F4E79")+";color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px"},(u.name||"?")[0].toUpperCase())+D({style:"flex:1"},D({style:"font-size:12px;font-weight:700;color:"+(rc[u.role]||"#1F4E79")},u.name||"Unknown")+D({style:"font-size:10px;color:#64748b"},u.email||""))+(u.online?S2({class:"od"},""):""))+D({style:"font-size:11px;color:#64748b;margin-bottom:2px"},"&#127757; "+lbl)+D({style:"font-size:12px;font-weight:700;color:"+(rc[u.role]||"#1F4E79")+";margin-bottom:6px"},"&#128336; "+lt)+S2({style:"font-size:10px;padding:2px 7px;border-radius:9999px;background:"+(rc[u.role]||"#1F4E79")+";color:white;font-weight:600"},u.role||"user")+(isT?D({style:"display:flex;gap:5px;margin-top:8px"},tag("button",{onclick:"startEditUser('"+u.id+"')",style:"flex:1;padding:4px 8px;border-radius:6px;border:1px solid "+(rc[u.role]||"#1F4E79")+";background:white;color:"+(rc[u.role]||"#1F4E79")+";font-size:11px;font-weight:600;cursor:pointer;font-family:inherit"},"&#9999; Edit")+(u.id!==S.user.uid?tag("button",{onclick:"deleteUser('"+u.id+"','"+u.name+"')",style:"padding:4px 8px;border-radius:6px;border:1px solid #9C0006;background:white;color:#9C0006;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit"},"&#128465;"):"")):""));});
+  return D({class:"pt"},"&#128101; Manage Users")+D({class:"ps"},"Add, edit or delete users - timezone shows correct local time everywhere")+addForm+D({class:"card"},D({class:"st"},"&#128101; All Users ("+S.users.length+")")+D({class:"g3"},userCards));
 }
-
-// ── Calendar & Planner ────────────────────────────────────────────────────────
-function CalPage({calEvents,addCalEvent,deleteCalEvent,isT}){
-  const[form,setForm]=useState({title:"",date:"",time:"",type:"study",subject:"",meetLink:"",notes:""});
-  const[saving,setSaving]=useState(false);
-  const save=async()=>{if(!form.title||!form.date)return;setSaving(true);await addCalEvent(form);setForm({title:"",date:"",time:"",type:"study",subject:"",meetLink:"",notes:""});setSaving(false);};
-  const today=new Date().toISOString().split("T")[0];
-  const upcoming=calEvents.filter(ev=>ev.date>=today).slice(0,20);
-  const past=calEvents.filter(ev=>ev.date<today).slice(0,10);
-  const tc={study:"#1F4E79",revision:"#C55A11",exam:"#9C0006",meeting:"#4B2E83",activity:"#1F6B5B"};
-  const tb={study:"#DCE6F1",revision:"#FCE4D6",exam:"#FFC7CE",meeting:"#E8E0F0",activity:"#DAEEE6"};
-  return div({className:"fi"},
-    div({className:"pt"},"📅 Calendar & Teaching Planner"),
-    div({className:"ps"},"Schedule study sessions, meetings, and events with online meeting links"),
-    isT&&div({className:"card",style:{marginBottom:16}},
-      div({className:"st"},"➕ Add Event / Meeting"),
-      div({style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:10}},
-        div({},lbl({className:"lbl"},"Title"),inp({className:"inp",placeholder:"e.g. English tutoring session",value:form.title,onChange:ev=>setForm(f=>({...f,title:ev.target.value}))})),
-        div({},lbl({className:"lbl"},"Date"),inp({className:"inp",type:"date",value:form.date,onChange:ev=>setForm(f=>({...f,date:ev.target.value}))})),
-        div({},lbl({className:"lbl"},"Time"),inp({className:"inp",type:"time",value:form.time,onChange:ev=>setForm(f=>({...f,time:ev.target.value}))}))
-      ),
-      div({style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:10}},
-        div({},lbl({className:"lbl"},"Type"),sel({className:"inp",value:form.type,onChange:ev=>setForm(f=>({...f,type:ev.target.value}))},opt({value:"study"},"📚 Study"),opt({value:"revision"},"🔄 Revision"),opt({value:"exam"},"📝 Exam"),opt({value:"meeting"},"🎥 Meeting / Tutoring"),opt({value:"activity"},"🏸 Activity"))),
-        div({},lbl({className:"lbl"},"Subject"),sel({className:"inp",value:form.subject,onChange:ev=>setForm(f=>({...f,subject:ev.target.value}))},opt({value:""},"-- Subject --"),...SUBS.map(s=>opt({key:s,value:s},s)))),
-        div({},lbl({className:"lbl"},"Meeting Link (Google Meet / Zoom)"),inp({className:"inp",placeholder:"https://meet.google.com/...",value:form.meetLink,onChange:ev=>setForm(f=>({...f,meetLink:ev.target.value}))}))
-      ),
-      div({style:{marginBottom:10}},lbl({className:"lbl"},"Notes"),inp({className:"inp",placeholder:"Additional notes...",value:form.notes,onChange:ev=>setForm(f=>({...f,notes:ev.target.value}))})),
-      btn({className:"btn bp",onClick:save,disabled:!form.title||!form.date||saving},saving?"Saving...":"📅 Add Event")
-    ),
-    div({style:{display:"grid",gridTemplateColumns:"2fr 1fr",gap:16}},
-      div({},
-        div({style:{fontSize:14,fontWeight:700,marginBottom:10,color:"#1F4E79"}},"📅 Upcoming Events"),
-        upcoming.length===0?div({className:"es"},div({className:"ei"},"📅"),p2({},"No upcoming events.")):
-        div({},
-          ...upcoming.map(ev=>div({key:ev.id,style:{display:"flex",alignItems:"flex-start",gap:10,padding:"12px 14px",borderRadius:10,background:tb[ev.type]||"#DCE6F1",border:`1px solid ${tc[ev.type]||"#1F4E79"}`,marginBottom:8}},
-            div({style:{textAlign:"center",minWidth:44,padding:"4px 8px",background:tc[ev.type]||"#1F4E79",color:"white",borderRadius:8}},div({style:{fontSize:11,fontWeight:700}},ev.date.split("-").slice(1).join("/")),ev.time&&div({style:{fontSize:10}},ev.time)),
-            div({style:{flex:1}},div({style:{fontSize:13,fontWeight:700,color:tc[ev.type]||"#1F4E79"}},ev.title),div({style:{fontSize:11,color:"#64748b"}},(ev.subject||"")+(ev.notes?" · "+ev.notes:"")),ev.meetLink&&e("a",{href:ev.meetLink,target:"_blank",style:{fontSize:11,color:"#1F4E79",fontWeight:600,textDecoration:"none"}},"🎥 Join Meeting →")),
-            isT&&btn({onClick:()=>deleteCalEvent(ev.id),style:{background:"none",border:"none",cursor:"pointer",color:"#9C0006",fontSize:14,fontFamily:"inherit"}},"🗑️")
-          ))
-        )
-      ),
-      div({},
-        div({style:{fontSize:14,fontWeight:700,marginBottom:10,color:"#64748b"}},"📜 Past Events"),
-        past.length===0?div({className:"es",style:{padding:"16px 0"}},p2({},"No past events")):
-        div({},
-          ...past.map(ev=>div({key:ev.id,style:{padding:"8px 12px",borderRadius:8,background:"#f8fafc",border:"1px solid #e2e8f0",marginBottom:6,opacity:.7}},
-            div({style:{fontSize:11,fontWeight:600,color:"#64748b"}},ev.date+(ev.time?" "+ev.time:"")),
-            div({style:{fontSize:12,color:"#334155"}},ev.title)
-          ))
-        )
-      )
-    )
-  );
-}
-
-// ── Timetable ─────────────────────────────────────────────────────────────────
-function TTPage({timetable,saveTimetable,isT}){
-  const[editing,setEditing]=useState(false);const[editTT,setEditTT]=useState(null);
-  const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-  const tn=days[new Date().getDay()];
-  const startEdit=()=>{setEditTT(JSON.parse(JSON.stringify(timetable)));setEditing(true);};
-  const updateCell=(day,idx,val)=>{setEditTT(p=>{const n={...p};n[day]=[...n[day]];n[day][idx]={...n[day][idx],sub:val};return n;});};
-  const saveEdit=async()=>{await saveTimetable(editTT);setEditing(false);};
-  const tt=editing?editTT:timetable;
-  return div({className:"fi"},
-    div({className:"pt"},"🗓️ School Timetable"),
-    div({className:"ps"},"Buxi Jagabandhu English Medium School-II · Std 5A · Mrs. Tarulata Mohanty"),
-    div({style:{display:"flex",gap:8,marginBottom:12}},
-      isT&&!editing&&btn({className:"btn bp bsm",onClick:startEdit},"✏️ Edit Timetable"),
-      editing&&btn({className:"btn bs bsm",onClick:saveEdit},"💾 Save"),
-      editing&&btn({className:"btn bg bsm",onClick:()=>setEditing(false)},"Cancel")
-    ),
-    div({style:{background:"white",borderRadius:16,boxShadow:"0 4px 16px rgba(0,0,0,.12)",overflow:"auto",marginBottom:16}},
-      e("table",{style:{width:"100%",borderCollapse:"collapse",minWidth:700}},
-        e("thead",{},e("tr",{},e("th",{style:{padding:"10px 14px",background:"#1F4E79",color:"white",fontSize:12,fontWeight:700,textAlign:"left",minWidth:90}},"Day"),...PERIODS.map((p,i)=>e("th",{key:i,style:{padding:"8px 6px",background:"#1F4E79",color:"white",fontSize:10,fontWeight:600,textAlign:"center",minWidth:80}},p)))),
-        e("tbody",{},...DAYS_LIST.map(day=>e("tr",{key:day,style:{background:day===tn?"#FFFDE7":"white"}},
-          e("td",{style:{padding:"8px 14px",fontWeight:700,fontSize:12,borderRight:"2px solid #e2e8f0",borderBottom:"1px solid #e2e8f0"}},day===tn&&e("span",{style:{fontSize:9,background:"#C55A11",color:"white",padding:"1px 5px",borderRadius:9999,marginRight:5,fontWeight:700}},"TODAY"),day),
-          ...(tt[day]||[]).map((cell,i)=>{
-            const c=TTC[cell.sub]||"#F2F2F2";
-            return e("td",{key:i,style:{padding:"6px 4px",textAlign:"center",borderBottom:"1px solid #e2e8f0",borderRight:"1px solid #e2e8f0"}},
-              editing&&cell.sub!=="BREAK"?inp({value:cell.sub,onChange:ev=>updateCell(day,i,ev.target.value),style:{width:70,padding:"3px 5px",border:"1px solid #e2e8f0",borderRadius:6,fontSize:10,textAlign:"center",fontFamily:"inherit"}}):
-              e("span",{style:{display:"inline-block",padding:"3px 7px",borderRadius:7,background:c,color:"#334155",fontSize:10,fontWeight:600,whiteSpace:"nowrap"}},cell.sub)
-            );
-          })
-        )))
-      )
-    )
-  );
-}
-
-// ── Manage Users ──────────────────────────────────────────────────────────────
-function UsersPage({users,addUser,isT}){
-  const[form,setForm]=useState({name:"",email:"",password:"",role:"teacher"});
-  const[saving,setSaving]=useState(false);
-  const save=async()=>{if(!form.name||!form.email||!form.password)return;setSaving(true);const ok=await addUser(form);if(ok)setForm({name:"",email:"",password:"",role:"teacher"});setSaving(false);};
-  const rc={teacher:"#1F4E79",admin:"#9C0006",child:"#276221"};const rb={teacher:"#DCE6F1",admin:"#FFC7CE",child:"#C6EFCE"};
-  return div({className:"fi"},
-    div({className:"pt"},"👥 Manage Users"),
-    div({className:"ps"},"Add teachers or students — they appear in Quick Login automatically"),
-    isT&&div({className:"card",style:{marginBottom:16}},
-      div({className:"st"},"➕ Add New User"),
-      div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}},
-        div({},lbl({className:"lbl"},"Full Name"),inp({className:"inp",placeholder:"e.g. Ravi Kumar",value:form.name,onChange:ev=>setForm(f=>({...f,name:ev.target.value}))})),
-        div({},lbl({className:"lbl"},"Email"),inp({className:"inp",type:"email",placeholder:"ravi@dugu-edutrack.com",value:form.email,onChange:ev=>setForm(f=>({...f,email:ev.target.value}))}))
-      ),
-      div({style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}},
-        div({},lbl({className:"lbl"},"Password"),inp({className:"inp",type:"password",placeholder:"Min 6 characters",value:form.password,onChange:ev=>setForm(f=>({...f,password:ev.target.value}))})),
-        div({},lbl({className:"lbl"},"Role"),sel({className:"inp",value:form.role,onChange:ev=>setForm(f=>({...f,role:ev.target.value}))},opt({value:"teacher"},"👨‍🏫 Teacher"),opt({value:"admin"},"🔑 Admin"),opt({value:"child"},"👦 Student")))
-      ),
-      div({style:{background:"#FFFBEB",border:"1px solid #FFD700",borderRadius:8,padding:"8px 12px",marginBottom:10,fontSize:12,color:"#7F6000"}},"💡 After adding, the user will appear in Quick Login on the login screen automatically."),
-      btn({className:"btn bp",onClick:save,disabled:!form.name||!form.email||!form.password||saving},saving?"Adding...":"👤 Add User")
-    ),
-    div({className:"card"},
-      div({className:"st"},"👥 All Users ("+users.length+")"),
-      users.length===0?div({className:"es"},div({className:"ei"},"👥"),p2({},"No users found.")):
-      div({className:"g3c"},
-        ...users.map(u=>div({key:u.id,style:{padding:"14px",borderRadius:12,background:rb[u.role]||"#DCE6F1",border:`1px solid ${rc[u.role]||"#1F4E79"}`,textAlign:"center"}},
-          div({style:{width:40,height:40,borderRadius:"50%",background:rc[u.role]||"#1F4E79",color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:16,margin:"0 auto 8px"}},(u.name||"?")[0].toUpperCase()),
-          div({style:{fontSize:13,fontWeight:700,color:rc[u.role]||"#1F4E79"}},u.name||"Unknown"),
-          div({style:{fontSize:11,color:"#64748b",marginBottom:4}},u.email||""),
-          e("span",{style:{fontSize:10,padding:"2px 8px",borderRadius:9999,background:rc[u.role]||"#1F4E79",color:"white",fontWeight:600,textTransform:"capitalize"}},u.role||"user"),
-          u.online&&div({style:{fontSize:10,color:"#276221",marginTop:4,fontWeight:600}},"● Online")
-        ))
-      )
-    )
-  );
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(h(App,null));
+function saveUser(){var name=val("usr-name").trim(),email=val("usr-email").trim(),pass=val("usr-pass"),role=val("usr-role")||"teacher";var tzv=parseFloat(val("usr-tz")||"5.5");var tzl=(TZ_OPTS.find(function(t){return t.v===tzv;})||{l:"IST +5:30"}).l;if(!name||!email||!pass){toast("Please fill all fields");return;}auth.createUserWithEmailAndPassword(email,pass).then(function(c){db.collection("users").doc(c.user.uid).set({name:name,email:email,password:pass,role:role,tzOffset:tzv,tzLabel:tzl,avatar:name[0].toUpperCase(),online:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});toast(name+" added! Quick Login updated.");["usr-name","usr-email","usr-pass"].forEach(function(id){var e=el(id);if(e)e.value="";});}).catch(function(ex){toast("Error: "+ex.message);});}
+function startEditUser(uid){S.editUser=S.users.find(function(u){return u.id===uid;})||null;renderPage();}
+function cancelEditUser(){S.editUser=null;renderPage();}
+function updateUser(){if(!S.editUser)return;var name=val("usr-name").trim(),pass=val("usr-pass"),role=val("usr-role")||"teacher";var tzv=parseFloat(val("usr-tz")||"5.5");var tzl=(TZ_OPTS.find(function(t){return t.v===tzv;})||{l:"IST +5:30"}).l;if(!name){toast("Enter name");return;}var upd={name:name,role:role,tzOffset:tzv,tzLabel:tzl,avatar:name[0].toUpperCase()};if(pass&&pass.length>=6)upd.password=pass;db.collection("users").doc(S.editUser.id).update(upd).then(function(){toast(name+" updated!");S.editUser=null;renderPage();});}
+function deleteUser(uid,name){if(!confirm("Delete user "+name+"? This cannot be undone."))return;db.collection("users").doc(uid).delete().then(function(){toast(name+" deleted.");});}
 </script>
 </body>
-</html>v1.1
+</html>
