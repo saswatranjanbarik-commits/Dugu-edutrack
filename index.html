@@ -6,9 +6,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Dugu EduTrack v1.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet"/>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,sans-serif;background:#f8fafc;color:#1a202c;min-height:100vh}
 @keyframes spin{to{transform:rotate(360deg)}}@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -52,7 +52,10 @@
 <body>
 <div id="toast" class="toast"></div>
 <div id="app"><div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1F4E79,#2E75B6);color:white;flex-direction:column;gap:14px"><div style="font-size:52px">&#127891;</div><div style="font-family:Nunito,sans-serif;font-size:26px;font-weight:900">Dugu EduTrack</div><div style="opacity:.8">Loading...</div><div style="width:36px;height:36px;border:3px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%" class="spin"></div></div></div>
-<script>
+<script defer>
+
+
+
 
 firebase.initializeApp({apiKey:"AIzaSyD4hjE7UhFfzpBh63XzPwRY9gOhCQfUn8w",authDomain:"dugu-edutrack.firebaseapp.com",projectId:"dugu-edutrack",storageBucket:"dugu-edutrack.firebasestorage.app",messagingSenderId:"336963361004",appId:"1:336963361004:web:4cde59e43fee0ad3282dc9"});
 var auth=firebase.auth(),db=firebase.firestore();
@@ -529,6 +532,8 @@ function deleteUser(uid,name){if(!confirm("Delete user "+name+"? This cannot be 
 
 // Auth observer - MUST be last so all functions are defined
 auth.onAuthStateChanged(function(u){S.user=u;if(u){db.collection("users").doc(u.uid).get().then(function(d){if(d.exists)S.profile=d.data();renderShell();renderPage();startListeners();});}else{S.profile=null;S.unsubs.forEach(function(f){f();});S.unsubs=[];renderLogin();}});
+
+
 
 </script>
 </body>
