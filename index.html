@@ -114,7 +114,7 @@ function renderShell(){
   el("app").innerHTML=tag("nav",{class:"nav"},D({style:"display:flex;align-items:center;gap:8px"},S2({style:"font-size:19px"},"&#127891;")+S2({style:"font-family:Nunito,sans-serif;font-size:17px;font-weight:800"},"Dugu EduTrack")+S2({style:"font-size:9px;background:rgba(255,255,255,.2);padding:2px 6px;border-radius:9999px;font-weight:600"},"v1.0")+S2({id:"nav-online",style:"font-size:10px;background:rgba(34,197,94,.2);color:#86efac;padding:2px 6px;border-radius:9999px;font-weight:600;display:none"},S2({class:"od"},"")+"0 online"))+D({style:"display:flex;align-items:center;gap:8px"},D({style:"text-align:right"},D({style:"font-weight:700;font-size:12px"},S.profile?S.profile.name:"...")+D({style:"font-size:10px;opacity:.75"},myLbl+" &middot; "+tag("span",{id:"nav-time"},localTime(myOff))))+D({style:"width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px"},S.profile?S.profile.name[0]:"?")+tag("button",{onclick:"doLogout()",style:"background:rgba(255,255,255,.15);color:white;border:none;padding:4px 10px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;font-family:inherit"},"Exit")))+D({class:"sb"},D({style:"padding:5px 14px 8px;border-bottom:1px solid #e2e8f0;margin-bottom:4px;font-size:10px;font-weight:700;color:#64748b;letter-spacing:1px"},isT?"TEACHER PORTAL":"STUDENT PORTAL")+si+D({style:"padding:9px 14px;position:absolute;bottom:0;left:0;right:0;border-top:1px solid #e2e8f0;font-size:9px;color:#64748b;text-align:center"},S2({class:"od"},"")+"Live Sync &middot; Baibhav &middot; Std 5A"))+D({id:"page-content",class:"main"},"")+D({class:"mn",style:"display:none"},mi);
 }
 function goPage(id){S.page=id;document.querySelectorAll(".si,.mi").forEach(function(e){var oc=e.getAttribute("onclick")||"";var m=oc.match(/goPage\('([^']+)'\)/);e.classList.toggle("act",!!(m&&m[1]===id));});renderPage();}
-function renderPage(){var pc=el("page-content");if(!pc)return;var isT=S.profile&&(S.profile.role==="teacher"||S.profile.role==="admin");var pages={dashboard:pgDashboard,log:pgLog,syllabus:pgSyllabus,studynotes:pgStudyNotes,revision:pgRevision,notes:pgNotes,content:pgContent,learn:pgLearn,tasks:pgTasks,calendar:pgCalendar,timetable:pgTimetable,users:pgUsers};try{var fn=pages[S.page]||pgDashboard;pc.innerHTML=D({class:"fi"},fn(isT));}catch(err){pc.innerHTML=D({style:"padding:20px;color:#9C0006;background:#FFC7CE;border-radius:10px;margin:20px"},"<strong>Error on page: "+S.page+"</strong><br>"+err.message);console.error(err);}}
+function renderPage(){var pc=el("page-content");if(!pc)return;var isT=S.profile&&(S.profile.role==="teacher"||S.profile.role==="admin");var pages={dashboard:pgDashboard,log:pgLog,syllabus:pgSyllabus,studynotes:pgStudyNotes,revision:pgRevision,notes:pgNotes,content:pgContent,learn:pgLearn,tasks:pgTasks,calendar:pgCalendar,timetable:pgTimetable,users:pgUsers};try{var fn=pages[S.page]||pgDashboard;pc.innerHTML=D({class:"fi"},fn(isT));}catch(err){pc.innerHTML=D({style:"padding:20px;color:#9C0006;background:#FFC7CE;border-radius:10px;margin:20px"},"<strong>Error on page: "+S.page+"</strong><br>"+err.message+"<br><small>"+err.stack+"</small>");console.error(err);}}
 function doLogin(){var email=val("li-email"),pass=val("li-pass");if(!email||!pass)return;var b=el("li-btn"),e=el("li-err");if(b)b.textContent="Signing in...";if(e)e.style.display="none";auth.signInWithEmailAndPassword(email,pass).catch(function(){if(e)e.style.display="block";if(b)b.textContent="Sign In";});}
 function quickLogin(e,p){var b=el("li-btn");if(b)b.textContent="Signing in...";auth.signInWithEmailAndPassword(e,p).catch(function(){if(b)b.textContent="Sign In";});}
 function doLogout(){S.unsubs.forEach(function(u){u();});S.unsubs=[];db.collection("users").doc(S.user.uid).update({online:false}).catch(function(){});auth.signOut();}
@@ -144,39 +144,68 @@ auth.onAuthStateChanged(function(u){S.user=u;if(u){db.collection("users").doc(u.
 function pgDashboard(isT){
   // ── STUDENT DASHBOARD ──────────────────────────────────────────────────────
   if(!isT){
-    var td=today(),tn=dayName(),hour=new Date().getHours();
+    var td=today();
+    var tn=dayName();
+    var hour=new Date().getHours();
     var gr=hour<12?'Good Morning':hour<17?'Good Afternoon':'Good Evening';
-    var ttToday=(S.timetable[tn]||[]);
-    var tr=S.revisions.filter(function(r){return !r.done&&r.dueDate<=td;});
+
+    // Safe access with fallbacks
+    var ttData=S.timetable||DEFAULT_TT;
+    var ttToday=ttData[tn]||[];
+    var allTasks=S.tasks||[];
+    var allRevisions=S.revisions||[];
+    var allTopics=S.topics||[];
+
+    var tr=allRevisions.filter(function(r){return !r.done&&r.dueDate<=td;});
+    var pendingTasks=allTasks.filter(function(t){return !t.done;});
+    var doneTasks=allTasks.filter(function(t){return t.done;}).slice(0,3);
+
+    // Overall progress
     var totalDone=0,totalTopics=0;
-    Object.keys(S.syllabus).forEach(function(sub){
-      var v=S.syllabus[sub];
-      totalDone+=Object.values(v.progress||{}).filter(function(x){return x.status==='taught';}).length;
-      (v.chapters||[]).forEach(function(c){(c.topics||[]).forEach(function(t){totalTopics+=1+(t.st||[]).length;});});
-    });
+    try{
+      Object.keys(S.syllabus||{}).forEach(function(sub){
+        var v=S.syllabus[sub];
+        if(!v)return;
+        totalDone+=Object.values(v.progress||{}).filter(function(x){return x.status==='taught';}).length;
+        (v.chapters||[]).forEach(function(ch){(ch.topics||[]).forEach(function(t){totalTopics+=1+(t.st||[]).length;});});
+      });
+    }catch(e){}
     var op=totalTopics?Math.round(totalDone/totalTopics*100):0;
 
-    // ── Header greeting ──────────────────────────────────────────────────────
+    // ── Header ───────────────────────────────────────────────────────────────
     var header=D({style:'display:flex;align-items:center;justify-content:space-between;margin-bottom:4px'},
       D({class:'pt'},'&#128075; Welcome back, Baibhav!')+
       S2({style:'background:#ede9fe;color:#4f46e5;padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:700'},'Std 5A')
     )+D({class:'ps'},new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}));
 
-    // ── Timetable periods ────────────────────────────────────────────────────
-    var periodTimes=['10:30 AM','11:10 AM','11:50 AM','12:30 PM','1:30 PM','2:10 PM','2:50 PM','3:30 PM','4:10 PM'];
-    var ttRows='';
-    // Get today's already-logged topics for pre-filling
-    var todayTopics={};
-    S.topics.forEach(function(t){if(t.date===td)todayTopics[t.subject]=(todayTopics[t.subject]||[])+1;});
+    // ── Revision alert ────────────────────────────────────────────────────────
+    var revAlert='';
+    if(tr.length>0){
+      revAlert=D({style:'background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #f59e0b;border-radius:10px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px'},
+        D({style:'font-size:20px'},'&#128276;')+
+        D({style:'flex:1'},
+          D({style:'font-size:13px;font-weight:700;color:#92400e'},tr.length+' topic'+(tr.length>1?'s':'')+' due for revision today!')+
+          D({style:'font-size:11px;color:#92400e'},'Go to Revisions tab to complete them.')
+        )+
+        D({onclick:"goPage('revision')",style:'padding:5px 12px;border-radius:7px;background:#f59e0b;color:white;font-size:11px;font-weight:600;cursor:pointer'},'View')
+      );
+    }
 
+    // ── Timetable ─────────────────────────────────────────────────────────────
+    var periodTimes=['10:30 AM','11:10 AM','11:50 AM','12:30 PM','1:30 PM','2:10 PM','2:50 PM','3:30 PM','4:10 PM'];
+    var todayLogged={};
+    allTopics.forEach(function(t){if(t.date===td&&t.subject)todayLogged[t.subject]=t.topic||'Topic logged';});
+    window._ttSubjects=ttToday;
+
+    var ttRows='';
     ttToday.forEach(function(subj,i){
-      var isBreak=subj==='BREAK';
+      var isBreak=(subj==='BREAK');
       var pTime=periodTimes[i]||'';
-      var pLabel=isBreak?'Break':'P'+(i<4?i+1:i);
-      var alreadyLogged=!isBreak&&todayTopics[subj]>0;
+      var pLabel=isBreak?'Break':(i<4?'P'+(i+1):(i===4?'Break':'P'+i));
       var inputId='ttinp'+i;
-      var subjectColor={English:'#4f46e5',Hindi:'#7c3aed',Odia:'#b45309',Mathematics:'#059669',Science:'#0891b2','Social Studies':'#dc2626','Computer Science':'#2563eb','Moral Science':'#9333ea','General Knowledge':'#64748b'};
-      var sc2=subjectColor[subj]||'#4f46e5';
+      var subColors={English:'#4f46e5',Hindi:'#7c3aed',Odia:'#b45309',Mathematics:'#059669',Science:'#0891b2'};
+      var sc2=subColors[subj]||'#4f46e5';
+      var alreadyLogged=!isBreak&&todayLogged[subj];
 
       if(isBreak){
         ttRows+=D({style:'display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:#fef9c3;border:1px solid #fde68a;margin-bottom:8px'},
@@ -184,16 +213,12 @@ function pgDashboard(isT){
           D({style:'font-size:13px;color:#92400e;font-weight:600'},'&#127829; Lunch Break')
         );
       } else if(alreadyLogged){
-        // Already logged today - show green badge
-        var loggedTopic='';
-        S.topics.forEach(function(t){if(t.date===td&&t.subject===subj&&!loggedTopic)loggedTopic=t.topic;});
         ttRows+=D({style:'display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:#f0fdf4;border:1px solid #bbf7d0;margin-bottom:8px'},
           D({style:'text-align:center;min-width:80px'},D({style:'font-size:11px;font-weight:700;color:'+sc2},pLabel)+D({style:'font-size:10px;color:#64748b'},pTime))+
-          D({style:'flex:1'},D({style:'font-size:13px;font-weight:700;color:#166534'},subj)+D({style:'font-size:11px;color:#166534;margin-top:2px'},'&#10003; '+(loggedTopic||'Topic logged')))+
+          D({style:'flex:1'},D({style:'font-size:13px;font-weight:700;color:#166534'},subj)+D({style:'font-size:11px;color:#166534;margin-top:2px'},'&#10003; '+alreadyLogged))+
           S2({style:'background:#C6EFCE;color:#276221;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:700'},'Logged')
         );
       } else {
-        // Not yet logged - show input
         ttRows+=D({style:'display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:white;border:1px solid #e2e8f0;margin-bottom:8px'},
           D({style:'text-align:center;min-width:80px'},D({style:'font-size:11px;font-weight:700;color:'+sc2},pLabel)+D({style:'font-size:10px;color:#64748b'},pTime))+
           D({style:'font-size:13px;font-weight:700;color:#312e81;min-width:100px;flex-shrink:0'},subj)+
@@ -202,7 +227,6 @@ function pgDashboard(isT){
         );
       }
     });
-    window._ttSubjects=ttToday;
 
     var ttSection=D({class:'card',style:'flex:1;min-width:0'},
       D({style:'display:flex;align-items:center;justify-content:space-between;margin-bottom:4px'},
@@ -214,79 +238,67 @@ function pgDashboard(isT){
       (ttToday.length===0?D({class:'es',style:'padding:12px 0'},D({style:'font-size:32px'},'&#127968;')+tag('p',{},'No school today!')):ttRows)
     );
 
-    // ── Self Study Plan ──────────────────────────────────────────────────────
-    // Teacher-assigned tasks + student's own study plan items
-    var allTasks=S.tasks.filter(function(t){return !t.done;});
-    var doneTasks=S.tasks.filter(function(t){return t.done;}).slice(0,3);
-
+    // ── Self Study Plan ───────────────────────────────────────────────────────
     var taskRows='';
-    if(!allTasks.length&&!doneTasks.length){
+    if(!pendingTasks.length&&!doneTasks.length){
       taskRows=D({class:'es',style:'padding:12px 0'},D({style:'font-size:28px'},'&#127881;')+tag('p',{},'No study tasks yet!'));
     } else {
-      allTasks.forEach(function(t){
-        var pc={high:'#dc2626',medium:'#C55A11',low:'#276221'};
-        var dot=D({style:'width:10px;height:10px;border-radius:50%;background:'+(pc[t.priority]||'#C55A11')+';flex-shrink:0'},'');
-        taskRows+=D({style:'display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:6px'},
+      pendingTasks.forEach(function(t){
+        var pc2={high:'#dc2626',medium:'#C55A11',low:'#276221'};
+        var dot=D({style:'width:10px;height:10px;border-radius:50%;background:'+(pc2[t.priority]||'#C55A11')+';flex-shrink:0;margin-top:3px'},'');
+        var tid=t.id||'';
+        taskRows+=D({style:'display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:9px;background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:6px'},
           dot+
           D({style:'flex:1'},
-            D({style:'font-size:13px;font-weight:600;color:#1e1b4b'},t.title)+
+            D({style:'font-size:13px;font-weight:600;color:#1e1b4b'},t.title||'')+
             (t.subject?D({style:'font-size:11px;color:#64748b'},t.subject+(t.dueDate?' &middot; Due: '+t.dueDate:'')):'')
           )+
-          D({onclick:"toggleTask('"+t.id+"',false)",style:'padding:4px 10px;border-radius:7px;border:1px solid #276221;background:#C6EFCE;color:#276221;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0'},'&#10003; Done')
+          D({onclick:"toggleTask('"+tid+"',false)",style:'padding:4px 10px;border-radius:7px;border:1px solid #276221;background:#C6EFCE;color:#276221;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0'},'&#10003; Done')
         );
       });
       doneTasks.forEach(function(t){
         taskRows+=D({style:'display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;background:#f0fdf4;border:1px solid #bbf7d0;margin-bottom:6px;opacity:.75'},
-          D({style:'width:10px;height:10px;border-radius:50%;background:#276221;flex-shrink:0'},'')+
-          D({style:'flex:1'},D({style:'font-size:12px;font-weight:600;color:#166534;text-decoration:line-through'},t.title))+
+          D({style:'width:10px;height:10px;border-radius:50%;background:#276221;flex-shrink:0'},'')+ 
+          D({style:'flex:1'},D({style:'font-size:12px;font-weight:600;color:#166534;text-decoration:line-through'},t.title||''))+
           S2({style:'font-size:10px;color:#276221;font-weight:600'},'&#10003; Done')
         );
       });
     }
 
-    // Add own study plan item
     var addPlanRow=D({style:'display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #e2e8f0'},
-      I({class:'inp',id:'own-plan-sub',placeholder:'Subject',style:'width:100px;flex-shrink:0;padding:7px 10px;font-size:12px;border-radius:8px'})+
+      I({class:'inp',id:'own-plan-sub',placeholder:'Subject',style:'width:90px;flex-shrink:0;padding:7px 10px;font-size:12px;border-radius:8px'})+
       I({class:'inp',id:'own-plan-txt',placeholder:'What will you study?',style:'flex:1;padding:7px 10px;font-size:12px;border-radius:8px'})+
       D({onclick:"addOwnPlan()",style:'padding:7px 14px;border-radius:8px;background:#312e81;color:white;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap'},'+ Add')
     );
 
-    var studyPlanSection=D({class:'card',style:'width:320px;flex-shrink:0'},
+    var studyPlanSection=D({class:'card',style:'width:300px;flex-shrink:0'},
       D({style:'display:flex;align-items:center;justify-content:space-between;margin-bottom:12px'},
         D({class:'st',style:'margin-bottom:0'},'&#128218; Self Study Plan')+
-        S2({style:'background:#ede9fe;color:#4f46e5;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:600'},allTasks.length+' pending')
+        S2({style:'background:#ede9fe;color:#4f46e5;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:600'},pendingTasks.length+' pending')
       )+
       taskRows+addPlanRow
     );
 
-    // ── Subject Progress row ─────────────────────────────────────────────────
+    // ── Subject Progress ──────────────────────────────────────────────────────
     var subjCards='';
     SUBS.forEach(function(sub){
-      var d=S.syllabus[sub]||{},p=d.progress||{},ch=d.chapters||SYL[sub]||[];
-      var total=0;ch.forEach(function(c){(c.topics||[]).forEach(function(t){total+=1+(t.st||[]).length;});});
-      var done=Object.values(p).filter(function(x){return x.status==='taught';}).length;
-      var pct=total?Math.round(done/total*100):0;
-      var subjectColor={English:'#4f46e5',Hindi:'#7c3aed',Odia:'#b45309',Mathematics:'#059669',Science:'#0891b2','Social Studies':'#dc2626','Computer Science':'#2563eb','Moral Science':'#9333ea','General Knowledge':'#64748b'};
-      var sc2=subjectColor[sub]||'#4f46e5';
-      subjCards+=D({style:'padding:10px 12px;border-radius:10px;background:white;border:1px solid #e2e8f0'},
-        D({style:'font-size:11px;font-weight:700;color:'+sc2+';margin-bottom:5px'},sub)+
-        D({class:'pb'},D({class:'pf',style:'width:'+pct+'%;background:'+sc2},''))+
-        D({style:'font-size:10px;color:#64748b;margin-top:3px;text-align:right'},pct+'%')
-      );
+      try{
+        var d=S.syllabus[sub]||{},p=d.progress||{},ch=d.chapters||SYL[sub]||[];
+        var total=0;ch.forEach(function(c){(c.topics||[]).forEach(function(t){total+=1+(t.st||[]).length;});});
+        var done=Object.values(p).filter(function(x){return x.status==='taught';}).length;
+        var pct=total?Math.round(done/total*100):0;
+        var subColors2={English:'#4f46e5',Hindi:'#7c3aed',Odia:'#b45309',Mathematics:'#059669',Science:'#0891b2','Social Studies':'#dc2626','Computer Science':'#2563eb','Moral Science':'#9333ea','General Knowledge':'#64748b'};
+        var sc3=subColors2[sub]||'#4f46e5';
+        subjCards+=D({style:'padding:10px 12px;border-radius:10px;background:white;border:1px solid #e2e8f0'},
+          D({style:'font-size:11px;font-weight:700;color:'+sc3+';margin-bottom:5px'},sub)+
+          D({class:'pb'},D({class:'pf',style:'width:'+pct+'%;background:'+sc3},''))+
+          D({style:'font-size:10px;color:#64748b;margin-top:3px;text-align:right'},pct+'%')
+        );
+      }catch(e){}
     });
     var subjSection=D({class:'card',style:'margin-top:16px'},
       D({class:'st'},'&#128202; Subject Progress')+D({class:'g3'},subjCards)
     );
-
-    // ── Revisions alert ──────────────────────────────────────────────────────
-    var revAlert='';
-    if(tr.length>0){
-      revAlert=D({style:'background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #f59e0b;border-radius:10px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px'},
-        D({style:'font-size:20px'},'&#128276;')+
-        D({style:'flex:1'},D({style:'font-size:13px;font-weight:700;color:#92400e'},tr.length+' topic'+(tr.length>1?'s':'')+' due for revision today!')+D({style:'font-size:11px;color:#92400e'},'Go to Revisions tab to complete them.'))+
-        D({onclick:"goPage('revision')",style:'padding:5px 12px;border-radius:7px;background:#f59e0b;color:white;font-size:11px;font-weight:600;cursor:pointer'},'View')
-      );
-    }
 
     return header+revAlert+
       D({style:'display:flex;gap:16px;align-items:flex-start'},ttSection+studyPlanSection)+
