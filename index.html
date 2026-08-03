@@ -53,6 +53,7 @@
 <div id="toast" class="toast"></div>
 <div id="app"><div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1F4E79,#2E75B6);color:white;flex-direction:column;gap:14px"><div style="font-size:52px">&#127891;</div><div style="font-family:Nunito,sans-serif;font-size:26px;font-weight:900">Dugu EduTrack</div><div style="opacity:.8">Loading...</div><div style="width:36px;height:36px;border:3px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%" class="spin"></div></div></div>
 <script>
+
 firebase.initializeApp({apiKey:"AIzaSyD4hjE7UhFfzpBh63XzPwRY9gOhCQfUn8w",authDomain:"dugu-edutrack.firebaseapp.com",projectId:"dugu-edutrack",storageBucket:"dugu-edutrack.firebasestorage.app",messagingSenderId:"336963361004",appId:"1:336963361004:web:4cde59e43fee0ad3282dc9"});
 var auth=firebase.auth(),db=firebase.firestore();
 var SUBS=["English","Hindi","Odia","Mathematics","Science","Social Studies","Computer Science","Moral Science","General Knowledge"];
@@ -93,8 +94,9 @@ function subOpts(sv){var o=OPT("","-- Select Subject --");SUBS.forEach(function(
 function chOpts(sub,sv){var o=OPT("","-- Select Chapter --");var chs=(S.syllabus[sub]&&S.syllabus[sub].chapters)||SYL[sub]||[];chs.forEach(function(c){o+=OPT(c.ch,c.ch,c.ch===sv);});return o;}
 function tpOpts(sub,ch,sv){var o=OPT("","-- Select Topic --");var chs=(S.syllabus[sub]&&S.syllabus[sub].chapters)||SYL[sub]||[];var cd=chs.find(function(c){return c.ch===ch;});if(cd)(cd.topics||[]).forEach(function(t){o+=OPT(t.n,t.n,t.n===sv);});return o;}
 function stOpts(sub,ch,tp,sv){var o=OPT("","-- Select Sub-topic --");var chs=(S.syllabus[sub]&&S.syllabus[sub].chapters)||SYL[sub]||[];var cd=chs.find(function(c){return c.ch===ch;});if(cd){var td=(cd.topics||[]).find(function(t){return t.n===tp;});if(td)(td.st||[]).forEach(function(s){o+=OPT(s,s,s===sv);});}return o;}
-</script>
-<script>
+
+
+
 function renderLogin(){
   var qBtns="";S.quickUsers.forEach(function(u){qBtns+=tag("button",{onclick:"quickLogin('"+u.e+"','"+u.p+"')",style:"flex:1 1 calc(25% - 7px);min-width:75px;padding:8px 3px;border-radius:9px;border:2px solid "+u.c+";background:white;color:"+u.c+";font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;line-height:1.4"},u.n+"<br><span style='font-size:9px;opacity:.7'>"+u.tz+"</span>");});
   el("app").innerHTML=D({class:"lp"},D({class:"lc"},D({style:"text-align:center;margin-bottom:22px"},D({style:"font-size:46px;margin-bottom:5px"},"&#127891;")+D({style:"font-family:Nunito,sans-serif;font-size:23px;font-weight:900;color:#1F4E79"},"Dugu EduTrack")+D({style:"color:#64748b;font-size:12px;margin-top:3px"},"Baibhav Personal Learning Portal v1.0")+D({style:"display:inline-flex;align-items:center;gap:5px;margin-top:6px;background:#C6EFCE;color:#276221;padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:600"},S2({class:"od"},"")+"Online - Real-time Sync"))+D({style:"margin-bottom:10px"},LBL("Email")+I({class:"inp",id:"li-email",type:"email",placeholder:"Enter your email"}))+D({style:"margin-bottom:14px"},LBL("Password")+I({class:"inp",id:"li-pass",type:"password",placeholder:"Enter your password"}))+D({id:"li-err",style:"display:none;background:#FFC7CE;color:#9C0006;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:11px;font-weight:500"},"Invalid email or password.")+B({class:"btn bp bfw blg",id:"li-btn",onclick:"doLogin()"},"&#128274; Sign In")+D({class:"dv"},"&nbsp;")+D({style:"font-size:11px;color:#64748b;text-align:center;margin-bottom:8px;font-weight:600"},"QUICK LOGIN")+D({style:"display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px"},qBtns)+D({style:"text-align:center"},tag("button",{onclick:"setupAccounts()",style:"background:none;border:none;color:#94a3b8;font-size:11px;cursor:pointer;text-decoration:underline;font-family:inherit"},"First time? Set up accounts"))));
@@ -165,9 +167,9 @@ function startListeners(){
   uns.push(db.collection("users").where("online","==",true).onSnapshot(function(s){S.onlineUsers=s.docs.map(function(d){return d.data().name;}).filter(Boolean);updateNavTime();}));
 }
 auth.onAuthStateChanged(function(u){S.user=u;if(u){db.collection("users").doc(u.uid).get().then(function(d){if(d.exists)S.profile=d.data();renderShell();renderPage();startListeners();});}else{S.profile=null;S.unsubs.forEach(function(f){f();});S.unsubs=[];renderLogin();}});
-</script>
 
-<script>
+
+
 function pgDashboard(isT){
   // ── STUDENT DASHBOARD ──────────────────────────────────────────────────────
   if(!isT){
@@ -458,9 +460,9 @@ function pgNotes(isT){var qn=["Covered today topics as per timetable","Baibhav n
 var _qn=["Covered today topics as per timetable","Baibhav needs extra help with Maths fractions","Revision done for English Ch-1 and Ch-2","Maths test announced for next week","Baibhav did great in SST Olympiad today!","Please revise Science Ch-1 tomorrow","Focus needed on Hindi grammar this week"];
 function setNoteText(i){var e=el("note-text");if(e)e.value=_qn[i];}
 function saveNote(){var text=el("note-text")?el("note-text").value.trim():"";if(!text)return;db.collection("notes").add({text:text,author:S.profile?S.profile.name:"Teacher",createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){el("note-text").value="";toast("Note posted!");});}
-</script>
 
-<script>
+
+
 function pgContent(isT){
   var tabs=D({class:"tabs"},D({class:"tab"+(S.ctab==="flashcards"?" act":""),onclick:"setCTab('flashcards')"},"&#127183; Flashcards ("+S.flashcards.length+")")+D({class:"tab"+(S.ctab==="quiz"?" act":""),onclick:"setCTab('quiz')"},"&#10067; Quiz ("+S.quizzes.length+")"));
   if(S.ctab==="flashcards"){
@@ -524,6 +526,7 @@ function startEditUser(uid){S.editUser=S.users.find(function(u){return u.id===ui
 function cancelEditUser(){S.editUser=null;renderPage();}
 function updateUser(){if(!S.editUser)return;var name=val("usr-name").trim(),pass=val("usr-pass"),role=val("usr-role")||"teacher";var tzv=parseFloat(val("usr-tz")||"5.5");var tzl=(TZ_OPTS.find(function(t){return t.v===tzv;})||{l:"IST +5:30"}).l;if(!name){toast("Enter name");return;}var upd={name:name,role:role,tzOffset:tzv,tzLabel:tzl,avatar:name[0].toUpperCase()};if(pass&&pass.length>=6)upd.password=pass;db.collection("users").doc(S.editUser.id).update(upd).then(function(){toast(name+" updated!");S.editUser=null;renderPage();});}
 function deleteUser(uid,name){if(!confirm("Delete user "+name+"? This cannot be undone."))return;db.collection("users").doc(uid).delete().then(function(){toast(name+" deleted.");});}
+
 </script>
 </body>
 </html>
