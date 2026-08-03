@@ -166,7 +166,7 @@ function startListeners(){
   uns.push(db.collection("users").onSnapshot(function(s){S.users=s.docs.map(function(d){return Object.assign({id:d.id},d.data());});var rc={teacher:"#1F4E79",admin:"#9C0006",child:"#C55A11"};var loaded=S.users.filter(function(u){return u.email&&u.password;}).map(function(u){return{n:u.name,e:u.email,p:u.password,c:rc[u.role]||"#1F4E79",tz:u.tzLabel||""};});if(loaded.length>0)S.quickUsers=loaded;if(S.page==="users")renderPage();else updateNavTime();}));
   uns.push(db.collection("users").where("online","==",true).onSnapshot(function(s){S.onlineUsers=s.docs.map(function(d){return d.data().name;}).filter(Boolean);updateNavTime();}));
 }
-auth.onAuthStateChanged(function(u){S.user=u;if(u){db.collection("users").doc(u.uid).get().then(function(d){if(d.exists)S.profile=d.data();renderShell();renderPage();startListeners();});}else{S.profile=null;S.unsubs.forEach(function(f){f();});S.unsubs=[];renderLogin();}});
+
 
 
 
@@ -526,6 +526,9 @@ function startEditUser(uid){S.editUser=S.users.find(function(u){return u.id===ui
 function cancelEditUser(){S.editUser=null;renderPage();}
 function updateUser(){if(!S.editUser)return;var name=val("usr-name").trim(),pass=val("usr-pass"),role=val("usr-role")||"teacher";var tzv=parseFloat(val("usr-tz")||"5.5");var tzl=(TZ_OPTS.find(function(t){return t.v===tzv;})||{l:"IST +5:30"}).l;if(!name){toast("Enter name");return;}var upd={name:name,role:role,tzOffset:tzv,tzLabel:tzl,avatar:name[0].toUpperCase()};if(pass&&pass.length>=6)upd.password=pass;db.collection("users").doc(S.editUser.id).update(upd).then(function(){toast(name+" updated!");S.editUser=null;renderPage();});}
 function deleteUser(uid,name){if(!confirm("Delete user "+name+"? This cannot be undone."))return;db.collection("users").doc(uid).delete().then(function(){toast(name+" deleted.");});}
+
+// Auth observer - MUST be last so all functions are defined
+auth.onAuthStateChanged(function(u){S.user=u;if(u){db.collection("users").doc(u.uid).get().then(function(d){if(d.exists)S.profile=d.data();renderShell();renderPage();startListeners();});}else{S.profile=null;S.unsubs.forEach(function(f){f();});S.unsubs=[];renderLogin();}});
 
 </script>
 </body>
